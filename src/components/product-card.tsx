@@ -19,12 +19,86 @@ export interface ProductCardProduct {
   best_seller?: boolean;
 
   rating?: number;
+  reviewCount?: number;
+  reviews?: number;
+  review_count?: number;
 
   sold?: number;
+  soldCount?: number;
+  sold_count?: number;
 
   likes?: number;
 
   badge?: string;
+}
+
+/**
+ * Tạo số ổn định theo từng sản phẩm.
+ * Không dùng Math.random() vì giá trị sẽ thay đổi mỗi lần component render.
+ */
+function stableNumber(
+  seed: string,
+  min: number,
+  max: number,
+): number {
+  let hash = 0;
+
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i);
+    hash |= 0;
+  }
+
+  const normalized = Math.abs(Math.sin(hash)) % 1;
+
+  return Math.floor(
+    min + normalized * (max - min + 1),
+  );
+}
+
+function getProductSocialProof(product: ProductCardProduct) {
+  const seed = String(product.id || product.slug || product.name);
+
+  // Ưu tiên dữ liệu thật nếu database/component đã truyền vào.
+  const rating =
+    typeof product.rating === "number"
+      ? product.rating
+      : [4.7, 4.8, 4.9, 5.0][
+          stableNumber(seed + "-rating", 0, 3)
+        ];
+
+  const reviewCount =
+    Number(
+      product.reviewCount ??
+        product.reviews ??
+        product.review_count ??
+        0,
+    ) > 0
+      ? Number(
+          product.reviewCount ??
+            product.reviews ??
+            product.review_count,
+        )
+      : stableNumber(seed + "-reviews", 18, 286);
+
+  const sold =
+    Number(
+      product.sold ??
+        product.soldCount ??
+        product.sold_count ??
+        0,
+    ) > 0
+      ? Number(
+          product.sold ??
+            product.soldCount ??
+            product.sold_count,
+        )
+      : stableNumber(seed + "-sold", 32, 420);
+
+  return {
+    rating,
+    reviewCount,
+    sold,
+  };
 }
 
 export function ProductCard({
@@ -37,11 +111,7 @@ export function ProductCard({
   const oldPrice = Number(product.old_price ?? 0);
   const price = Number(product.price);
 
-  const rating = product.rating ?? 4.9;
-  const sold = product.sold ?? 0;
-
-  // Rút gọn tên sản phẩm cho card
- 
+  const socialProof = getProductSocialProof(product);
 
   return (
     <Link
@@ -127,7 +197,11 @@ export function ProductCard({
             />
 
             <span className="text-[9px] font-medium text-neutral-700">
-              {product.likes ?? 128}
+              {product.likes ?? stableNumber(
+                String(product.id) + "-likes",
+                24,
+                188,
+              )}
             </span>
           </div>
         )}
@@ -223,17 +297,17 @@ export function ProductCard({
           />
 
           <span className="text-[9px] font-medium text-neutral-700">
-            {rating}
+            {socialProof.rating.toFixed(1)}
           </span>
 
           <span className="text-[9px] text-neutral-400">
-            · 94 đánh giá
+            · {socialProof.reviewCount} đánh giá
           </span>
         </div>
 
         {/* SOLD */}
         <p className="mt-0.5 text-[9px] text-neutral-500">
-          Đã bán {sold > 0 ? sold : 64}
+          Đã bán {socialProof.sold}
         </p>
 
         {/* OLD PRICE */}

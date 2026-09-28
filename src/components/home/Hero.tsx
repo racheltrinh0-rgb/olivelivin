@@ -44,21 +44,30 @@ export default function Hero() {
     <section
       className="
         relative
+        mx-auto
         w-full
         overflow-hidden
+        bg-[#F3F0EA]
 
         /*
          * Mobile
-         * Giữ tỷ lệ ngang để ảnh không bị crop.
          */
-        aspect-video
+        aspect-[16/10]
 
         /*
-         * Desktop
-         * Vẫn giữ tỷ lệ ảnh nhưng thấp hơn,
-         * tránh Hero chiếm gần toàn bộ màn hình.
+         * Tablet
          */
-        lg:aspect-[16/7]
+        sm:aspect-[16/8]
+
+        /*
+         * Desktop / 16-inch laptop
+         * Match the INFIBETTER reference:
+         * centered container, compact 3:1 hero.
+         */
+        lg:aspect-[3/1]
+        lg:max-w-[1280px]
+        lg:rounded-[24px]
+        lg:shadow-[0_12px_40px_rgba(0,0,0,0.08)]
       "
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -68,42 +77,46 @@ export default function Hero() {
       ====================================================== */}
 
       {slides.map((slide, index) => (
-        <img
+        <div
           key={slide}
-          src={slide}
-          alt=""
-          draggable={false}
           className={`
             absolute
             inset-0
-            h-full
-            w-full
-
-            /*
-             * Giữ ảnh phủ toàn bộ khung.
-             * Khung Hero đã được đặt theo tỷ lệ ngang
-             * nên hạn chế crop tối đa.
-             */
-            object-cover
-            object-center
-
+            flex
+            items-center
+            justify-center
             transition-opacity
             duration-1000
-
             ${
               index === current
                 ? "opacity-100"
                 : "opacity-0"
             }
           `}
-        />
+        >
+          {/* Main artwork fills the hero card, matching the wide reference. */}
+          <img
+            src={slide}
+            alt=""
+            draggable={false}
+            className="
+              relative
+              z-10
+              block
+              h-full
+              w-full
+              object-cover
+              object-center
+            "
+          />
+        </div>
       ))}
 
       {/* =====================================================
           OVERLAY
       ====================================================== */}
 
-      <div className="absolute inset-0 bg-black/15" />
+      <div className="absolute inset-0 z-10 bg-black/[0.04]" />
 
       {/* =====================================================
           CONTENT
@@ -125,17 +138,15 @@ export default function Hero() {
             text-white
 
             sm:max-w-[380px]
+            lg:max-w-[400px]
+            xl:max-w-[430px]
 
             /*
-             * Desktop nhỏ gọn hơn
+             * Keep the copy inside the safe area of the banner.
              */
-            lg:max-w-[430px]
+            lg:ml-[2vw]
           "
         >
-          {/* =================================================
-              LABEL
-          ================================================== */}
-
           <p
             className="
               mb-2
@@ -156,10 +167,6 @@ export default function Hero() {
             THÀNH VIÊN MỚI
           </p>
 
-          {/* =================================================
-              TITLE
-          ================================================== */}
-
           <h1
             className="
               font-display
@@ -170,21 +177,16 @@ export default function Hero() {
               sm:text-[34px]
               sm:leading-[1.06]
 
-              /*
-               * Desktop nhỏ hơn trước
-               */
-              lg:text-[44px]
+              lg:text-[38px]
               lg:leading-[1.08]
+
+              xl:text-[44px]
             "
           >
             Ưu đãi 5%
             <br />
             cho đơn đầu tiên.
           </h1>
-
-          {/* =================================================
-              DESCRIPTION
-          ================================================== */}
 
           <p
             className="
@@ -199,22 +201,15 @@ export default function Hero() {
               sm:text-[12px]
               sm:leading-5
 
-              /*
-               * Desktop nhỏ gọn
-               */
               lg:mt-4
-              lg:max-w-[380px]
-              lg:text-[13px]
+              lg:max-w-[360px]
+              lg:text-[12px]
               lg:leading-5
             "
           >
             Giảm tối đa 35.000đ · Không yêu cầu giá trị
             đơn hàng.
           </p>
-
-          {/* =================================================
-              BUTTONS
-          ================================================== */}
 
           <div
             className="
@@ -230,10 +225,6 @@ export default function Hero() {
               lg:gap-3
             "
           >
-            {/* -------------------------------------------------
-                NHẬN ƯU ĐÃI
-            -------------------------------------------------- */}
-
             <Link
               to="/voucher-register"
               className="
@@ -259,21 +250,14 @@ export default function Hero() {
                 sm:px-4
                 sm:text-[12px]
 
-                /*
-                 * Desktop nhỏ hơn
-                 */
                 lg:h-10
-                lg:min-w-[135px]
+                lg:min-w-[130px]
                 lg:px-5
                 lg:text-[12px]
               "
             >
               Nhận ưu đãi
             </Link>
-
-            {/* -------------------------------------------------
-                XEM SẢN PHẨM
-            -------------------------------------------------- */}
 
             <Link
               to="/shop"
@@ -302,11 +286,8 @@ export default function Hero() {
                 sm:px-4
                 sm:text-[12px]
 
-                /*
-                 * Desktop nhỏ hơn
-                 */
                 lg:h-10
-                lg:min-w-[135px]
+                lg:min-w-[130px]
                 lg:px-5
                 lg:text-[12px]
               "

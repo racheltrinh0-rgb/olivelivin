@@ -1,11 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { formatVND } from "@/lib/format";
-import { ArrowRight } from "lucide-react";
-import clsx from "clsx";
 import { getImageUrl } from "@/lib/storage";
 import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
-
+import clsx from "clsx";
 
 interface Product {
   id: string;
@@ -14,8 +12,21 @@ interface Product {
   price: number | string;
   image_url: string | null;
   stock?: number;
-
   color_preview?: string[];
+
+  /**
+   * Social proof fields.
+   * BestSeller.tsx injects these values so every product
+   * can have different rating / review / sold numbers.
+   */
+  rating?: number;
+  reviewCount?: number;
+  reviews?: number;
+  review_count?: number;
+
+  sold?: number;
+  soldCount?: number;
+  sold_count?: number;
 }
 
 interface Props {
@@ -24,14 +35,136 @@ interface Props {
   highlight?: boolean;
 }
 
+/**
+ * ============================================================
+ * STABLE RANDOM FALLBACK
+ * ============================================================
+ *
+ * Used only when the product does not already have
+ * rating / review / sold values.
+ *
+ * The result is deterministic:
+ * - Same product = same numbers
+ * - Reload does not change the numbers
+ * - Different products get different numbers
+ */
+function stableRandom(
+  seed: string,
+  min: number,
+  max: number
+) {
+  let hash = 0;
+
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i);
+    hash |= 0;
+  }
+
+  const normalized = Math.abs(Math.sin(hash)) % 1;
+
+  return Math.floor(
+    normalized * (max - min + 1)
+  ) + min;
+}
+
+function getSocialProof(product: Product) {
+  const seed = String(
+    product?.id ||
+      product?.slug ||
+      product?.name ||
+      "product"
+  );
+
+  const ratingOptions = [
+    4.7,
+    4.8,
+    4.9,
+    5.0,
+  ];
+
+  const ratingIndex = stableRandom(
+    `${seed}-rating`,
+    0,
+    ratingOptions.length - 1
+  );
+
+  const generatedRating =
+    ratingOptions[ratingIndex];
+
+  const generatedReviews = stableRandom(
+    `${seed}-reviews`,
+    24,
+    386
+  );
+
+  const generatedSold = stableRandom(
+    `${seed}-sold`,
+    48,
+    980
+  );
+
+  /**
+   * Priority:
+   *
+   * 1. rating
+   * 2. reviewCount
+   * 3. reviews
+   * 4. review_count
+   *
+   * If none exists -> deterministic fallback.
+   */
+  const rating =
+    typeof product.rating === "number"
+      ? product.rating
+      : generatedRating;
+
+  const reviews =
+    typeof product.reviewCount === "number"
+      ? product.reviewCount
+      : typeof product.reviews === "number"
+        ? product.reviews
+        : typeof product.review_count === "number"
+          ? product.review_count
+          : generatedReviews;
+
+  /**
+   * BestSeller injects soldCount / sold_count.
+   * We intentionally prioritize those over product.sold
+   * so the UI can display the randomized social-proof value.
+   */
+  const sold =
+    typeof product.soldCount === "number"
+      ? product.soldCount
+      : typeof product.sold_count === "number"
+        ? product.sold_count
+        : typeof product.sold === "number"
+          ? product.sold
+          : generatedSold;
+
+  return {
+    rating,
+    reviews,
+    sold,
+  };
+}
+
 export default function HomeProductCard({
   product,
   badge,
   highlight = false,
 }: Props) {
   const salePrice = Number(product.price);
+  const originalPrice = Math.round(
+    salePrice * 1.35
+  );
 
-  const originalPrice = Math.round(salePrice * 1.35);
+  /**
+   * ============================================================
+   * SOCIAL PROOF
+   * ============================================================
+   */
+  const socialProof =
+    getSocialProof(product);
 
   return (
     <Link
@@ -42,78 +175,60 @@ export default function HomeProductCard({
       className="group block h-full"
     >
       <article
-  className={clsx(
-    `
-    flex
-    h-full
-    flex-col
-
-    overflow-hidden
-
-    rounded-[24px]
-
-    border
-    border-[#E8DED2]
-
-    bg-white
-
-    shadow-[0_2px_8px_rgba(0,0,0,.04)]
-
-    transition-all
-    hover:-translate-y-3
-hover:scale-[1.03]
-hover:border-[#C77B55]
-hover:shadow-[0_28px_60px_rgba(0,0,0,.14)]
-    `,
-          highlight && "ring-1 ring-[#C77B55]/20"
+        className={clsx(
+          `
+            flex
+            h-full
+            flex-col
+            overflow-hidden
+            rounded-[20px]
+            border
+            border-[#E8E1D8]
+            bg-[#FFFDFC]
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:border-[#D9CEC0]
+            hover:shadow-[0_12px_30px_rgba(74,62,48,0.08)]
+          `,
+          highlight &&
+            "border-[#D8C8B7]"
         )}
       >
-        {/* IMAGE */}
+        {/* ======================================================
+            PRODUCT IMAGE
+        ====================================================== */}
 
         <div
-  className="
-    relative
-
-    aspect-square
-
-    overflow-hidden
-
-    rounded-t-[24px]
-
-    bg-gradient-to-b
-    from-[#FBFAF8]
-    via-[#F7F5F2]
-    to-[#F1ECE5]
-  "
->
+          className="
+            relative
+            aspect-square
+            overflow-hidden
+            bg-[#F6F3EE]
+          "
+        >
           {badge && (
             <span
               className="
                 absolute
                 left-4
-top-4
+                top-4
                 z-20
-
                 rounded-full
-
-                bg-gradient-to-r
-                from-[#FF8A00]
-                to-[#FF4D4F]
-
-              px-2.5
-py-0.5
-
-                text-[10px]
-                font-bold
+                border
+                border-[#E7DED3]
+                bg-[#FBF8F3]/95
+                px-3
+                py-1.5
+                text-[9px]
+                font-medium
                 uppercase
-                tracking-[0.18em]
-
-                text-white
-
-                shadow-lg
+                tracking-[0.14em]
+                text-[#6B6258]
+                shadow-[0_2px_8px_rgba(74,62,48,0.05)]
               "
             >
-              🔥 {badge}
+              {badge}
             </span>
           )}
 
@@ -124,361 +239,265 @@ py-0.5
                 right-4
                 top-4
                 z-20
-
                 rounded-full
-
-                bg-white/95
-
-                px-2.5
-                py-1
-
-                text-[10px]
+                border
+                border-[#E7DED3]
+                bg-white/90
+                px-3
+                py-1.5
+                text-[9px]
                 font-medium
-
-                text-[#C77B55]
-
-                shadow
+                text-[#756C63]
+                shadow-[0_2px_8px_rgba(74,62,48,0.04)]
               "
             >
               Còn {product.stock}
             </span>
           )}
 
-          
-<div
-  className="
-    absolute
-    inset-0
-
-    flex
-    items-center
-    justify-center
-
-    bg-gradient-to-b
-    from-[#FBFAF8]
-    via-[#F7F5F2]
-    to-[#F1ECE5]
-  "
->
-
-<img
-  src={product.image_url ? getImageUrl(product.image_url) : ""}
-  alt={product.name}
-  loading="lazy"
-  className="
-    max-w-[90%]
-    max-h-[90%]
-    object-contain
-  "
-/>
-
-</div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img
+              src={
+                product.image_url
+                  ? getImageUrl(
+                      product.image_url
+                    )
+                  : ""
+              }
+              alt={product.name}
+              loading="lazy"
+              className="
+                h-full
+                w-full
+                object-cover
+                transition-transform
+                duration-500
+                ease-out
+                group-hover:scale-[1.025]
+              "
+            />
+          </div>
         </div>
 
-        {/* CONTENT */}
+        {/* ======================================================
+            CONTENT
+        ====================================================== */}
 
         <div
           className="
             flex
             flex-1
             flex-col
-
-            px-2.5
-            py-3
-
-            lg:px-4
-            lg:py-4
+            px-4
+            pb-4
+            pt-4
+            lg:px-5
+            lg:pb-5
           "
         >
-
-         {/* PRODUCT NAME */}
-
-<h3
-  className="
-    line-clamp-2
-
-    min-h-[34px]
-
-    text-[15px]
-    font-medium
-
-    leading-5
-
-    text-[#2F2F2F]
-
-    lg:text-[15px]
-  "
->
-  {product.name}
-</h3>
-
-{/* RATING + COLORS */}
-
-<div className="mt-2 flex items-center justify-between">
-
-  {/* Rating */}
-  <div className="flex items-center gap-1">
-    <span className="text-[11px] tracking-[1px] text-[#D4A017]">
-      ★★★★★
-    </span>
-
-    <span className="text-[11px] font-medium text-neutral-700">
-      4.9
-    </span>
-
-    <span className="text-[11px] text-neutral-400">
-      (126)
-    </span>
-  </div>
-
-  {/* Colors */}
-  <div className="flex items-center gap-1">
-
-    {product.color_preview?.slice(0, 3).map((color, index) => (
-      <span
-        key={`${product.id}-${index}`}
-        className="
-          h-3.5
-          w-3.5
-          rounded-full
-          border
-          border-white
-          shadow-sm
-          ring-1
-          ring-neutral-200
-          transition-all
-          duration-300
-          hover:scale-110
-        "
-        style={{
-          backgroundColor: color,
-        }}
-      />
-    ))}
-
-    {(product.color_preview?.length ?? 0) > 3 && (
-      <span className="ml-1 text-[10px] text-neutral-500">
-        +{product.color_preview!.length - 3}
-      </span>
-    )}
-
-  </div>
-
-</div>
-
-{/* Đã bán */}
-
-<div className="mt-2 flex items-center justify-between gap-2">
-
-  <span
-    className="
-      flex
-      h-6
-      flex-1
-
-      items-center
-      justify-center
-
-      whitespace-nowrap
-
-      rounded-full
-
-      bg-emerald-50
-
-      text-[10px]
-      font-semibold
-
-      text-emerald-700
-    "
-  >
-    🚚 Freeship
-  </span>
-
-  <span
-    className="
-      flex
-      h-6
-      flex-1
-
-      items-center
-      justify-center
-
-      whitespace-nowrap
-
-      rounded-full
-
-      bg-[#E8F3EC]
-
-      text-[10px]
-      font-semibold
-
-      text-[#2E6B4E]
-    "
-  >
-    ↩ 15 ngày
-  </span>
-
-</div>
-
-
-{/* PRICE */}
-
-<div className="mt-2">
-
-  <div
-    className="
-      text-[11px]
-
-      text-neutral-400
-
-      line-through
-    "
-  >
-    {formatVND(originalPrice)}
-  </div>
-
-  <div
-    className="
-      mt-1
-
-      text-[17px]
-
-lg:text-[20px]
-      font-bold
-
-      text-[#C76A2F]
-
-      lg:text-[20px]
-    "
-  >
-    {formatVND(salePrice)}
-  </div>
-
-<div
-  className="
-    mt-1
-    text-[11px]
-    font-medium
-    text-green-600
-  "
->
-  Tiết kiệm {formatVND(originalPrice - salePrice)}
-</div>
-
-</div>
-
-{/* BENEFITS */}
-
-
-
-
-
-{/* CTA */}
-
-<div
-className="
-mt-6
-flex
-gap-3
-
-pb-4
-"
->
-
-  {/* Buy Now */}
- 
-<motion.button
-  whileHover={{
-    scale: 1.04,
-    y: -2,
-  }}
-  whileTap={{
-    scale: 0.98,
-  }}
-  animate={{
-    scale: [1, 1.015, 1],
-  }}
-  transition={{
-    scale: {
-      duration: 7,
-      repeat: Infinity,
-      ease: "easeInOut",
-    },
-    y: {
-      duration: 0.2,
-    },
-  }}
-  className="
-    flex-1
-    h-10
-
-    rounded-xl
-
-    bg-[#DDF3E6]
-
-    text-[#2E6B4E]
-    text-[12px]
-    font-semibold
-
-    shadow-sm
-
-    transition-colors
-    duration-300
-
-    hover:bg-[#CFEAD8]
-  "
->
-  Mua ngay
-</motion.button>
-
-  {/* Add to Cart */}
-  <button
-    className="
-flex
-h-9
-w-9
-
-items-center
-justify-center
-
-rounded-xl
-
-border
-border-[#D9E8DF]
-
-bg-[#F3FAF6]
-
-text-[#2E6B4E]
-
-transition-all
-duration-300
-
-hover:bg-[#2E6B4E]
-hover:text-white
-hover:border-[#2E6B4E]
-"
-  >
-    
-    <motion.div
-  animate={{
-    rotate: [0, -10, 10, -10, 0],
-  }}
-  transition={{
-    duration: 1.5,
-    repeat: Infinity,
-    repeatDelay: 4,
-  }}
->
-  <ShoppingCart
-    size={16}
-    strokeWidth={2.2}
-  />
-</motion.div>
-
-  </button>
-</div>
-
-
+          {/* ====================================================
+              PRODUCT NAME
+          ==================================================== */}
+
+          <h3
+            className="
+              line-clamp-2
+              min-h-[40px]
+              text-[14px]
+              font-medium
+              leading-[1.45]
+              tracking-[-0.005em]
+              text-[#393530]
+            "
+          >
+            {product.name}
+          </h3>
+
+          {/* ====================================================
+              RATING + COLORS
+          ==================================================== */}
+
+          <div className="mt-2.5 flex min-h-[18px] items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <span
+                className="
+                  text-[10px]
+                  tracking-[1px]
+                  text-[#B49A63]
+                "
+                aria-label={`Đánh giá ${socialProof.rating.toFixed(1)} trên 5`}
+              >
+                ★★★★★
+              </span>
+
+              <span className="text-[10px] text-[#6F6861]">
+                {socialProof.rating.toFixed(1)}
+              </span>
+
+              <span className="text-[10px] text-[#AAA29A]">
+                ({socialProof.reviews})
+              </span>
+            </div>
+
+            {product.color_preview?.length ? (
+              <div className="flex items-center gap-1">
+                {product.color_preview
+                  .slice(0, 3)
+                  .map((color, index) => (
+                    <span
+                      key={`${product.id}-${index}`}
+                      className="
+                        h-3
+                        w-3
+                        rounded-full
+                        border
+                        border-white
+                        shadow-[0_1px_3px_rgba(0,0,0,0.12)]
+                        ring-1
+                        ring-[#DDD6CE]
+                      "
+                      style={{
+                        backgroundColor:
+                          color,
+                      }}
+                    />
+                  ))}
+
+                {product.color_preview
+                  .length > 3 && (
+                  <span className="ml-0.5 text-[9px] text-[#9A928A]">
+                    +
+                    {product
+                      .color_preview
+                      .length - 3}
+                  </span>
+                )}
+              </div>
+            ) : null}
+          </div>
+
+          {/* ====================================================
+              PRICE
+          ==================================================== */}
+
+          <div className="mt-3">
+            <div className="text-[10px] text-[#A9A19A] line-through">
+              {formatVND(originalPrice)}
+            </div>
+
+            <div
+              className="
+                mt-0.5
+                text-[19px]
+                font-semibold
+                leading-tight
+                tracking-[-0.015em]
+                text-[#3A3733]
+              "
+            >
+              {formatVND(salePrice)}
+            </div>
+          </div>
+
+          {/* ====================================================
+              SERVICE INFO + SOLD
+          ==================================================== */}
+
+          <div
+            className="
+              mt-3
+              flex
+              min-w-0
+              items-center
+              gap-2
+              text-[10px]
+              text-[#81786F]
+            "
+          >
+            <span className="shrink-0">
+              Freeship
+            </span>
+
+            <span className="text-[#C8C0B8]">
+              ·
+            </span>
+
+            <span className="shrink-0">
+              Đổi trả 15 ngày
+            </span>
+
+            <span className="text-[#C8C0B8]">
+              ·
+            </span>
+
+            <span
+              className="truncate"
+              title={`${socialProof.sold.toLocaleString(
+                "vi-VN"
+              )} lượt mua`}
+            >
+              {socialProof.sold.toLocaleString(
+                "vi-VN"
+              )} đã bán
+            </span>
+          </div>
+
+          {/* ====================================================
+              CTA
+          ==================================================== */}
+
+          <div className="mt-4 flex items-center gap-2">
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{
+                scale: 0.985,
+              }}
+              className="
+                h-10
+                flex-1
+                rounded-xl
+                bg-[#5E6754]
+                px-3
+                text-[11px]
+                font-medium
+                tracking-[0.01em]
+                text-white
+                transition-colors
+                duration-200
+                hover:bg-[#4F5847]
+              "
+            >
+              Mua ngay
+            </motion.button>
+
+            <button
+              type="button"
+              aria-label="Thêm vào giỏ hàng"
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-[#DDD5CC]
+                bg-[#FAF8F5]
+                text-[#5E5A55]
+                transition-all
+                duration-200
+                hover:border-[#5E6754]
+                hover:bg-[#5E6754]
+                hover:text-white
+              "
+            >
+              <ShoppingCart
+                size={16}
+                strokeWidth={1.7}
+              />
+            </button>
+          </div>
         </div>
       </article>
     </Link>

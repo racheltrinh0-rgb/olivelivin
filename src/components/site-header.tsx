@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart";
 
+
 const NAV = [
   { to: "/", label: "Trang chủ" },
   { to: "/shop", label: "Cửa hàng" },
@@ -25,26 +26,31 @@ const categories = [
     title: "Đèn bàn",
     slug: "den-ban",
     icon: LampDesk,
+    image: "/images/category-table-lamp.jpg",
   },
   {
     title: "Đèn đứng",
     slug: "den-dung",
     icon: LampFloor,
+    image: "/images/category-floor-lamp.png",
   },
   {
     title: "Đèn thả",
     slug: "den-tha",
     icon: Lightbulb,
+    image: "/images/category-pendant.png",
   },
   {
     title: "Đèn tường",
     slug: "den-tuong",
     icon: Home,
+    image: "/images/category-wall-lamp.png",
   },
   {
     title: "Đồ decor",
     slug: "do-decor",
     icon: Sparkles,
+    image: "/images/category-decor.png",
   },
 ];
 
@@ -147,7 +153,7 @@ export function SiteHeader() {
           flex
           h-14
           w-full
-          max-w-[1600px]
+          max-w-[1280px]
           items-center
           justify-between
           gap-4
@@ -155,11 +161,11 @@ export function SiteHeader() {
           border
           border-neutral-200/80
           bg-white
-          px-5
+          px-6
           shadow-[0_8px_30px_rgba(0,0,0,0.06)]
           sm:h-16
-          sm:px-6
-          lg:px-7
+          sm:px-7
+          lg:px-8
         "
       >
         {/* =================================================
@@ -190,7 +196,13 @@ export function SiteHeader() {
           className="
             hidden
             items-center
-            gap-9
+            gap-1
+            rounded-full
+            border
+            border-neutral-200/80
+            bg-neutral-50/90
+            p-1
+            shadow-[0_2px_12px_rgba(0,0,0,0.04)]
             lg:flex
           "
         >
@@ -204,26 +216,22 @@ export function SiteHeader() {
               to={item.to}
               className="
                 relative
-                text-[14px]
-                font-normal
-                tracking-wide
+                rounded-full
+                px-4
+                py-2
+                text-[13px]
+                font-medium
+                tracking-[0.01em]
                 text-neutral-600
                 transition-all
-                duration-300
-                hover:text-black
-
-                after:absolute
-                after:-bottom-1
-                after:left-0
-                after:h-px
-                after:w-0
-                after:bg-black
-                after:transition-all
-                hover:after:w-full
+                duration-200
+                hover:bg-white
+                hover:text-[#2F2F2F]
+                hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]
               "
               activeProps={{
                 className:
-                  "relative text-[14px] font-normal tracking-wide text-black after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-black",
+                  "relative rounded-full bg-white px-4 py-2 text-[13px] font-medium tracking-[0.01em] text-[#2F2F2F] shadow-[0_2px_8px_rgba(0,0,0,0.06)]",
               }}
             >
               {item.label}
@@ -249,13 +257,18 @@ export function SiteHeader() {
                 flex
                 items-center
                 gap-1.5
-                text-[14px]
-                font-normal
-                tracking-wide
+                rounded-full
+                px-4
+                py-2
+                text-[13px]
+                font-medium
+                tracking-[0.01em]
                 text-neutral-600
                 transition-all
-                duration-300
-                hover:text-black
+                duration-200
+                hover:bg-white
+                hover:text-[#2F2F2F]
+                hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]
               "
             >
               <span>Danh mục</span>
@@ -285,9 +298,9 @@ export function SiteHeader() {
                 className="
                   absolute
                   left-1/2
-                  top-[calc(100%+18px)]
+                  top-[calc(100%+8px)]
                   z-[100]
-                  w-[245px]
+                  w-[285px]
                   -translate-x-1/2
                   overflow-hidden
                   rounded-2xl
@@ -305,11 +318,11 @@ export function SiteHeader() {
                 <div className="px-3 pb-2 pt-2">
                   <p
                     className="
-                      text-[9px]
-                      font-medium
+                      text-[10px]
+                      font-semibold
                       uppercase
-                      tracking-[0.28em]
-                      text-neutral-400
+                      tracking-[0.24em]
+                      text-neutral-500
                     "
                   >
                     COLLECTIONS
@@ -342,8 +355,9 @@ export function SiteHeader() {
                           rounded-xl
                           px-3
                           py-2.5
-                          text-[13px]
-                          text-neutral-600
+                          text-[14px]
+                          font-medium
+                          text-[#343434]
                           transition-all
                           duration-200
                           hover:bg-[#F7FAF5]
@@ -352,37 +366,36 @@ export function SiteHeader() {
                       >
                         {/* ICON + LABEL */}
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
                           <div
                             className="
-                              flex
-                              h-8
-                              w-8
+                              h-11
+                              w-11
                               shrink-0
-                              items-center
-                              justify-center
+                              overflow-hidden
                               rounded-lg
                               border
                               border-neutral-100
                               bg-neutral-50
-                              text-neutral-500
-                              transition-all
-                              duration-200
-                              group-hover:border-[#DDE8D7]
-                              group-hover:bg-[#F1F6EE]
-                              group-hover:text-[#6F8B5E]
+                              shadow-[0_2px_8px_rgba(0,0,0,0.04)]
                             "
                           >
-                            <Icon
+                            <img
+                              src={category.image}
+                              alt={category.title}
+                              loading="lazy"
                               className="
-                                h-[17px]
-                                w-[17px]
+                                h-full
+                                w-full
+                                object-cover
+                                transition-transform
+                                duration-300
+                                group-hover:scale-105
                               "
-                              strokeWidth={1.5}
                             />
                           </div>
 
-                          <span>
+                          <span className="truncate">
                             {category.title}
                           </span>
                         </div>
@@ -392,7 +405,8 @@ export function SiteHeader() {
                         <span
                           className="
                             text-[13px]
-                            text-neutral-300
+                            font-medium
+                            text-neutral-400
                             transition-transform
                             duration-200
                             group-hover:translate-x-1
@@ -431,9 +445,9 @@ export function SiteHeader() {
                       rounded-xl
                       px-3
                       py-2.5
-                      text-[13px]
-                      font-medium
-                      text-[#2F2F2F]
+                      text-[14px]
+                      font-semibold
+                      text-[#242424]
                       transition-all
                       duration-200
                       hover:bg-neutral-50
@@ -619,8 +633,8 @@ export function SiteHeader() {
         <div
           className="
             mx-auto
-            mt-2
-            max-w-[1600px]
+            mt-1
+            max-w-[1280px]
             rounded-2xl
             border
             border-neutral-200
@@ -696,8 +710,8 @@ export function SiteHeader() {
         <div
           className="
             mx-auto
-            mt-2
-            max-w-[1600px]
+            mt-1
+            max-w-[1280px]
             overflow-hidden
             rounded-2xl
             border
@@ -804,29 +818,26 @@ export function SiteHeader() {
                   >
                     {/* ICON + LABEL */}
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
                       <div
                         className="
-                          flex
-                          h-8
-                          w-8
-                          items-center
-                          justify-center
+                          h-10
+                          w-10
+                          shrink-0
+                          overflow-hidden
                           rounded-lg
                           bg-neutral-50
-                          text-neutral-400
-                          transition-all
-                          group-hover:bg-[#F1F6EE]
-                          group-hover:text-[#6F8B5E]
                         "
                       >
-                        <Icon
-                          className="h-4 w-4"
-                          strokeWidth={1.5}
+                        <img
+                          src={category.image}
+                          alt={category.title}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
                         />
                       </div>
 
-                      <span>
+                      <span className="truncate">
                         {category.title}
                       </span>
                     </div>

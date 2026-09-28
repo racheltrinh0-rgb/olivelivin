@@ -186,63 +186,32 @@ export default function Vouchers() {
   );
 
   return (
-    <section className="bg-[#FAF8F5] py-8 sm:py-12 lg:py-14">
+    <section className="bg-[#F8F6F1] pt-4 pb-10 sm:pt-5 sm:pb-12 lg:pt-6 lg:pb-16">
       <div className="container-x">
-
-        {/* HEADER */}
-
-        <div className="mx-auto mb-6 max-w-lg text-center sm:mb-8">
-          <p className="text-[9px] uppercase tracking-[0.3em] text-neutral-500">
-            EXCLUSIVE OFFERS
+        <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
+          <p className="text-[9px] font-medium uppercase tracking-[0.26em] text-[#A99B8A]">
+            OLIVE LIVING · PRIVATE OFFERS
           </p>
 
-          <h2 className="mt-1.5 font-display text-2xl lg:text-3xl">
-            Ưu đãi dành riêng cho bạn
+          <h2 className="mt-2 font-display text-[27px] font-normal leading-[1.18] tracking-[-0.025em] text-[#39352F] sm:text-[32px]">
+            A little something for your space.
           </h2>
 
-  <p className="mx-auto mt-1 max-w-md text-xs leading-5 text-neutral-500">
-  Đăng ký một lần – nhận ưu đãi quanh năm.
-  Nhận voucher theo tháng, ưu đãi đặc biệt vào các dịp lễ
-  và những chương trình dành riêng cho khách hàng Olive Living.
-</p>
+          <p className="mx-auto mt-2.5 max-w-lg text-[12px] leading-5 text-[#858078] sm:text-[13px]">
+            Những ưu đãi nhỏ dành cho những không gian bạn yêu thích.
+          </p>
 
-          {/* ĐĂNG KÝ NHẬN VOUCHER */}
           <Link
             to="/voucher-register"
-            className="
-              mx-auto
-              mt-4
-              flex
-              w-fit
-              items-center
-              justify-center
-              gap-2
-              rounded-full
-              bg-gray-900
-              px-5
-              py-2.5
-              text-[11px]
-              font-semibold
-              tracking-wide
-              text-white
-              shadow-sm
-              transition-all
-              hover:bg-gray-800
-              active:scale-[0.98]
-            "
+            className="mx-auto mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#DED7CC] bg-[#FBFAF7] px-4 py-2 text-[9px] font-medium uppercase tracking-[0.1em] text-[#686158] transition-all hover:border-[#CEC4B7] hover:bg-white active:scale-[0.98]"
           >
-            <Gift size={14} strokeWidth={2} />
-            ĐĂNG KÝ NHẬN VOUCHER
+            <Gift size={12} strokeWidth={1.5} />
+            Nhận ưu đãi
           </Link>
         </div>
 
-        {/* ALL VOUCHERS
-            Black Friday dùng đúng layout voucher thường.
-            Chỉ đổi màu + thêm hiệu ứng nhẹ.
-        */}
-
         {visibleVouchers.length > 0 && (
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-3.5 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2">
             {visibleVouchers
               .filter((item) => {
                 if (!item.start_at || !item.end_at) return false;
@@ -269,622 +238,159 @@ export default function Vouchers() {
                 return (
                   <motion.div
                     key={item.code}
-                    initial={{ opacity: 0, y: 6 }}
+                    initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25 }}
-                    className={`
-                      group
-                      relative
-                      flex
-                      h-[124px]
-                      overflow-hidden
-                      rounded-xl
-                      border
-                      shadow-sm
-                      transition-all
-                      duration-300
-                      hover:-translate-y-0.5
-                      hover:shadow-md
-                      sm:h-[140px]
-                      ${
-                        blackFriday
-                          ? "hover:shadow-[0_10px_30px_rgba(185,125,70,0.18)]"
-                          : ""
-                      }
-
-                      ${
-                        blackFriday
-                          ? `
-                            border-[#D8C7B3]
-                            bg-[#F3EBDD]
-                          `
-                          : `
-                            border-[#E9E3DA]
-                            bg-white
-                          `
-                      }
-                    `}
+                    className="group relative overflow-hidden rounded-[22px] border border-[#E7E1D8] bg-[#FCFBF8] shadow-[0_2px_14px_rgba(73,61,48,0.035)] transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_8px_24px_rgba(73,61,48,0.065)]"
                   >
-
-                    {/* LEFT STRIPE */}
-
-                    <div
-                      className={`
-                        absolute
-                        left-0
-                        top-0
-                        h-full
-                        w-1.5
-                        transition-all
-                        group-hover:w-2
-
-                        ${
-                          blackFriday
-                            ? "bg-gradient-to-b from-[#E8B77D] via-[#C98245] to-[#A96235]"
-                            : "bg-[#D97745]"
-                        }
-                      `}
-                    />
-
-                    {/* BLACK FRIDAY SPECIAL EFFECTS */}
-
                     {blackFriday && (
-                      <>
-                        {/* Soft champagne glow */}
-                        <motion.div
-                          className="
-                            pointer-events-none
-                            absolute
-                            -right-10
-                            -top-10
-                            h-28
-                            w-28
-                            rounded-full
-                            bg-[#F7C98F]/25
-                            blur-2xl
-                          "
-                          animate={{
-                            scale: [0.9, 1.15, 0.9],
-                            opacity: [0.25, 0.55, 0.25],
-                          }}
-                          transition={{
-                            duration: 3.8,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                        />
-
-                        {/* Moving light sweep */}
-                        <motion.div
-                          className="
-                            pointer-events-none
-                            absolute
-                            inset-y-0
-                            -left-1/3
-                            z-[1]
-                            w-1/4
-                            rotate-[18deg]
-                            bg-gradient-to-r
-                            from-transparent
-                            via-white/35
-                            to-transparent
-                            blur-[2px]
-                          "
-                          animate={{
-                            x: ["-80%", "560%"],
-                          }}
-                          transition={{
-                            duration: 4.5,
-                            repeat: Infinity,
-                            repeatDelay: 2.5,
-                            ease: "easeInOut",
-                          }}
-                        />
-
-                        {/* Tiny twinkling stars */}
-                        <motion.span
-                          className="pointer-events-none absolute left-[27%] top-[22%] z-[2] text-[9px] text-white"
-                          animate={{
-                            opacity: [0.15, 1, 0.15],
-                            scale: [0.7, 1.25, 0.7],
-                          }}
-                          transition={{
-                            duration: 1.8,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                        >
-                          ✦
-                        </motion.span>
-
-                        <motion.span
-                          className="pointer-events-none absolute right-[16%] top-[18%] z-[2] text-[7px] text-[#FFF5E8]"
-                          animate={{
-                            opacity: [0.1, 0.9, 0.1],
-                            scale: [0.7, 1.15, 0.7],
-                          }}
-                          transition={{
-                            duration: 2.4,
-                            repeat: Infinity,
-                            delay: 0.6,
-                            ease: "easeInOut",
-                          }}
-                        >
-                          ✦
-                        </motion.span>
-
-                        <motion.span
-                          className="pointer-events-none absolute bottom-[20%] right-[34%] z-[2] text-[6px] text-white"
-                          animate={{
-                            opacity: [0.1, 0.75, 0.1],
-                            scale: [0.6, 1.2, 0.6],
-                          }}
-                          transition={{
-                            duration: 2.1,
-                            repeat: Infinity,
-                            delay: 1.1,
-                            ease: "easeInOut",
-                          }}
-                        >
-                          ✦
-                        </motion.span>
-                      </>
+                      <div className="pointer-events-none absolute inset-0 bg-[#F7F0E7]/40" />
                     )}
 
-                    {/* LEFT VALUE */}
+                    <div className="absolute left-6 right-6 top-0 h-[2px] rounded-full bg-[#D8B9A0] opacity-60" />
 
-                    <div
-                      className={`
-                        relative
-                        z-10
-                        flex
-                        w-[96px]
-                        shrink-0
-                        flex-col
-                        items-center
-                        justify-center
-                        border-r
-                        border-dashed
-                        px-2
-                        py-3
-                        sm:w-[120px]
+                    <div className="relative flex min-h-[142px]">
+                      <div className="flex w-[108px] shrink-0 flex-col items-center justify-center bg-[#F8F5EF] px-3 py-5 sm:w-[124px]">
+                        <div className="mb-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-[#F1E9DE] text-[#B28C71]">
+                          {blackFriday ? (
+                            <Flame size={15} strokeWidth={1.35} />
+                          ) : (
+                            <Icon size={15} strokeWidth={1.35} />
+                          )}
+                        </div>
 
-                        ${
-                          blackFriday
-                            ? "border-[#D8C9B8] bg-[#EFE5D6]/70"
-                            : "border-[#E5DED5] bg-[#FAF8F5]/40"
-                        }
-                      `}
-                    >
-
-                      <div
-                        className={`
-                          mb-1
-                          flex
-                          h-6
-                          w-6
-                          items-center
-                          justify-center
-                          rounded-full
-
-                          ${
-                            blackFriday
-                              ? "bg-[#E7D7C2]"
-                              : "bg-[#FFF4EA]"
-                          }
-                        `}
-                      >
-                        {blackFriday ? (
-                          <Flame
-                            size={14}
-                            className="text-[#B87343]"
-                          />
-                        ) : (
-                          <Icon
-                            size={14}
-                            className="text-[#D97745]"
-                          />
+                        {blackFriday && (
+                          <span className="mb-1 text-[7px] font-medium uppercase tracking-[0.16em] text-[#A8754D]">
+                            Black Friday
+                          </span>
                         )}
+
+                        <p className="max-w-full truncate text-[8px] font-medium tracking-[0.07em] text-[#A49B90]">
+                          {item.code}
+                        </p>
+
+                        <p className="mt-0.5 text-[21px] font-normal leading-none tracking-[-0.035em] text-[#AD896F] sm:text-[23px]">
+                          {formatDiscount(item)}
+                        </p>
+
+                        <span className="mt-1 text-[8px] text-[#AAA197]">
+                          ưu đãi
+                        </span>
                       </div>
 
-                      {/* BF BADGE / NORMAL BADGE */}
+                      <div className="flex min-w-0 flex-1 flex-col justify-between px-4 py-4 sm:px-5">
+                        <div className="min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="min-w-0 truncate text-[12px] font-medium tracking-[-0.005em] text-[#48433C] sm:text-[13px]">
+                              {item.title ||
+                                (blackFriday
+                                  ? "Black Friday Special"
+                                  : "A little treat for you")}
+                            </h3>
 
-                      {blackFriday ? (
-                        <span
-                          className="
-                            rounded-full
-                            bg-[#C98245]
-                            px-1.5
-                            py-0.5
-                            text-[7px]
-                            font-bold
-                            uppercase
-                            leading-none
-                            tracking-wide
-                            text-white
-                            sm:text-[8px]
-                          "
-                        >
-                          BLACK FRIDAY
-                        </span>
-                      ) : null}
-
-                      <p
-                        className={`
-                          w-full
-                          truncate
-                          text-center
-                          font-mono
-                          font-medium
-
-                          ${
-                            blackFriday
-                              ? "mt-1 text-[8px] text-[#857666] sm:text-[9px]"
-                              : "text-[9px] text-neutral-400"
-                          }
-                        `}
-                      >
-                        {item.code}
-                      </p>
-
-                      <p
-                        className={`
-                          mt-0.5
-                          text-center
-                          font-bold
-                          leading-tight
-                          tracking-tight
-
-                          ${
-                            blackFriday
-                              ? "text-lg text-[#B87343] sm:text-xl"
-                              : "text-lg text-[#D97745]"
-                          }
-                        `}
-                      >
-                        {formatDiscount(item)}
-                      </p>
-
-                      <span
-                        className={`
-                          text-[9px]
-
-                          ${
-                            blackFriday
-                              ? "text-[#857666]"
-                              : "text-neutral-400"
-                          }
-                        `}
-                      >
-                        Voucher
-                      </span>
-                    </div>
-
-                    {/* RIGHT INFO */}
-
-                    <div
-                      className={`
-                        relative
-                        z-10
-                        flex
-                        min-w-0
-                        flex-1
-                        flex-col
-                        justify-between
-                        p-3
-
-                        ${
-                          blackFriday
-                            ? "text-[#40382F]"
-                            : ""
-                        }
-                      `}
-                    >
-
-                      <div className="min-w-0">
-
-                        <div className="flex items-center gap-1.5">
-
-                          <h3
-                            className={`
-                              line-clamp-1
-                              min-w-0
-                              text-xs
-                              font-semibold
-
-                              ${
-                                blackFriday
-                                  ? "text-[#3D362E]"
-                                  : "text-neutral-800"
-                              }
-                            `}
-                          >
-                            {item.title ||
-                              (blackFriday
-                                ? "BLACK FRIDAY 39"
-                                : "")}
-                          </h3>
-
-                          {blackFriday ? (
-                            <span
-                              className="
-                                inline-flex
-                                shrink-0
-                                items-center
-                                gap-0.5
-                                rounded-full
-                                bg-[#C98245]
-                                px-1.5
-                                py-0.5
-                                text-[7px]
-                                font-semibold
-                                text-white
-                              "
-                            >
-                              <Flame size={8} />
-                              HOT
-                            </span>
-                          ) : (
-                            item.badge && (
+                            {item.badge && !blackFriday ? (
                               <span
-                                className="
-                                  shrink-0
-                                  rounded-full
-                                  px-1.5
-                                  py-0.5
-                                  text-[8px]
-                                  font-semibold
-                                  text-white
-                                "
+                                className="shrink-0 rounded-full px-2 py-1 text-[7px] font-medium text-white opacity-85"
                                 style={{
                                   backgroundColor:
-                                    item.badge_color || "#111",
+                                    item.badge_color || "#8A8278",
                                 }}
                               >
                                 {item.badge}
                               </span>
-                            )
-                          )}
+                            ) : blackFriday ? (
+                              <span className="shrink-0 rounded-full bg-[#F0E4D5] px-2 py-1 text-[7px] font-medium text-[#A8754D]">
+                                Special
+                              </span>
+                            ) : null}
+                          </div>
 
-                        </div>
-
-                        <p
-                          className={`
-                            mt-0.5
-                            line-clamp-1
-                            text-[11px]
-
-                            ${
-                              blackFriday
-                                ? "text-[#75695C]"
-                                : "text-neutral-500"
-                            }
-                          `}
-                        >
-                          {item.description}
-                        </p>
-
-                        <p
-                          className={`
-                            mt-1
-                            text-[11px]
-
-                            ${
-                              blackFriday
-                                ? "text-[#75695C]"
-                                : "text-neutral-500"
-                            }
-                          `}
-                        >
-                          Đơn từ:{" "}
-                          <span
-                            className={`
-                              font-semibold
-
-                              ${
-                                blackFriday
-                                  ? "text-[#3D362E]"
-                                  : "text-neutral-800"
-                              }
-                            `}
-                          >
-                            {Number(
-                              item.min_order || 0
-                            ).toLocaleString("vi-VN")}
-                            đ
-                          </span>
-                        </p>
-
-                      </div>
-
-                      {/* BOTTOM */}
-
-                      <div
-                        className={`
-                          mt-2
-                          flex
-                          items-center
-                          justify-between
-                          border-t
-                          pt-1.5
-
-                          ${
-                            blackFriday
-                              ? "border-[#DED1C2]"
-                              : "border-neutral-100"
-                          }
-                        `}
-                      >
-
-                        <div className="min-w-0">
-
-                          <p
-                            className={`
-                              text-[10px]
-                              font-medium
-
-                              ${
-                                blackFriday
-                                  ? "text-[#B87343]"
-                                  : "text-[#D97745]"
-                              }
-                            `}
-                          >
-                            {upcoming
-                              ? "Sắp diễn ra"
-                              : `Còn ${Math.max(
-                                  0,
-                                  Number(item.quantity || 0) -
-                                    Number(item.used || 0)
-                                )}`}
+                          <p className="mt-1 line-clamp-2 max-w-[330px] text-[10px] leading-[1.55] text-[#888178] sm:text-[11px]">
+                            {item.description}
                           </p>
 
-                          <p
-                            className={`
-                              text-[9px]
-
-                              ${
-                                blackFriday
-                                  ? "text-[#968979]"
-                                  : "text-neutral-400"
-                              }
-                            `}
-                          >
-                            {upcoming
-                              ? `Bắt đầu: ${new Date(
-                                  item.start_at
-                                ).toLocaleDateString("vi-VN")}`
-                              : `HSD: ${new Date(
-                                  item.end_at
-                                ).toLocaleDateString("vi-VN")}`}
+                          <p className="mt-2 text-[10px] text-[#8B847B]">
+                            Đơn từ{" "}
+                            <span className="font-medium text-[#514B44]">
+                              {Number(item.min_order || 0).toLocaleString(
+                                "vi-VN"
+                              )}
+                              đ
+                            </span>
                           </p>
-
                         </div>
 
-                        {/* ACTION */}
+                        <div className="mt-3 flex items-end justify-between gap-3">
+                          <div>
+                            <p className="text-[9px] font-medium text-[#A88973]">
+                              {upcoming
+                                ? "Sắp diễn ra"
+                                : `Còn ${Math.max(
+                                    0,
+                                    Number(item.quantity || 0) -
+                                      Number(item.used || 0)
+                                  )}`}
+                            </p>
 
-                        {blackFriday ? (
+                            <p className="mt-0.5 text-[8px] text-[#AAA39A]">
+                              {upcoming
+                                ? `Bắt đầu: ${new Date(
+                                    item.start_at
+                                  ).toLocaleDateString("vi-VN")}`
+                                : `HSD: ${new Date(
+                                    item.end_at
+                                  ).toLocaleDateString("vi-VN")}`}
+                            </p>
+                          </div>
+
                           <div className="flex shrink-0 items-center gap-1.5">
-
                             <button
-                              onClick={() =>
-                                copyCode(item.code)
-                              }
-                              className="
-                                flex
-                                h-7
-                                items-center
-                                gap-1
-                                rounded-lg
-                                border
-                                border-[#D3C4B3]
-                                bg-white/60
-                                px-2
-                                text-[9px]
-                                font-medium
-                                text-[#554A3F]
-                                transition
-                                hover:bg-white
-                              "
+                              onClick={() => copyCode(item.code)}
+                              className="flex h-7 items-center gap-1 rounded-full border border-[#DED8CE] bg-transparent px-2.5 text-[8px] font-medium text-[#716A61] transition-colors hover:bg-white"
                             >
-                              <Copy size={11} />
-
+                              <Copy size={10} strokeWidth={1.5} />
                               <span className="hidden sm:inline">
                                 Sao chép
                               </span>
                             </button>
 
                             <button
-                              onClick={() =>
-                                saveVoucher(item)
-                              }
+                              onClick={() => saveVoucher(item)}
                               disabled={saved}
-                              className={`
-                                rounded-lg
-                                px-2.5
-                                py-1.5
-                                text-[10px]
-                                font-semibold
-                                transition
-
-                                ${
-                                  saved
-                                    ? "bg-[#6D8B5B] text-white"
-                                    : "bg-[#D9905C] text-white hover:bg-[#C98245]"
-                                }
-                              `}
+                              className={`h-7 rounded-full px-3 text-[8px] font-medium transition-colors ${
+                                saved
+                                  ? "bg-[#87907C] text-white"
+                                  : "bg-[#737B69] text-white hover:bg-[#626A59]"
+                              }`}
                             >
                               {saved ? (
                                 <>
                                   <Check
-                                    size={11}
+                                    size={10}
                                     className="mr-0.5 inline"
+                                    strokeWidth={1.8}
                                   />
                                   Đã lưu
                                 </>
                               ) : (
-                                "Lấy ưu đãi"
+                                "Lưu ưu đãi"
                               )}
                             </button>
-
                           </div>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              saveVoucher(item)
-                            }
-                            disabled={saved}
-                            className={`
-                              rounded-lg
-                              px-2.5
-                              py-1
-                              text-[11px]
-                              font-semibold
-                              transition
-
-                              ${
-                                saved
-                                  ? "bg-[#6D8B5B] text-white"
-                                  : "bg-[#D97745] text-white hover:bg-[#C96B3B]"
-                              }
-                            `}
-                          >
-                            {saved
-                              ? "✓ Đã lưu"
-                              : "Lưu ngay"}
-                          </button>
-                        )}
-
+                        </div>
                       </div>
-
                     </div>
-
                   </motion.div>
                 );
               })}
           </div>
         )}
 
-        {/* SHOW MORE */}
-
         {hiddenVoucherCount > 0 && (
-          <div className="mt-5 flex justify-center">
+          <div className="mt-6 flex justify-center">
             <button
               onClick={() => setShowAll(!showAll)}
-              className="
-                rounded-full
-                border
-                border-[#D9D3CA]
-                bg-white
-                px-4
-                py-1.5
-                text-xs
-                font-medium
-                text-neutral-700
-                transition
-                hover:bg-[#D97745]
-                hover:text-white
-              "
+              className="rounded-full border border-[#DDD6CB] bg-transparent px-4 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-[#746D64] transition-all hover:border-[#C6BCAF] hover:bg-white"
             >
               {showAll
                 ? "Thu gọn"
@@ -892,7 +398,6 @@ export default function Vouchers() {
             </button>
           </div>
         )}
-
       </div>
     </section>
   );

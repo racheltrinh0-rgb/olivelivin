@@ -26,6 +26,7 @@ import {
   Settings,
   ShoppingBag,
   TicketPercent,
+  Truck,
   UserRound,
   Users,
   WalletCards,
@@ -88,6 +89,11 @@ const navigationGroups = [
         label: "Đơn hàng",
         href: "/admin/orders",
         icon: ClipboardList,
+      },
+      {
+        label: "Vận chuyển",
+        href: "/admin/shipping",
+        icon: Truck,
       },
     ],
   },
@@ -1149,7 +1155,7 @@ function AccountPage() {
             </h2>
 
             <p className="mt-1 text-sm text-neutral-500">
-              Theo dõi hoạt động cửa
+              Theo dõi hoạt động của
               hàng và đơn hàng của bạn.
             </p>
           </section>

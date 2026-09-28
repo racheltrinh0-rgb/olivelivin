@@ -72,6 +72,27 @@ const [imageUrl, setImageUrl] = useState(
   product.image_url ?? ""
 );
 
+  // SHIPPING
+  const [weightKg, setWeightKg] = useState(
+    product.weight_kg ?? product.weight ?? 0
+  );
+
+  const [packageLengthCm, setPackageLengthCm] = useState(
+    product.package_length_cm ?? 0
+  );
+
+  const [packageWidthCm, setPackageWidthCm] = useState(
+    product.package_width_cm ?? 0
+  );
+
+  const [packageHeightCm, setPackageHeightCm] = useState(
+    product.package_height_cm ?? 0
+  );
+
+  const [expressAvailable, setExpressAvailable] = useState(
+    product.express_available ?? false
+  );
+
 useEffect(() => {
   
   loadCategories();
@@ -172,6 +193,13 @@ async function save() {
 
   price,
   stock,
+
+  // SHIPPING
+  weight_kg: Number(weightKg) || 0,
+  package_length_cm: Number(packageLengthCm) || 0,
+  package_width_cm: Number(packageWidthCm) || 0,
+  package_height_cm: Number(packageHeightCm) || 0,
+  express_available: expressAvailable,
 })
 
       .eq("id", product.id);
@@ -730,6 +758,180 @@ if (error) throw error;
             </div>
           </div>
         )}
+      </section>
+
+      {/* VẬN CHUYỂN */}
+      <section className="rounded-2xl border border-[#DDD6CE] bg-white p-4 shadow-sm md:p-5">
+        <div className="mb-4 flex flex-col gap-2 border-b border-[#E8E4DE] pb-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="text-xl font-bold text-[#2D2D2D]">
+              🚚 Vận chuyển
+            </h3>
+            <p className="mt-0.5 text-xs text-neutral-500">
+              Thông tin dùng để tính phí giao hàng và xác định sản phẩm có thể dùng Express.
+            </p>
+          </div>
+
+          <span className="w-fit rounded-full bg-[#F2F7F4] px-3 py-1 text-[10px] font-semibold text-[#2D6A4F]">
+            Shipping
+          </span>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2">
+          {/* KHỐI LƯỢNG */}
+          <div className="rounded-xl border border-[#DDD] bg-[#FAFAFA] p-4">
+            <label className="mb-1.5 block text-sm font-semibold text-[#2D2D2D]">
+              ⚖️ Khối lượng
+            </label>
+
+            <div className="relative">
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={weightKg}
+                onChange={(e) => setWeightKg(Number(e.target.value))}
+                className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 pr-12 text-base font-semibold outline-none focus:border-[#2D6A4F] focus:ring-4 focus:ring-[#EAF3EE]"
+                placeholder="0"
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-neutral-500">
+                kg
+              </span>
+            </div>
+
+            <p className="mt-2 text-[11px] text-neutral-500">
+              Dùng để tính phí giao hàng theo trọng lượng.
+            </p>
+          </div>
+
+          {/* EXPRESS */}
+          <div className="rounded-xl border border-[#CFE7D6] bg-[#F7FBF8] p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <label className="block text-sm font-semibold text-[#2D2D2D]">
+                  ⚡ Giao hàng nhanh
+                </label>
+
+                <p className="mt-1 text-[11px] leading-5 text-neutral-500">
+                  Cho phép sản phẩm này sử dụng dịch vụ Express nếu khu vực giao hàng hỗ trợ.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={expressAvailable}
+                onClick={() => setExpressAvailable((value) => !value)}
+                className={`relative mt-0.5 h-7 w-12 shrink-0 rounded-full transition ${
+                  expressAvailable
+                    ? "bg-[#2D6A4F]"
+                    : "bg-neutral-300"
+                }`}
+              >
+                <span
+                  className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${
+                    expressAvailable
+                      ? "left-6"
+                      : "left-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            <div className="mt-3 text-[11px] font-medium">
+              {expressAvailable ? (
+                <span className="text-[#2D6A4F]">
+                  ✓ Sản phẩm được phép giao Express
+                </span>
+              ) : (
+                <span className="text-neutral-400">
+                  Express đang tắt cho sản phẩm này
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* KÍCH THƯỚC */}
+        <div className="mt-3 rounded-xl border border-[#DDD] bg-[#FAFAFA] p-4">
+          <div className="mb-3">
+            <label className="block text-sm font-semibold text-[#2D2D2D]">
+              📦 Kích thước đóng gói
+            </label>
+            <p className="mt-1 text-[11px] text-neutral-500">
+              Kích thước kiện hàng sau khi đóng gói. Đơn vị: cm.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+                Dài
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={packageLengthCm}
+                  onChange={(e) => setPackageLengthCm(Number(e.target.value))}
+                  className="h-10 w-full rounded-lg border border-stone-200 bg-white px-3 pr-9 text-sm font-semibold outline-none focus:border-[#2D6A4F] focus:ring-2 focus:ring-[#EAF3EE]"
+                  placeholder="0"
+                />
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-400">
+                  cm
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+                Rộng
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={packageWidthCm}
+                  onChange={(e) => setPackageWidthCm(Number(e.target.value))}
+                  className="h-10 w-full rounded-lg border border-stone-200 bg-white px-3 pr-9 text-sm font-semibold outline-none focus:border-[#2D6A4F] focus:ring-2 focus:ring-[#EAF3EE]"
+                  placeholder="0"
+                />
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-400">
+                  cm
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+                Cao
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={packageHeightCm}
+                  onChange={(e) => setPackageHeightCm(Number(e.target.value))}
+                  className="h-10 w-full rounded-lg border border-stone-200 bg-white px-3 pr-9 text-sm font-semibold outline-none focus:border-[#2D6A4F] focus:ring-2 focus:ring-[#EAF3EE]"
+                  placeholder="0"
+                />
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-400">
+                  cm
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-3 rounded-xl border border-[#E8E4DE] bg-[#FCFAF8] px-4 py-3">
+          <p className="text-[11px] leading-5 text-neutral-500">
+            💡 Phí vận chuyển không nhập tại đây. Giá Standard / Express sẽ được
+            quản lý tập trung tại <strong>Admin → Vận chuyển</strong>.
+          </p>
+        </div>
       </section>
 
       {/* ACTIONS — giữ đầy đủ */}

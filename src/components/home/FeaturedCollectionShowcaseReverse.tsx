@@ -50,20 +50,7 @@ export default function FeaturedCollectionShowcaseReverse({
 
   return (
     <>
-      <style>{`
-        @keyframes olivePulse {
-          0%, 100% {
-            box-shadow: 0 6px 18px rgba(46, 53, 40, 0.12);
-            transform: translateY(0);
-          }
-          50% {
-            box-shadow:
-              0 8px 24px rgba(46, 53, 40, 0.22),
-              0 0 14px rgba(221, 241, 230, 0.55);
-            transform: translateY(-2px);
-          }
-        }
-      `}</style>
+
 
       <section className="bg-[#F7F4EF] py-10 sm:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
@@ -159,22 +146,7 @@ export default function FeaturedCollectionShowcaseReverse({
 
             {/* DESCRIPTION */}
 
-            <p
-              className="
-                mt-5
-                max-w-[540px]
-
-                text-[13px]
-                leading-6
-                text-neutral-500
-
-                sm:text-sm
-                sm:leading-7
-              "
-            >
-              Những thiết kế được chọn lọc để kết hợp hài hòa
-              giữa công năng, thẩm mỹ và phong cách sống hiện đại.
-            </p>
+            
 
 
             {/* ===================================================== */}
@@ -183,18 +155,14 @@ export default function FeaturedCollectionShowcaseReverse({
 
             <div
               className="
-                mt-7
-
+                mt-6
                 grid
                 grid-cols-2
-
                 gap-2.5
-
-                sm:mt-9
+                sm:mt-8
                 sm:gap-4
-
                 lg:max-w-[500px]
-                lg:gap-5
+                lg:gap-4
               "
             >
 
@@ -206,14 +174,11 @@ export default function FeaturedCollectionShowcaseReverse({
                     min-w-0
                     overflow-hidden
 
-                    rounded-[16px]
-
+                    rounded-[12px]
                     border
-                    border-[#E5DDD3]
-
+                    border-[#E7E1D8]
                     bg-white
-
-                    shadow-[0_5px_20px_rgba(60,45,30,0.03)]
+                    shadow-[0_3px_14px_rgba(60,45,30,0.025)]
                   "
                 >
 
@@ -229,11 +194,11 @@ export default function FeaturedCollectionShowcaseReverse({
 
                     <div
                       className="
-                        aspect-square
+                        aspect-[1.12/1]
                         w-full
                         overflow-hidden
-
                         bg-[#F5F2ED]
+                        sm:aspect-[1.06/1]
                       "
                     >
 
@@ -244,12 +209,13 @@ export default function FeaturedCollectionShowcaseReverse({
                           h-full
                           w-full
 
-                          object-cover
+                          object-contain
+                          object-center
 
                           transition-transform
                           duration-500
 
-                          hover:scale-[1.03]
+                          hover:scale-[1.025]
                         "
                       />
 
@@ -264,9 +230,14 @@ export default function FeaturedCollectionShowcaseReverse({
                     className="
                       flex
                       min-w-0
+                      flex-1
                       flex-col
-                      p-2.5
-                      sm:p-4
+                      px-2
+                      pb-2
+                      pt-2
+                      sm:px-3
+                      sm:pb-3
+                      sm:pt-2.5
                     "
                   >
                     {/* PRODUCT NAME */}
@@ -278,17 +249,18 @@ export default function FeaturedCollectionShowcaseReverse({
                       }}
                       className="
                         block
-                        min-h-[42px]
+                        min-h-[28px]
                         line-clamp-2
                         overflow-hidden
-                        text-[12px]
-                        font-bold
-                        leading-[1.55]
-                        text-[#202820]
+                        text-[10px]
+                        font-medium
+                        leading-[1.3]
+                        tracking-[-0.005em]
+                        text-[#292725]
                         transition-colors
                         hover:text-[#4F8063]
-                        sm:min-h-[46px]
-                        sm:text-[13px]
+                        sm:min-h-[31px]
+                        sm:text-[11.5px]
                       "
                     >
                       {getMemphisDisplayName(product)}
@@ -302,17 +274,17 @@ export default function FeaturedCollectionShowcaseReverse({
                       return (
                         <div
                           className="
-                            mt-1.5
+                            mt-0.5
                             flex
                             min-w-0
-                            flex-wrap
                             items-center
-                            gap-x-1.5
-                            gap-y-0.5
-                            text-[8.5px]
-                            leading-4
-                            text-[#77736D]
-                            sm:text-[9.5px]
+                            gap-x-1
+                            whitespace-nowrap
+                            overflow-hidden
+                            text-[7.5px]
+                            leading-3.5
+                            text-[#817A72]
+                            sm:text-[8.5px]
                           "
                         >
                           <span className="font-semibold text-[#C8922E]">
@@ -321,21 +293,21 @@ export default function FeaturedCollectionShowcaseReverse({
 
                           <span className="text-[#B8B2AA]">·</span>
 
-                          <span>{socialProof.reviews} đánh giá</span>
+                          <span className="truncate">{socialProof.reviews} đánh giá</span>
 
-                          <span className="text-[#B8B2AA]">·</span>
+                          <span className="text-[#C8C1B8]">·</span>
 
-                          <span>Đã bán {socialProof.sold}</span>
+                          <span className="truncate">Đã bán {socialProof.sold}</span>
                         </div>
                       );
                     })()}
 
                     {/* PRICE */}
 
-                    <div className="mt-1.5 min-h-[42px]">
+                    <div className="mt-0.5 min-h-[30px]">
                       {product.price ? (
                         <>
-                          <div className="text-[8.5px] leading-4 text-gray-400 line-through sm:text-[9.5px]">
+                          <div className="text-[8px] leading-3 text-[#B0AAA3] line-through sm:text-[8.5px]">
                             {new Intl.NumberFormat("vi-VN").format(
                               product.compare_at_price &&
                               product.compare_at_price > product.price
@@ -346,7 +318,7 @@ export default function FeaturedCollectionShowcaseReverse({
                             )}₫
                           </div>
 
-                          <div className="mt-0.5 text-[14px] font-bold leading-5 text-[#4F8063] sm:text-[15px]">
+                          <div className="mt-0.5 text-[13px] font-semibold leading-4 tracking-[-0.02em] text-[#4F8063] sm:text-[13.5px]">
                             {new Intl.NumberFormat("vi-VN").format(
                               product.price
                             )}₫
@@ -363,13 +335,13 @@ export default function FeaturedCollectionShowcaseReverse({
 
                     <div
                       className="
-                        mt-2.5
+                        mt-1
                         grid
-                        grid-cols-[1fr_34px]
+                        grid-cols-[1fr_30px]
                         items-center
-                        gap-1.5
-                        sm:grid-cols-[1fr_36px]
-                        sm:gap-2
+                        gap-1
+                        sm:grid-cols-[1fr_32px]
+                        sm:gap-1.5
                       "
                     >
                       {/* BUY */}
@@ -381,24 +353,24 @@ export default function FeaturedCollectionShowcaseReverse({
                         }}
                         className="
                           flex
-                          h-8
+                          h-7
                           w-full
                           items-center
                           justify-center
-                          rounded-[10px]
+                          rounded-[8px]
                           bg-[#DDF1E6]
-                          px-2
-                          text-[9px]
-                          font-semibold
+                          px-1.5
+                          text-[8px]
+                          font-medium
                           text-[#4F8063]
                           transition-all
                           duration-300
                           hover:-translate-y-0.5
                           hover:bg-[#CDE8D9]
                           active:scale-[0.98]
-                          sm:h-9
-                          sm:rounded-xl
-                          sm:text-[10px]
+                          sm:h-8
+                          sm:rounded-[9px]
+                          sm:text-[9px]
                         "
                       >
                         Mua ngay
@@ -414,12 +386,12 @@ export default function FeaturedCollectionShowcaseReverse({
                         aria-label={`Thêm ${product.name} vào giỏ hàng`}
                         className="
                           flex
-                          h-8
-                          w-[34px]
+                          h-7
+                          w-[30px]
                           shrink-0
                           items-center
                           justify-center
-                          rounded-[10px]
+                          rounded-[8px]
                           border
                           border-[#D7E9DD]
                           bg-[#F7FBF8]
@@ -429,14 +401,14 @@ export default function FeaturedCollectionShowcaseReverse({
                           hover:-translate-y-0.5
                           hover:bg-[#DDF1E6]
                           active:scale-[0.96]
-                          sm:h-9
-                          sm:w-9
-                          sm:rounded-xl
+                          sm:h-8
+                          sm:w-8
+                          sm:rounded-[9px]
                         "
                       >
                         <ShoppingCart
-                          size={14}
-                          strokeWidth={1.7}
+                          size={13}
+                          strokeWidth={1.6}
                         />
                       </Link>
                     </div>
@@ -451,192 +423,105 @@ export default function FeaturedCollectionShowcaseReverse({
 
 
             {/* ===================================================== */}
-            {/* CTA */}
-            {/* ===================================================== */}
+            {/* CTA + TRUST STRIP */}
 
             <div
               className="
-                mt-8
-                flex
-                flex-wrap
-                items-center
-                gap-x-5
-                gap-y-3
-                sm:mt-10
+                mt-5
+                border-t
+                border-[#E7E0D7]
+                pt-4
+                sm:mt-7
+                sm:pt-5
               "
             >
-
               <Link
                 to="/shop"
                 className="
                   group
-                  inline-flex
-                  shrink-0
+                  flex
+                  h-9
+                  w-full
                   items-center
-                  gap-1.5
+                  justify-center
+                  gap-2
                   rounded-full
                   bg-[#2E3528]
-                  px-5
-                  py-3
-                  text-[12px]
+                  px-4
+                  text-[9px]
                   font-semibold
-                  tracking-[0.01em]
+                  tracking-[-0.01em]
                   text-white
-                  shadow-[0_6px_18px_rgba(46,53,40,0.12)]
-                  transition-all
-                  duration-300
-                  ease-out
-                  hover:-translate-y-1
+                  transition-colors
+                  duration-200
                   hover:bg-[#3A4433]
-                  hover:shadow-[0_10px_24px_rgba(46,53,40,0.20)]
-                  active:scale-[0.97]
-                  motion-safe:animate-[olivePulse_3s_ease-in-out_infinite]
+                  active:scale-[0.99]
+                  sm:h-10
+                  sm:w-fit
+                  sm:text-[10px]
                 "
               >
-                <span>Khám phá bộ sưu tập</span>
-                <span
-                  className="
-                    inline-block
-                    text-[14px]
-                    transition-transform
-                    duration-300
-                    ease-out
-                    group-hover:translate-x-1
-                  "
-                >
+                <span>Xem trọn bộ nội thất</span>
+                <span className="text-[12px] transition-transform duration-200 group-hover:translate-x-1">
                   →
                 </span>
               </Link>
 
-              {/* SHOPPING BENEFITS */}
-
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-
-                {/* FREESHIP */}
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-
-                  <span
-                    className="
-                      flex h-7 w-7 items-center justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 6h11v10H3z" />
-                      <path d="M14 9h4l3 3v4h-7z" />
-                      <circle cx="7" cy="19" r="1.5" />
-                      <circle cx="18" cy="19" r="1.5" />
+              <div
+                className="
+                  mt-3
+                  grid
+                  min-h-[48px]
+                  grid-cols-3
+                  divide-x
+                  divide-[#E4DDD4]
+                  rounded-[10px]
+                  bg-[#F7F4EF]
+                  px-1
+                  py-1.5
+                  sm:min-h-[52px]
+                  sm:px-2
+                "
+              >
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] sm:h-7 sm:w-7">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6h11v10H3z" /><path d="M14 9h4l3 3v4h-7z" /><circle cx="7" cy="19" r="1.5" /><circle cx="18" cy="19" r="1.5" />
                     </svg>
                   </span>
-
-                  <span className="text-[9px] leading-4 text-[#6B756A]">
-                    <strong className="font-semibold text-[#3F493F]">
-                      Freeship
-                    </strong>
-                    <br />
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">Freeship</strong>
                     toàn quốc
                   </span>
-
                 </div>
 
-
-                {/* RETURN */}
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-
-                  <span
-                    className="
-                      flex h-7 w-7 items-center justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 14 4 9l5-5" />
-                      <path d="M4 9h10a6 6 0 0 1 6 6v1" />
-                      <path d="M15 20h5v-5" />
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] sm:h-7 sm:w-7">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 14 4 9l5-5" /><path d="M4 9h10a6 6 0 0 1 6 6v1" /><path d="M15 20h5v-5" />
                     </svg>
                   </span>
-
-                  <span className="text-[9px] leading-4 text-[#6B756A]">
-                    <strong className="font-semibold text-[#3F493F]">
-                      Đổi trả
-                    </strong>
-                    <br />
-                    trong 15 ngày
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">Đổi trả</strong>
+                    15 ngày
                   </span>
-
                 </div>
 
-
-                {/* VOUCHER */}
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-
-                  <span
-                    className="
-                      flex h-7 w-7 items-center justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7" />
-                      <path d="M2 7h20v5H2z" />
-                      <path d="M12 7v14" />
-                      <path d="M12 7H8.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7Z" />
-                      <path d="M12 7h3.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7Z" />
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] sm:h-7 sm:w-7">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7" /><path d="M2 7h20v5H2z" /><path d="M12 7v14" /><path d="M12 7H8.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7Z" /><path d="M12 7h3.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7Z" />
                     </svg>
                   </span>
-
-                  <span className="text-[9px] leading-4 text-[#6B756A]">
-                    <strong className="font-semibold text-[#3F493F]">
-                      Voucher 50K
-                    </strong>
-                    <br />
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">Voucher 50K</strong>
                     cho đơn hàng
                   </span>
-
                 </div>
-
               </div>
-
             </div>
 
           </div>
-
 
           {/* ===================================================== */}
           {/* RIGHT IMAGE */}

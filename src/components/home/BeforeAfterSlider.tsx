@@ -131,28 +131,17 @@ export default function BeforeAfterSlider({
   return (
     <>
       <style>{`
-        @keyframes floorLampPulse {
-          0%, 100% {
-            box-shadow: 0 6px 18px rgba(46, 53, 40, 0.12);
-            transform: translateY(0);
-          }
-          50% {
-            box-shadow:
-              0 8px 24px rgba(46, 53, 40, 0.22),
-              0 0 14px rgba(221, 241, 230, 0.55);
-            transform: translateY(-2px);
-          }
-        }
+        /* intentionally static — premium editorial UI */
       `}</style>
 
-      <section className="w-full bg-stone-50 py-10 md:py-20">
+      <section className="w-full bg-[#F6F4EF] py-7 sm:py-10 md:py-16">
       <div className="mx-auto max-w-[1320px] px-3 sm:px-5">
-        <div className="flex flex-col overflow-hidden rounded-[24px] border border-stone-200 bg-white p-3 sm:p-5 lg:grid lg:grid-cols-[1fr_1.05fr] lg:gap-5">
+        <div className="flex flex-col overflow-hidden rounded-[22px] border border-stone-200/80 bg-white p-2.5 shadow-[0_10px_35px_rgba(38,38,32,0.05)] sm:p-4 lg:grid lg:grid-cols-[0.94fr_1.06fr] lg:gap-4">
 
           {/* BEFORE / AFTER */}
           <div
             ref={containerRef}
-            className="order-1 relative aspect-[4/5] w-full cursor-ew-resize overflow-hidden rounded-[20px] bg-stone-100 select-none touch-none lg:order-2 lg:mt-0 lg:aspect-auto"
+            className="order-1 relative aspect-[1/1.03] w-full cursor-ew-resize overflow-hidden rounded-[18px] bg-stone-100 select-none touch-none lg:order-2 lg:aspect-[0.92/1]"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
           >
@@ -216,20 +205,16 @@ export default function BeforeAfterSlider({
               SIGNATURE FLOOR LIGHTING
             </p>
 
-            <h2 className="font-serif text-[30px] leading-[1.05] text-gray-800 sm:text-4xl">
+            <h2 className="font-serif text-[27px] leading-[1.02] tracking-[-0.02em] text-gray-800 sm:text-4xl">
               Một dáng đèn,
               <br />
               cả góc phòng khác biệt.
             </h2>
 
-            <p className="mt-3 max-w-[600px] text-[11px] leading-[1.65] text-gray-500 sm:text-sm sm:leading-6">
-              Những mẫu đèn cây đứng với đường nét thanh thoát và ánh sáng dịu,
-              giúp tạo nên một điểm nhấn có chiều sâu cho phòng khách,
-              phòng ngủ và những góc thư giãn.
-            </p>
+            
 
             {/* PRODUCTS */}
-            <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-2 sm:gap-2.5 lg:grid-cols-4">
               {products.slice(0, 4).map((product) => {
                 const image = getFloorLampImage(product);
 
@@ -242,20 +227,20 @@ export default function BeforeAfterSlider({
                 return (
                   <div
                     key={product.id}
-                    className="flex min-w-0 flex-col overflow-hidden rounded-[16px] border border-stone-200 bg-white"
+                    className="group flex min-w-0 flex-col overflow-hidden rounded-[13px] border border-stone-200/90 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-[0_8px_22px_rgba(38,38,32,0.07)]"
                   >
                     {/* PRODUCT IMAGE */}
                     <button
                       type="button"
                       onClick={() => goToProduct(product)}
-                      className="aspect-square w-full overflow-hidden bg-stone-100"
+                      className="aspect-[1.08/1] w-full overflow-hidden bg-[#F4F2ED]"
                     >
                       {image ? (
                         <img
                           src={image}
                           alt={getFloorLampDisplayName(product)}
                           draggable={false}
-                          className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center text-[10px] text-gray-400">
@@ -265,25 +250,25 @@ export default function BeforeAfterSlider({
                     </button>
 
                     {/* PRODUCT INFO */}
-                    <div className="flex flex-1 flex-col p-2.5 sm:p-3">
+                    <div className="flex flex-1 flex-col p-2 sm:p-2.5">
 
                       {/* PRODUCT NAME */}
                       <button
                         type="button"
                         onClick={() => goToProduct(product)}
                         className="
-                          min-h-[42px]
+                          min-h-[32px]
                           line-clamp-2
                           overflow-hidden
                           text-left
-                          text-[11px]
-                          font-bold
-                          leading-[1.55]
+                          text-[10px]
+                          font-semibold
+                          leading-[1.35]
                           text-gray-900
                           transition-colors
                           hover:text-emerald-700
-                          sm:min-h-[46px]
-                          sm:text-[12px]
+                          sm:min-h-[36px]
+                          sm:text-[11px]
                         "
                       >
                         {getFloorLampDisplayName(product)}
@@ -296,7 +281,7 @@ export default function BeforeAfterSlider({
                         return (
                           <div
                             className="
-                              mt-1.5
+                              mt-1
                               flex
                               min-w-0
                               flex-wrap
@@ -325,7 +310,7 @@ export default function BeforeAfterSlider({
                       })()}
 
                       {/* PRICE */}
-                      <div className="mt-1.5 min-h-[42px]">
+                      <div className="mt-1 min-h-[36px]">
                         {oldPrice ? (
                           <div className="flex flex-col leading-tight">
                             <span className="text-[8.5px] text-gray-400 line-through sm:text-[9.5px]">
@@ -350,15 +335,15 @@ export default function BeforeAfterSlider({
                       </div>
 
                       {/* BUTTONS */}
-                      <div className="mt-2.5 grid grid-cols-[1fr_34px] items-center gap-1.5">
+                      <div className="mt-2 grid grid-cols-[1fr_30px] items-center gap-1">
                         <button
                           type="button"
                           onClick={() => goToProduct(product)}
                           className="
                             h-8
                             w-full
-                            rounded-[10px]
-                            bg-emerald-50
+                            rounded-[8px]
+                            bg-[#F0F5F0]
                             px-2
                             text-[9px]
                             font-semibold
@@ -366,7 +351,7 @@ export default function BeforeAfterSlider({
                             transition-all
                             duration-300
                             hover:-translate-y-0.5
-                            hover:bg-emerald-100
+                            hover:bg-[#E5EEE7]
                             active:scale-[0.98]
                             sm:h-9
                             sm:text-[10px]
@@ -385,19 +370,19 @@ export default function BeforeAfterSlider({
                           className="
                             flex
                             h-8
-                            w-[34px]
+                            w-[30px]
                             shrink-0
                             items-center
                             justify-center
-                            rounded-[10px]
+                            rounded-[8px]
                             border
-                            border-emerald-100
+                            border-stone-200
                             bg-white
                             text-emerald-700
                             transition-all
                             duration-300
                             hover:-translate-y-0.5
-                            hover:bg-emerald-50
+                            hover:bg-stone-50
                             active:scale-[0.96]
                             sm:h-9
                             sm:w-9
@@ -446,11 +431,11 @@ export default function BeforeAfterSlider({
                   window.location.href = "/shop";
                 }}
                 className="
-                  w-fit
-                  rounded-full
-                  bg-gray-800
-                  px-5
-                  py-3
+                  group
+                  flex w-full items-center justify-between
+                  rounded-[11px]
+                  bg-gray-900
+                  px-4 py-2.5
                   text-[10px]
                   font-medium
                   text-white

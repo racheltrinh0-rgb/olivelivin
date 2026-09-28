@@ -94,20 +94,7 @@ function getProductSocialProof(product: any) {
 
   return (
     <>
-      <style>{`
-        @keyframes olivePulse {
-          0%, 100% {
-            box-shadow: 0 6px 18px rgba(46, 53, 40, 0.12);
-            transform: translateY(0);
-          }
-          50% {
-            box-shadow:
-              0 8px 24px rgba(46, 53, 40, 0.22),
-              0 0 14px rgba(221, 241, 230, 0.55);
-            transform: translateY(-2px);
-          }
-        }
-      `}</style>
+
 
       <section className="bg-[#F7F4EF] py-10 sm:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
@@ -267,15 +254,15 @@ function getProductSocialProof(product: any) {
 
 <div
   className="
-    mt-8
+    mt-6
     grid
     grid-cols-2
-    gap-3
+    gap-2.5
 
-    sm:mt-9
-    sm:gap-5
+    sm:mt-8
+    sm:gap-4
 
-    lg:mt-8
+    lg:mt-7
     lg:gap-4
 
     xl:gap-5
@@ -287,7 +274,7 @@ function getProductSocialProof(product: any) {
       className="
         min-w-0
         overflow-hidden
-        rounded-[18px]
+        rounded-[12px]
         border
         border-[#E5DDD3]
         bg-white
@@ -305,10 +292,11 @@ function getProductSocialProof(product: any) {
       >
         <div
           className="
-            aspect-square
+            aspect-[1.12/1]
             w-full
             overflow-hidden
             bg-[#F5F2ED]
+            sm:aspect-[1.06/1]
           "
         >
           <img
@@ -320,7 +308,7 @@ function getProductSocialProof(product: any) {
               object-cover
               transition-transform
               duration-500
-              hover:scale-[1.03]
+              hover:scale-[1.025]
             "
           />
         </div>
@@ -332,11 +320,11 @@ function getProductSocialProof(product: any) {
 <div
   className="
     flex
-    min-h-[128px]
+    min-h-[108px]
     flex-col
-    p-3
-    sm:min-h-[140px]
-    sm:p-4
+    p-2.5
+    sm:min-h-[118px]
+    sm:p-3
   "
 >
 
@@ -350,15 +338,16 @@ function getProductSocialProof(product: any) {
     className="
       block
       line-clamp-2
-      min-h-[40px]
+      min-h-[28px]
       overflow-hidden
-      text-[13px]
-      font-bold
-      leading-5
-      text-[#403C37]
+      text-[10px]
+      font-medium
+      leading-[1.3]
+      tracking-[-0.01em]
+      text-[#292725]
 
-      sm:min-h-[44px]
-      sm:text-[14px]
+      sm:min-h-[31px]
+      sm:text-[11.5px]
     "
   >
     {getFeaturedDisplayName(product)}
@@ -370,34 +359,35 @@ function getProductSocialProof(product: any) {
     const socialProof = getProductSocialProof(product);
 
     return (
-      <div className="mt-1 flex flex-col gap-0.5 text-[9px] leading-4 sm:text-[10px]">
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[#77736D]">
-          <span className="font-semibold text-[#D39A2F]">
-            ★ {socialProof.rating}
-          </span>
-          <span>{socialProof.reviews} đánh giá</span>
-        </div>
-
-        <div className="text-[#77736D]">
+      <div className="mt-0.5 flex min-w-0 items-center gap-1 whitespace-nowrap overflow-hidden text-[7.5px] leading-3 text-[#817970] sm:text-[8.5px]">
+        <span className="shrink-0 font-medium text-[#B8875B]">
+          ★ {socialProof.rating}
+        </span>
+        <span className="text-[#C9C1B8]">·</span>
+        <span className="truncate">
+          {socialProof.reviews} đánh giá
+        </span>
+        <span className="text-[#C9C1B8]">·</span>
+        <span className="shrink-0">
           Đã bán {socialProof.sold}
-        </div>
+        </span>
       </div>
     );
   })()}
 
   {/* PRICE */}
 
-  <div className="mt-2 flex min-h-[36px] flex-col justify-center">
+  <div className="mt-0.5 flex min-h-[27px] flex-col justify-center">
 
     {product.compare_at_price &&
      product.compare_at_price > product.price && (
       <span
         className="
-          text-[9px]
-          leading-4
+          text-[7.5px]
+          leading-3
           text-neutral-400
           line-through
-          sm:text-[10px]
+          sm:text-[8.5px]
         "
       >
         {formatFeaturedPrice(product.compare_at_price)}
@@ -406,11 +396,11 @@ function getProductSocialProof(product: any) {
 
     <span
       className="
-        text-[14px]
-        font-bold
-        leading-5
+        text-[12.5px]
+        font-semibold
+        leading-4
         text-[#4F8063]
-        sm:text-[15px]
+        sm:text-[13.5px]
       "
     >
       {formatFeaturedPrice(product.price)}
@@ -426,8 +416,8 @@ function getProductSocialProof(product: any) {
       mt-auto
       flex
       items-center
-      gap-2
-      pt-3
+      gap-1
+      pt-1
     "
   >
 
@@ -440,22 +430,22 @@ function getProductSocialProof(product: any) {
       }}
       className="
         flex
-        h-9
+        h-7
         min-w-0
         flex-1
         items-center
         justify-center
-        rounded-xl
+        rounded-[8px]
         bg-[#DDF1E6]
-        px-2
-        text-[10px]
-        font-semibold
+        px-1.5
+        text-[8px]
+        font-medium
         text-[#4F8063]
         transition-all
         duration-300
         hover:bg-[#CDE8D9]
 
-        sm:text-[11px]
+        sm:text-[10px]
       "
     >
       Mua ngay
@@ -472,12 +462,12 @@ function getProductSocialProof(product: any) {
       aria-label={`Xem ${getFeaturedDisplayName(product)}`}
       className="
         flex
-        h-9
-        w-9
+        h-7
+        w-7
         shrink-0
         items-center
         justify-center
-        rounded-xl
+        rounded-[8px]
         border
         border-[#D7E9DD]
         bg-[#F7FBF8]
@@ -487,7 +477,7 @@ function getProductSocialProof(product: any) {
         hover:bg-[#DDF1E6]
       "
     >
-      <ShoppingCart size={15} strokeWidth={1.6} />
+      <ShoppingCart size={12} strokeWidth={1.6} />
     </Link>
 
   </div>
@@ -499,59 +489,50 @@ function getProductSocialProof(product: any) {
 </div>
 
             {/* ================================================= */}
-            {/* CTA */}
+            {/* COMPACT CTA + TRUST STRIP */}
             {/* ================================================= */}
 
             <div
               className="
-                mt-8
-                flex
-                flex-wrap
-                items-center
-                gap-x-5
-                gap-y-3
-
-                sm:mt-10
+                mt-5
+                border-t
+                border-[#E7E0D7]
+                pt-4
+                sm:mt-7
+                sm:pt-5
               "
             >
-
-              {/* CTA */}
-
               <Link
                 to="/shop"
                 className="
                   group
-                  inline-flex
-                  shrink-0
+                  flex
+                  h-9
+                  w-full
                   items-center
-                  gap-1.5
+                  justify-center
+                  gap-2
                   rounded-full
                   bg-[#2E3528]
-                  px-5
-                  py-3
-                  text-[12px]
+                  px-4
+                  text-[9px]
                   font-semibold
-                  tracking-[0.01em]
+                  tracking-[-0.01em]
                   text-white
-                  shadow-[0_6px_18px_rgba(46,53,40,0.12)]
-                  transition-all
-                  duration-300
-                  ease-out
-                  hover:-translate-y-1
+                  transition-colors
+                  duration-200
                   hover:bg-[#3A4433]
-                  hover:shadow-[0_10px_24px_rgba(46,53,40,0.20)]
-                  active:scale-[0.97]
-                  motion-safe:animate-[olivePulse_3s_ease-in-out_infinite]
+                  active:scale-[0.99]
+                  sm:h-10
+                  sm:text-[10px]
                 "
               >
-                <span>Khám phá bộ sưu tập</span>
+                <span>Xem trọn bộ nội thất</span>
                 <span
                   className="
-                    inline-block
-                    text-[14px]
+                    text-[12px]
                     transition-transform
-                    duration-300
-                    ease-out
+                    duration-200
                     group-hover:translate-x-1
                   "
                 >
@@ -559,128 +540,58 @@ function getProductSocialProof(product: any) {
                 </span>
               </Link>
 
-
-              {/* BENEFITS */}
-
               <div
                 className="
-                  flex
-                  flex-wrap
-                  items-center
-                  gap-x-5
-                  gap-y-2
+                  mt-3
+                  grid
+                  min-h-[48px]
+                  grid-cols-3
+                  divide-x
+                  divide-[#E4DDD4]
+                  rounded-[10px]
+                  bg-[#F7F4EF]
+                  px-1
+                  py-1.5
+                  sm:min-h-[52px]
+                  sm:px-2
                 "
               >
-
-                {/* FREESHIP */}
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-
-                  <span
-                    className="
-                      flex
-                      h-7
-                      w-7
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <Truck size={14} strokeWidth={1.5} />
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] shadow-[0_1px_4px_rgba(40,35,30,0.035)] sm:h-7 sm:w-7">
+                    <Truck size={12} strokeWidth={1.5} />
                   </span>
-
-                  <span
-                    className="
-                      text-[9px]
-                      leading-4
-                      text-[#6B756A]
-                    "
-                  >
-                    <strong className="font-semibold text-[#3F493F]">
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">
                       Freeship
                     </strong>
-                    <br />
                     toàn quốc
                   </span>
-
                 </div>
 
-
-                {/* RETURN */}
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-
-                  <span
-                    className="
-                      flex
-                      h-7
-                      w-7
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <RotateCcw size={14} strokeWidth={1.5} />
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] shadow-[0_1px_4px_rgba(40,35,30,0.035)] sm:h-7 sm:w-7">
+                    <RotateCcw size={12} strokeWidth={1.5} />
                   </span>
-
-                  <span
-                    className="
-                      text-[9px]
-                      leading-4
-                      text-[#6B756A]
-                    "
-                  >
-                    <strong className="font-semibold text-[#3F493F]">
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">
                       Đổi trả
                     </strong>
-                    <br />
-                    trong 15 ngày
+                    15 ngày
                   </span>
-
                 </div>
 
-
-                {/* VOUCHER */}
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-
-                  <span
-                    className="
-                      flex
-                      h-7
-                      w-7
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <Gift size={14} strokeWidth={1.5} />
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] shadow-[0_1px_4px_rgba(40,35,30,0.035)] sm:h-7 sm:w-7">
+                    <Gift size={12} strokeWidth={1.5} />
                   </span>
-
-                  <span
-                    className="
-                      text-[9px]
-                      leading-4
-                      text-[#6B756A]
-                    "
-                  >
-                    <strong className="font-semibold text-[#3F493F]">
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">
                       Voucher 50K
                     </strong>
-                    <br />
                     cho đơn hàng
                   </span>
-
                 </div>
-
               </div>
-
             </div>
 
           </div>

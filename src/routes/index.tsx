@@ -376,71 +376,7 @@ function HomePage() {
 
 <CustomerFeedbackGallery />
 
-      {/* REVIEWS */}
-<section className="bg-[var(--color-sand)]">
-  <div className="container-x py-20">
-
-    <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-      KHÁCH HÀNG NÓI GÌ
-    </p>
-
-    <h2 className="mt-2 text-center font-display text-3xl md:text-4xl">
-      Niềm tin được xây dựng từng món đồ
-    </h2>
-
-    <div className="mt-12 grid gap-6 md:grid-cols-3">
-
-      {[
-        {
-          q: "Một chiếc đèn nhỏ nhưng làm thay đổi cả góc phòng. Ánh sáng ấm và rất dễ chịu.",
-          n: "Ngọc Anh",
-          c: "TP.HCM",
-        },
-        {
-          q: "Thiết kế đẹp, tối giản đúng như mong đợi. Sản phẩm được đóng gói kỹ và giao đúng hẹn.",
-          n: "Quang Minh",
-          c: "Hà Nội",
-        },
-        {
-          q: "Mình mua để trang trí góc đọc sách và rất hài lòng. Chất liệu và độ hoàn thiện vượt mong đợi trong tầm giá.",
-          n: "Thanh Hà",
-          c: "Đà Nẵng",
-        },
-      ].map((r) => (
-        <figure
-          key={r.n}
-          className="
-            rounded-lg
-            border
-            border-border
-            bg-background
-            p-7
-          "
-        >
-
-          <blockquote className="font-display text-xl leading-snug">
-            "{r.q}"
-          </blockquote>
-
-          <figcaption className="mt-5 text-sm">
-            <span className="font-medium">
-              {r.n}
-            </span>
-
-            {" · "}
-
-            <span className="text-muted-foreground">
-              {r.c}
-            </span>
-          </figcaption>
-
-        </figure>
-      ))}
-
-    </div>
-
-  </div>
-</section>
+     
 
       {/* STORY */}
 

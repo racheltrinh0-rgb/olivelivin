@@ -1,90 +1,112 @@
-﻿import { Link } from "@tanstack/react-router";
-import { ShoppingCart } from "lucide-react";
+﻿import { ShoppingCart, Truck, RotateCcw, Gift } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   products: any[];
 }
 
-const getFurnitureDisplayName = (product: any) => {
+const getFeaturedDisplayName = (product: any) => {
   const text = `${product.name || ""} ${product.slug || ""}`.toLowerCase();
+
+  if (text.includes("cordless")) {
+    return "ĐÈN BÀN CORDLESS";
+  }
 
   if (text.includes("montara") || text.includes("panton wire")) {
     return "KỆ MONTARA PANTON WIRE";
   }
 
-  if (text.includes("aero") || text.includes("side table")) {
-    return "AERO SIDE TABLE";
-  }
-
-  if (text.includes("curva")) {
-    return "BÀN CURVA";
-  }
-
   return product.name;
 };
 
-const getFurnitureSocialProof = (product: any) => {
+const formatFeaturedPrice = (price: number) => {
+  return `${new Intl.NumberFormat("vi-VN").format(price)}₫`;
+};
+
+export default function FeaturedCollectionShowcase({
+  products,
+}: Props) {
+
+const [pantonProduct, setPantonProduct] = useState<any | null>(null);
+const [cordlessProduct, setCordlessProduct] = useState<any | null>(null);
+
+useEffect(() => {
+  async function loadCollectionProducts() {
+    const [panton, cordless] = await Promise.all([
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .ilike("name", "%Panton%")
+        .limit(1)
+        .maybeSingle(),
+
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .ilike("name", "%Cordless%")
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+    if (panton.error) {
+      console.error("PANTON PRODUCT ERROR:", panton.error);
+    }
+
+    if (cordless.error) {
+      console.error("CORDLESS PRODUCT ERROR:", cordless.error);
+    }
+
+    setPantonProduct(panton.data);
+    setCordlessProduct(cordless.data);
+  }
+
+  loadCollectionProducts();
+}, []);
+
+const collectionProducts = [
+  cordlessProduct,
+  pantonProduct,
+].filter(Boolean);
+
+function getProductSocialProof(product: any) {
   const seed = String(product.id || product.slug || "")
     .split("")
     .reduce((sum, char) => sum + char.charCodeAt(0), 0);
 
+  const rating = (4.7 + (seed % 4) * 0.1).toFixed(1);
+
+  const reviews = 12 + (seed % 76);
+
+  const sold = 35 + ((seed * 7) % 210);
+
   return {
-    rating: (4.7 + (seed % 4) * 0.1).toFixed(1),
-    reviews: 16 + (seed % 87),
-    sold: 38 + ((seed * 7) % 280),
+    rating,
+    reviews,
+    sold,
   };
-};
-
-const formatFurniturePrice = (price: number) => {
-  return `${new Intl.NumberFormat("vi-VN").format(price)}₫`;
-};
-export default function FurnitureCollectionShowcase({
-  products,
-}: Props) {
-
-  // Lấy tối đa 3 sản phẩm nội thất
-
-const furnitureProducts = [
-  products.find((p) =>
-    `${p.name} ${p.slug}`.toLowerCase().includes("montara")
-  ),
-
-  products.find((p) =>
-    `${p.name} ${p.slug}`.toLowerCase().includes("aero")
-  ),
-
-  products.find((p) =>
-    `${p.name} ${p.slug}`.toLowerCase().includes("curva")
-  ),
-].filter(Boolean);
+}
 
   return (
     <>
       <style>{`
-        @keyframes olivePulseFurniture {
-          0%, 100% {
-            box-shadow: 0 6px 18px rgba(46, 53, 40, 0.12);
-            transform: translateY(0);
-          }
-          50% {
-            box-shadow:
-              0 8px 24px rgba(46, 53, 40, 0.22),
-              0 0 14px rgba(221, 241, 230, 0.55);
-            transform: translateY(-2px);
-          }
-        }
-      `}</style>
+              `}</style>
 
       <section className="bg-[#F7F4EF] py-10 sm:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
 
-        {/* MAIN CARD */}
-
+        {/* MAIN COLLECTION */}
         <div
           className="
             overflow-hidden
             rounded-[26px]
-            border border-[#E7DED3]
+            border
+            border-[#E7DED3]
             bg-white
             shadow-[0_20px_70px_rgba(60,45,30,0.06)]
 
@@ -110,10 +132,9 @@ const furnitureProducts = [
               lg:min-h-[680px]
             "
           >
-
             <img
-              src="/images/furniture-showcase.jpg"
-              alt="Olive Living Furniture Collection"
+              src="/images/collection-showcase.jpg"
+              alt="Olive Living Collection"
               className="
                 absolute
                 inset-0
@@ -124,11 +145,10 @@ const furnitureProducts = [
 
                 transition-transform
                 duration-700
-
-                hover:scale-[1.02]
               "
             />
 
+            {/* subtle overlay */}
             <div
               className="
                 pointer-events-none
@@ -140,7 +160,6 @@ const furnitureProducts = [
                 to-black/[0.04]
               "
             />
-
           </div>
 
 
@@ -154,17 +173,17 @@ const furnitureProducts = [
               flex-col
               justify-center
 
-              px-6
-              py-9
+              px-5
+              py-7
 
               sm:px-8
               sm:py-10
 
-              lg:px-8
-              lg:py-10
+              lg:px-10
+              lg:py-12
 
-              xl:px-10
-              xl:py-12
+              xl:px-14
+              xl:py-14
             "
           >
 
@@ -181,7 +200,7 @@ const furnitureProducts = [
                 sm:text-[10px]
               "
             >
-              FORM & FUNCTION
+              FEATURED COLLECTION
             </p>
 
 
@@ -190,24 +209,24 @@ const furnitureProducts = [
             <h2
               className="
                 mt-4
-                max-w-[520px]
+                max-w-[540px]
 
                 font-display
-                text-[32px]
+                text-[34px]
                 leading-[1.05]
                 tracking-[-0.025em]
                 text-[#292725]
 
-                sm:text-[38px]
+                sm:text-[42px]
 
-                lg:text-[40px]
+                lg:text-[46px]
 
-                xl:text-[46px]
+                xl:text-[52px]
               "
             >
-              Nội thất cho
+              Đẹp Từ Những 
               <br />
-              một không gian có gu.
+              Điều Đơn Giản
             </h2>
 
 
@@ -216,465 +235,363 @@ const furnitureProducts = [
             <p
               className="
                 mt-5
-                max-w-[540px]
+                max-w-[560px]
 
-                text-[12px]
-                leading-5
+                text-[13px]
+                leading-6
                 text-neutral-500
 
-                sm:text-[13px]
-                sm:leading-6
+                sm:text-sm
+                sm:leading-7
               "
             >
-              Từ những đường nét tối giản đến chất liệu tinh tế,
-              mỗi thiết kế được chọn để không gian sống trở nên
-              tiện dụng, hài hòa và có dấu ấn riêng.
+              Thiết kế tinh giản cho một không gian sống đầy cảm hứng.
             </p>
 
 
             {/* ================================================= */}
-            {/* PRODUCTS */}
+{/* COLLECTION PRODUCTS */}
+{/* ================================================= */}
+
+<div
+  className="
+    mt-5
+    grid
+    grid-cols-2
+    gap-2.5
+
+    sm:mt-8
+    sm:gap-4
+
+    lg:mt-7
+    lg:gap-4
+
+    xl:gap-5
+  "
+>
+  {collectionProducts.map((product) => (
+    <div
+      key={product.id}
+      className="
+        min-w-0
+        overflow-hidden
+        rounded-[12px]
+        border
+        border-[#E5DDD3]
+        bg-white
+      "
+    >
+
+      {/* PRODUCT IMAGE */}
+
+      <Link
+        to="/products/$slug"
+        params={{
+          slug: product.slug,
+        }}
+        className="block"
+      >
+        <div
+          className="
+            aspect-[1.12/1]
+            w-full
+            overflow-hidden
+            bg-[#F5F2ED]
+            sm:aspect-[1.06/1]
+          "
+        >
+          <img
+            src={product.image_url}
+            alt={getFeaturedDisplayName(product)}
+            className="
+              h-full
+              w-full
+              object-cover
+              transition-transform
+              duration-500
+              hover:scale-[1.03]
+            "
+          />
+        </div>
+      </Link>
+
+
+     {/* PRODUCT CONTENT */}
+
+<div
+  className="
+    flex
+    min-h-[108px]
+    flex-col
+    p-2.5
+    sm:min-h-[118px]
+    sm:p-3
+  "
+>
+
+  {/* NAME */}
+
+  <Link
+    to="/products/$slug"
+    params={{
+      slug: product.slug,
+    }}
+    className="
+      block
+      line-clamp-2
+      min-h-[28px]
+      overflow-hidden
+      text-[10px]
+      font-medium
+      leading-[1.3]
+      tracking-[-0.01em]
+      text-[#292725]
+
+      sm:min-h-[31px]
+      sm:text-[11.5px]
+    "
+  >
+    {getFeaturedDisplayName(product)}
+  </Link>
+
+
+  {/* RATING + REVIEWS + SOLD */}
+  {(() => {
+    const socialProof = getProductSocialProof(product);
+
+    return (
+      <div className="mt-0.5 flex flex-col gap-0 text-[7.5px] leading-3 text-[#817970] sm:text-[8.5px]">
+        <div className="flex min-w-0 items-center gap-x-1 whitespace-nowrap overflow-hidden text-[#817970]">
+          <span className="font-medium text-[#B8875B]">
+            ★ {socialProof.rating}
+          </span>
+          <span>{socialProof.reviews} đánh giá</span>
+        </div>
+
+        <div className="text-[#9A9188]">
+          Đã bán {socialProof.sold}
+        </div>
+      </div>
+    );
+  })()}
+
+  {/* PRICE */}
+
+  <div className="mt-0.5 min-h-[27px] flex flex-col justify-center">
+
+    {product.compare_at_price &&
+     product.compare_at_price > product.price && (
+      <span
+        className="
+          text-[7.5px]
+          leading-3
+          text-neutral-400
+          line-through
+          sm:text-[8.5px]
+        "
+      >
+        {formatFeaturedPrice(product.compare_at_price)}
+      </span>
+    )}
+
+    <span
+      className="
+        text-[12.5px]
+        font-semibold
+        leading-4
+        text-[#4F8063]
+        sm:text-[13.5px]
+      "
+    >
+      {formatFeaturedPrice(product.price)}
+    </span>
+
+  </div>
+
+
+  {/* ACTION */}
+
+  <div
+    className="
+      mt-auto
+      flex
+      items-center
+      gap-1
+      pt-1
+    "
+  >
+
+    {/* MUA NGAY */}
+
+    <Link
+      to="/products/$slug"
+      params={{
+        slug: product.slug,
+      }}
+      className="
+        flex
+        h-7
+        min-w-0
+        flex-1
+        items-center
+        justify-center
+        rounded-[8px]
+        bg-[#DDF1E6]
+        px-1.5
+        text-[8px]
+        font-medium
+        text-[#4F8063]
+        transition-all
+        duration-300
+        hover:bg-[#CDE8D9]
+
+        sm:text-[10px]
+      "
+    >
+      Mua ngay
+    </Link>
+
+
+    {/* CART */}
+
+    <Link
+      to="/products/$slug"
+      params={{
+        slug: product.slug,
+      }}
+      aria-label={`Xem ${getFeaturedDisplayName(product)}`}
+      className="
+        flex
+        h-7
+        w-7
+        shrink-0
+        items-center
+        justify-center
+        rounded-[8px]
+        border
+        border-[#D7E9DD]
+        bg-[#F7FBF8]
+        text-[#4F8063]
+        transition-all
+        duration-300
+        hover:bg-[#DDF1E6]
+      "
+    >
+      <ShoppingCart size={12} strokeWidth={1.6} />
+    </Link>
+
+  </div>
+
+</div>
+
+    </div>
+  ))}
+</div>
+
+            {/* ================================================= */}
+            {/* REFERENCE CTA + TRUST STRIP */}
             {/* ================================================= */}
 
             <div
               className="
-                mt-7
-
-                grid
-                grid-cols-2
-                gap-2.5
-
-                sm:mt-8
-                sm:gap-3
-
-                lg:grid-cols-3
-                lg:gap-3
-
-                xl:gap-4
+                mt-5
+                border-t
+                border-[#E7E0D7]
+                pt-4
+                sm:mt-7
+                sm:pt-5
               "
             >
-
-              {furnitureProducts.map((product) => (
-
-                <div
-                  key={product.id}
-                  className="
-                    min-w-0
-                    overflow-hidden
-
-                    rounded-[14px]
-
-                    border
-                    border-[#E5DDD3]
-
-                    bg-white
-                  "
-                >
-
-                  {/* PRODUCT IMAGE */}
-
-                  <Link
-                    to="/products/$slug"
-                    params={{
-                      slug: product.slug,
-                    }}
-                    className="block"
-                  >
-
-                    <div
-                      className="
-                        aspect-square
-                        w-full
-                        overflow-hidden
-                        bg-[#F5F2ED]
-                      "
-                    >
-
-                      <img
-                        src={product.image_url}
-                        alt={getFurnitureDisplayName(product)}
-                        className="
-                          h-full
-                          w-full
-                          object-cover
-
-                          transition-transform
-                          duration-500
-
-                          hover:scale-[1.03]
-                        "
-                      />
-
-                    </div>
-
-                  </Link>
-
-
-                  {/* PRODUCT CONTENT */}
-
-                  <div
-                    className="
-                      flex
-                      min-w-0
-                      flex-col
-                      p-2.5
-                      sm:p-3.5
-                    "
-                  >
-                    {/* PRODUCT NAME */}
-
-                    <Link
-                      to="/products/$slug"
-                      params={{
-                        slug: product.slug,
-                      }}
-                      className="
-                        block
-                        min-h-[42px]
-                        line-clamp-2
-                        overflow-hidden
-                        text-[11px]
-                        font-bold
-                        leading-[1.55]
-                        text-[#202820]
-                        transition-colors
-                        hover:text-[#4F8063]
-                        sm:min-h-[46px]
-                        sm:text-[13px]
-                      "
-                    >
-                      {getFurnitureDisplayName(product)}
-                    </Link>
-
-                    {/* RATING / REVIEWS / SOLD */}
-
-                    {(() => {
-                      const socialProof = getFurnitureSocialProof(product);
-
-                      return (
-                        <div
-                          className="
-                            mt-1.5
-                            flex
-                            min-w-0
-                            flex-wrap
-                            items-center
-                            gap-x-1.5
-                            gap-y-0.5
-                            text-[8.5px]
-                            leading-4
-                            text-[#77736D]
-                            sm:text-[9.5px]
-                          "
-                        >
-                          <span className="font-semibold text-[#C8922E]">
-                            ★ {socialProof.rating}
-                          </span>
-
-                          <span className="text-[#B8B2AA]">·</span>
-
-                          <span>{socialProof.reviews} đánh giá</span>
-
-                          <span className="text-[#B8B2AA]">·</span>
-
-                          <span>Đã bán {socialProof.sold}</span>
-                        </div>
-                      );
-                    })()}
-
-                    {/* PRICE */}
-
-                    <div className="mt-1.5 min-h-[42px]">
-                      {product.price ? (
-                        <>
-                          <div className="text-[8.5px] leading-4 text-gray-400 line-through sm:text-[9.5px]">
-                            {new Intl.NumberFormat("vi-VN").format(
-                              product.compare_at_price &&
-                              product.compare_at_price > product.price
-                                ? product.compare_at_price
-                                : Math.ceil(
-                                    (product.price * 1.1) / 10000
-                                  ) * 10000
-                            )}₫
-                          </div>
-
-                          <div className="mt-0.5 text-[14px] font-bold leading-5 text-[#4F8063] sm:text-[15px]">
-                            {new Intl.NumberFormat("vi-VN").format(
-                              product.price
-                            )}₫
-                          </div>
-                        </>
-                      ) : (
-                        <div className="text-[10px] text-red-500">
-                          Chưa có giá
-                        </div>
-                      )}
-                    </div>
-
-                    {/* ACTIONS */}
-
-                    <div
-                      className="
-                        mt-2.5
-                        flex
-                        items-center
-                        gap-1.5
-                      "
-                    >
-                      <Link
-                        to="/products/$slug"
-                        params={{
-                          slug: product.slug,
-                        }}
-                        className="
-                          flex
-                          h-8
-                          min-w-0
-                          flex-1
-                          items-center
-                          justify-center
-                          rounded-[10px]
-                          bg-[#DDF1E6]
-                          px-2
-                          text-[9px]
-                          font-semibold
-                          text-[#4F8063]
-                          transition-all
-                          duration-300
-                          hover:-translate-y-0.5
-                          hover:bg-[#CDE8D9]
-                          active:scale-[0.98]
-                          sm:h-9
-                          sm:rounded-xl
-                          sm:text-[10px]
-                        "
-                      >
-                        Mua ngay
-                      </Link>
-
-                      <Link
-                        to="/products/$slug"
-                        params={{
-                          slug: product.slug,
-                        }}
-                        aria-label={`Xem ${getFurnitureDisplayName(product)}`}
-                        className="
-                          flex
-                          h-8
-                          w-[34px]
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-[10px]
-                          border
-                          border-[#D7E9DD]
-                          bg-[#F7FBF8]
-                          text-[#4F8063]
-                          transition-all
-                          duration-300
-                          hover:-translate-y-0.5
-                          hover:bg-[#DDF1E6]
-                          active:scale-[0.96]
-                          sm:h-9
-                          sm:w-9
-                          sm:rounded-xl
-                        "
-                      >
-                        <ShoppingCart size={14} strokeWidth={1.7} />
-                      </Link>
-                    </div>
-                  </div>
-
-                </div>
-
-              ))}
-
-            </div>
-
-
-            {/* ================================================= */}
-            {/* CTA */}
-            {/* ================================================= */}
-
-            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-8">
-
               <Link
                 to="/shop"
                 className="
-                  inline-flex
-                  items-center
-                  gap-2
-
-                  rounded-full
-
-                  bg-[#2E3528]
-
-                  px-5
-                  py-3
-
-                  text-[11px]
-                  font-semibold
-
-                  text-white
-
-                  transition-all
-                  duration-300
-
-                  hover:-translate-y-0.5
-                  hover:bg-[#6F8B5E]
-                  hover:shadow-lg
-
-                  active:scale-[0.98]
-                "
-              >
-                Xem trọn bộ nội thất
-
-                <span>
-                  →
-                </span>
-
-              </Link>
-              {/* SHOPPING BENEFITS */}
-
-              <div
-                className="
-                  mt-0
+                  group
                   flex
-                  flex-wrap
+                  h-9
+                  w-full
                   items-center
-                  gap-x-5
-                  gap-y-2
-
-                  lg:ml-2
-                  lg:mt-0
-
+                  justify-center
+                  gap-2
+                  rounded-full
+                  bg-[#2E3528]
+                  px-4
                   text-[9px]
-                  text-[#6B756A]
+                  font-semibold
+                  tracking-[-0.01em]
+                  text-white
+                  transition-colors
+                  duration-200
+                  hover:bg-[#3A4433]
+                  active:scale-[0.99]
+                  sm:h-10
                   sm:text-[10px]
                 "
               >
+                <span>Xem trọn bộ nội thất</span>
+                <span
+                  className="
+                    text-[12px]
+                    transition-transform
+                    duration-200
+                    group-hover:translate-x-1
+                  "
+                >
+                  →
+                </span>
+              </Link>
 
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-                  <span
-                    className="
-                      flex
-                      h-7
-                      w-7
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 6h11v10H3z" />
-                      <path d="M14 9h4l3 3v4h-7z" />
-                      <circle cx="7" cy="19" r="1.5" />
-                      <circle cx="18" cy="19" r="1.5" />
-                    </svg>
+              <div
+                className="
+                  mt-3
+                  grid
+                  min-h-[48px]
+                  grid-cols-3
+                  divide-x
+                  divide-[#E4DDD4]
+                  rounded-[10px]
+                  bg-[#F7F4EF]
+                  px-1
+                  py-1.5
+                  sm:min-h-[52px]
+                  sm:px-2
+                "
+              >
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] shadow-[0_1px_4px_rgba(40,35,30,0.035)] sm:h-7 sm:w-7">
+                    <Truck size={12} strokeWidth={1.5} />
                   </span>
-
-                  <span>
-                    <strong className="font-semibold text-[#3F493F]">
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">
                       Freeship
                     </strong>
-                    <br />
                     toàn quốc
                   </span>
                 </div>
 
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-                  <span
-                    className="
-                      flex
-                      h-7
-                      w-7
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 14 4 9l5-5" />
-                      <path d="M4 9h10a6 6 0 0 1 6 6v1" />
-                      <path d="M15 20h5v-5" />
-                    </svg>
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] shadow-[0_1px_4px_rgba(40,35,30,0.035)] sm:h-7 sm:w-7">
+                    <RotateCcw size={12} strokeWidth={1.5} />
                   </span>
-
-                  <span>
-                    <strong className="font-semibold text-[#3F493F]">
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">
                       Đổi trả
                     </strong>
-                    <br />
-                    trong 15 ngày
+                    15 ngày
                   </span>
                 </div>
 
-
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-                  <span
-                    className="
-                      flex
-                      h-7
-                      w-7
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-[#F1F7F2]
-                      text-[#4F8063]
-                    "
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7" />
-                      <path d="M2 7h20v5H2z" />
-                      <path d="M12 7v14" />
-                      <path d="M12 7H8.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7Z" />
-                      <path d="M12 7h3.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7Z" />
-                    </svg>
+                <div className="flex min-w-0 items-center justify-center gap-1.5 px-1 sm:gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#66745F] shadow-[0_1px_4px_rgba(40,35,30,0.035)] sm:h-7 sm:w-7">
+                    <Gift size={12} strokeWidth={1.5} />
                   </span>
-
-                  <span>
-                    <strong className="font-semibold text-[#3F493F]">
+                  <span className="min-w-0 text-[7.5px] leading-[1.25] text-[#817970] sm:text-[8.5px]">
+                    <strong className="block font-medium text-[#454D43]">
                       Voucher 50K
                     </strong>
-                    <br />
                     cho đơn hàng
                   </span>
                 </div>
-
               </div>
-
             </div>
 
           </div>
@@ -686,3 +603,5 @@ const furnitureProducts = [
     </>
   );
 }
+
+

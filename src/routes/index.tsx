@@ -1,6 +1,11 @@
-﻿import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+﻿import { createFileRoute } from "@tanstack/react-router";
+import {
+  useSuspenseQuery,
+  queryOptions,
+} from "@tanstack/react-query";
+
 import { supabase } from "@/integrations/supabase/client";
+
 import Hero from "@/components/home/Hero";
 import NewArrival from "@/components/home/NewArrival";
 import Collections from "@/components/home/Collections";
@@ -24,364 +29,695 @@ import OliveTrustSection from "@/components/home/OliveTrustSection";
 import ScrollToTopBottom from "@/components/home/ScrollToTopBottom";
 
 
+/* =========================================================
+   HOME DATA
+========================================================= */
+
 const homeData = queryOptions({
   queryKey: ["home-data"],
 
-  staleTime: 1000 * 60 * 10, // Cache 10 phÃºt
-  gcTime: 1000 * 60 * 30, // Giá»¯ cache 30 phÃºt
-  refetchOnWindowFocus: false, // KhÃ´ng gá»i láº¡i khi quay láº¡i tab
+  staleTime: 1000 * 60 * 10,
+
+  gcTime: 1000 * 60 * 30,
+
+  refetchOnWindowFocus: false,
 
   queryFn: async () => {
-  
-const [
-  featured,
-  bedside,
-  bestSellers,
-  under399,
-  memphisProducts,
-  furnitureProducts,
-  floorLampProducts,
-] = await Promise.all([
+    const [
+      featured,
+      newArrivals,
+      bedside,
+      bestSellers,
+      under399,
+      memphisProducts,
+      furnitureProducts,
+      floorLampProducts,
+    ] = await Promise.all([
 
-  // FEATURED
-  supabase
-    .from("products")
-    .select(
-      "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
-    )
-    .eq("featured", true)
-    .limit(9),
+      /* =====================================================
+         FEATURED
+      ===================================================== */
 
-  // BEDSIDE
-  supabase
-    .from("products")
-    .select(
-      "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
-    )
-    .eq(
-      "category_id",
-      "8c71807e-4a94-4304-bff7-a4d5208cd5b8"
-    )
-    .limit(4),
-
-  // BEST SELLERS
-  supabase
-    .from("products")
-    .select(
-      "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
-    )
-    .eq("top_seller", true),
-
-  // UNDER 399
-  supabase
-    .from("products")
-    .select(
-      "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
-    )
-    .lte("price", 399000)
-    .order("price")
-    .limit(20),
-
-  // MEMPHIS 32 + MEMPHIS 20
-  supabase
-    .from("products")
-    .select(
-      "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
-    )
-    .or(
-      "name.ilike.%Memphis 32%,name.ilike.%Memphis 20%"
-    ),
-
-  // FURNITURE
-  supabase
+      supabase
   .from("products")
   .select(
     "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
   )
-  .or(
-    "name.ilike.%Montara%,name.ilike.%AERO%,name.ilike.%Curva%"
-  )
-,
-  // FLOOR LAMPS — BAUHAUS + MEMPHIS 20 + HALF ROUND
-  supabase
-    .from("products")
-    .select("id,slug,name,price,compare_at_price,stock"
-    )
-    .or(
-      "name.ilike.%HALF ROUND%,name.ilike.%MEMPHIS 20%,name.ilike.%BAUHAUS%,name.ilike.%FISHING%"
-    )
-    .limit(4)
+  .eq("featured", true)
+  .or("new_arrival.eq.false,new_arrival.is.null")
+  .limit(9),
 
 
-]);
+      /* =====================================================
+         NEW ARRIVAL
+         Chỉ lấy sản phẩm có new_arrival = true
+      ===================================================== */
+
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .eq("new_arrival", true)
+        .order("created_at", { ascending: false })
+        .limit(12),
 
 
-console.log("TOP SELLER DATA", bestSellers.data);
-console.log("TOP SELLER ERROR", bestSellers.error);
+      /* =====================================================
+         BEDSIDE
+      ===================================================== */
 
-const mapProducts = (list: any[]) =>
-  (list ?? []).map((p) => ({
-    ...p,
-    old_price: p.compare_at_price,
-  }));
-console.log("UNDER399 DATA:", under399.data);
-console.log("UNDER399 ERROR:", under399.error);
-return {
-  featured: mapProducts(featured.data),
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .eq(
+          "category_id",
+          "8c71807e-4a94-4304-bff7-a4d5208cd5b8"
+        )
+        .limit(4),
 
-  bedside: mapProducts(bedside.data),
 
-  bestSellers: mapProducts(bestSellers.data),
+      /* =====================================================
+         BEST SELLERS / MOST LOVED
+      ===================================================== */
 
-  under399: mapProducts(under399.data),
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .eq("top_seller", true),
 
-  memphisProducts: mapProducts(memphisProducts.data),
 
-  furnitureProducts: mapProducts(furnitureProducts.data),
-  floorLampProducts: mapProducts(floorLampProducts.data),
+      /* =====================================================
+         UNDER 399
+      ===================================================== */
 
-  categories: [
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .lte("price", 399000)
+        .order("price")
+        .limit(20),
 
+
+      /* =====================================================
+         MEMPHIS 32 + MEMPHIS 20
+      ===================================================== */
+
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .or(
+          "name.ilike.%Memphis 32%,name.ilike.%Memphis 20%"
+        ),
+
+
+      /* =====================================================
+         FURNITURE
+      ===================================================== */
+
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+        )
+        .or(
+          "name.ilike.%Montara%,name.ilike.%AERO%,name.ilike.%Curva%"
+        ),
+
+
+      /* =====================================================
+         FLOOR LAMPS
+      ===================================================== */
+
+      supabase
+        .from("products")
+        .select(
+          "id,slug,name,price,compare_at_price,stock"
+        )
+        .or(
+          "name.ilike.%HALF ROUND%,name.ilike.%MEMPHIS 20%,name.ilike.%BAUHAUS%,name.ilike.%FISHING%"
+        )
+        .limit(4),
+    ]);
+
+
+    /* =======================================================
+       DEBUG
+    ======================================================= */
+
+    console.log(
+      "FEATURED DATA",
+      featured.data
+    );
+
+    console.log(
+      "FEATURED ERROR",
+      featured.error
+    );
+
+    console.log(
+      "NEW ARRIVAL DATA",
+      newArrivals.data
+    );
+
+    console.log(
+      "NEW ARRIVAL ERROR",
+      newArrivals.error
+    );
+
+    console.log(
+      "TOP SELLER DATA",
+      bestSellers.data
+    );
+
+    console.log(
+      "TOP SELLER ERROR",
+      bestSellers.error
+    );
+
+    console.log(
+      "UNDER399 DATA:",
+      under399.data
+    );
+
+    console.log(
+      "UNDER399 ERROR:",
+      under399.error
+    );
+
+
+    /* =======================================================
+       MAP PRODUCTS
+    ======================================================= */
+
+    const mapProducts = (
+      list: any[]
+    ) =>
+      (list ?? []).map((p) => ({
+        ...p,
+        old_price:
+          p.compare_at_price,
+      }));
+
+
+    /* =======================================================
+       RETURN HOME DATA
+    ======================================================= */
+
+    return {
+
+      /* FEATURED */
+      featured:
+        mapProducts(
+          featured.data
+        ),
+
+
+      /* NEW ARRIVAL */
+      newArrivals:
+        mapProducts(
+          newArrivals.data
+        ),
+
+
+      /* BEDSIDE */
+      bedside:
+        mapProducts(
+          bedside.data
+        ),
+
+
+      /* BEST SELLERS */
+      bestSellers:
+        mapProducts(
+          bestSellers.data
+        ),
+
+
+      /* UNDER 399 */
+      under399:
+        mapProducts(
+          under399.data
+        ),
+
+
+      /* MEMPHIS */
+      memphisProducts:
+        mapProducts(
+          memphisProducts.data
+        ),
+
+
+      /* FURNITURE */
+      furnitureProducts:
+        mapProducts(
+          furnitureProducts.data
+        ),
+
+
+      /* FLOOR LAMP */
+      floorLampProducts:
+        mapProducts(
+          floorLampProducts.data
+        ),
+
+
+      /* =====================================================
+         CATEGORIES
+      ===================================================== */
+
+      categories: [
         {
           id: "1",
           slug: "den-ban",
-          name: "ÄÃ¨n bÃ n",
-          description: "ÄÃ¨n ngá»§, Ä‘Ã¨n decor",
+          name: "Đèn bàn",
+          description:
+            "Đèn ngủ, đèn decor",
         },
+
         {
           id: "2",
           slug: "den-dung",
-          name: "ÄÃ¨n Ä‘á»©ng",
-          description: "Floor lamp phÃ²ng khÃ¡ch",
+          name: "Đèn đứng",
+          description:
+            "Floor lamp phòng khách",
         },
+
         {
           id: "3",
           slug: "den-tha",
-          name: "ÄÃ¨n tháº£",
-          description: "ÄÃ¨n tháº£ tráº§n hiá»‡n Ä‘áº¡i",
+          name: "Đèn thả",
+          description:
+            "Đèn thả trần hiện đại",
         },
+
         {
           id: "4",
           slug: "den-tuong",
-          name: "ÄÃ¨n tÆ°á»ng",
-          description: "Wall lamp trang trÃ­",
+          name: "Đèn tường",
+          description:
+            "Wall lamp trang trí",
         },
+
         {
           id: "5",
           slug: "den-khong-day",
-          name: "ÄÃ¨n khÃ´ng dÃ¢y",
-          description: "Cordless lamp collection",
+          name: "Đèn không dây",
+          description:
+            "Cordless lamp collection",
         },
       ],
     };
   },
 });
 
-export const Route = createFileRoute("/")({
 
-head: () => ({
-  meta: [
-    {
-      title: "OLIVE LIVING — Nội thất tinh tế cho ngôi nhà bạn",
-    },
-    {
-      name: "description",
-      content: "Khám phá bộ sưu tập nội thất tối giản và tinh tế.",
-    },
-  ],
-}),
+/* =========================================================
+   ROUTE
+========================================================= */
 
-  loader: ({ context }) => { context.queryClient.ensureQueryData(homeData); },
-  component: HomePage,
-});
+export const Route =
+  createFileRoute("/")({
+
+    head: () => ({
+      meta: [
+        {
+          title:
+            "OLIVE LIVING — Nội thất tinh tế cho ngôi nhà bạn",
+        },
+
+        {
+          name: "description",
+          content:
+            "Khám phá bộ sưu tập nội thất tối giản và tinh tế.",
+        },
+      ],
+    }),
+
+
+    loader: ({ context }) => {
+      context.queryClient.ensureQueryData(
+        homeData
+      );
+    },
+
+
+    component: HomePage,
+  });
+
+
+/* =========================================================
+   HOME PAGE
+========================================================= */
 
 function HomePage() {
-  const { data } = useSuspenseQuery(homeData);
+
+  const { data } =
+    useSuspenseQuery(
+      homeData
+    );
+
 
   return (
     <div>
-     {/* <WelcomeVoucherModal /> */}
+
+      {/* =====================================================
+          VOUCHER POPUP
+      ===================================================== */}
+
+      {/* <WelcomeVoucherModal /> */}
+
       <BF08VoucherPopup />
-<Hero />
-{/*<Services />*/}
-<Collections />
 
-{/*
-<FeaturedCollection />
-*/}
 
-<Vouchers />
+      {/* =====================================================
+          HERO
+      ===================================================== */}
 
-<BestSeller
-  products={data.bestSellers}
-/>
+      <Hero />
 
-<FeaturedCollectionShowcase
-  products={data.featured}
-/>
 
-{/* VIDEO NGANG */}
-<section className="bg-[#F7F4EF] py-4 sm:py-6 lg:py-8">
-  <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-    <div
-      className="
-        relative
-        w-full
-        overflow-hidden
-        rounded-[26px]
-        border
-        border-[#E7DED3]
-        bg-black
-        shadow-[0_20px_70px_rgba(60,45,30,0.08)]
+      {/* =====================================================
+          COLLECTIONS
+      ===================================================== */}
 
-        aspect-[16/7]
+      {/* <Services /> */}
 
-        sm:aspect-[16/7]
+      <Collections />
 
-        lg:aspect-[16/7]
-      "
-    >
-      <video
-        src="/videos/0825 (4)(1).mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className="
-          absolute
-          inset-0
-          h-full
-          w-full
-          object-cover
-        "
+
+      {/* =====================================================
+          FEATURED COLLECTION - OLD
+      ===================================================== */}
+
+      {/*
+      <FeaturedCollection />
+      */}
+
+
+      {/* =====================================================
+          VOUCHERS
+      ===================================================== */}
+
+      <Vouchers />
+
+
+      {/* =====================================================
+          MOST LOVED
+      ===================================================== */}
+
+      <BestSeller
+        products={
+          data.bestSellers
+        }
       />
-    </div>
-  </div>
-</section>
-
-<FeaturedCollectionShowcaseReverse
-  products={data.memphisProducts}
-/>
-
-<OliveTrustSection />
-
-<ScrollToTopBottom />
-
-<FurnitureCollectionShowcase
-  products={data.furnitureProducts}
-/>
-
-<BeforeAfterSlider
-  beforeImage="/images/floor-lamp-before.jpg"
-  afterImage="/images/floor-lamp-after.jpg"
-  products={data.floorLampProducts}
-/>
-
-<FlashSale />
-
-{/*
-<FavoriteProducts
-  products={data.bestSellers.slice(0, 4)}
-/>
-*/}
 
 
+      {/* =====================================================
+          NEW ARRIVAL
+          Lấy riêng products.new_arrival = true
+      ===================================================== */}
 
-{/*
-<Under399
-  products={data.under399}
-/>
-*/}
-
-
-
-
-{/*
-<NewArrival
-  products={data.featured}
-/>
-*/}
-
-{/*
-<Lookbook />
-*/}
-
-{/*<BedsideCollection
-  products={data.bedside}
-/>*/}
-
-{/* Popup */}
-
-{/*<FlashSalePopup />
-
-{/* VIDEO NGANG */}
-<section className="bg-[#F7F4EF] py-4 sm:py-6 lg:py-8">
-  <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-    <div
-      className="
-        relative
-        w-full
-        overflow-hidden
-        rounded-[26px]
-        border
-        border-[#E7DED3]
-        bg-black
-        shadow-[0_20px_70px_rgba(60,45,30,0.08)]
-
-        aspect-[16/7]
-
-        sm:aspect-[16/7]
-
-        lg:aspect-[16/7]
-      "
-    >
-      <video
-        src="/videos/0825 (9).mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className="
-          absolute
-          inset-0
-          h-full
-          w-full
-          object-cover
-        "
+      <NewArrival
+        products={
+          data.newArrivals
+        }
       />
-    </div>
-  </div>
-</section>
 
 
-  
-      {/* BEST SELLERS */}
-      {/*<section className="container-x py-20">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">BÃ¡n cháº¡y</p>
-            <h2 className="mt-2 font-display text-3xl md:text-4xl">ÄÆ°á»£c yÃªu thÃ­ch nháº¥t</h2>
+      {/* =====================================================
+          FEATURED COLLECTION SHOWCASE
+          Lấy products.featured = true
+      ===================================================== */}
+
+      {/*<FeaturedCollectionShowcase
+        products={
+          data.featured
+        }
+      />*/}
+
+
+      {/* =====================================================
+          VIDEO 01
+      ===================================================== */}
+
+      <section
+        className="
+          bg-[#F7F4EF]
+          py-4
+          sm:py-6
+          lg:py-8
+        "
+      >
+
+        <div
+          className="
+            mx-auto
+            w-full
+            max-w-[1380px]
+            px-4
+            sm:px-6
+            lg:px-8
+          "
+        >
+
+          <div
+            className="
+              relative
+              w-full
+              overflow-hidden
+              rounded-[26px]
+              border
+              border-[#E7DED3]
+              bg-black
+              shadow-[0_20px_70px_rgba(60,45,30,0.08)]
+              aspect-[16/7]
+            "
+          >
+
+            <video
+              src="/videos/0825 (4)(1).mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="
+                absolute
+                inset-0
+                h-full
+                w-full
+                object-cover
+              "
+            />
+
           </div>
-          <Link to="/shop" className="text-sm text-primary hover:underline">Xem táº¥t cáº£ â†’</Link>
+
         </div>
-        <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
-          {data.bestSellers.slice(0, 4).map((p) => <ProductCard key={p.id} product={p} />)}
+
+      </section>
+
+
+      {/* =====================================================
+          MEMPHIS COLLECTION
+      ===================================================== */}
+
+      <FeaturedCollectionShowcaseReverse
+        products={
+          data.memphisProducts
+        }
+      />
+
+
+      {/* =====================================================
+          TRUST
+      ===================================================== */}
+
+      <OliveTrustSection />
+
+
+      {/* =====================================================
+          SCROLL CONTROL
+      ===================================================== */}
+
+      <ScrollToTopBottom />
+
+
+      {/* =====================================================
+          FURNITURE
+      ===================================================== */}
+
+      <FurnitureCollectionShowcase
+        products={
+          data.furnitureProducts
+        }
+      />
+
+
+      {/* =====================================================
+          FLOOR LAMP
+      ===================================================== */}
+
+      <BeforeAfterSlider
+        beforeImage="/images/floor-lamp-before.jpg"
+        afterImage="/images/floor-lamp-after.jpg"
+        products={
+          data.floorLampProducts
+        }
+      />
+
+
+      {/* =====================================================
+          FLASH SALE
+      ===================================================== */}
+
+      <FlashSale />
+
+
+      {/* =====================================================
+          FAVORITE PRODUCTS - OLD
+      ===================================================== */}
+
+      {/*
+      <FavoriteProducts
+        products={
+          data.bestSellers.slice(
+            0,
+            4
+          )
+        }
+      />
+      */}
+
+
+      {/* =====================================================
+          UNDER 399 - OLD
+      ===================================================== */}
+
+      {/*
+      <Under399
+        products={
+          data.under399
+        }
+      />
+      */}
+
+
+      {/* =====================================================
+          LOOKBOOK - OLD
+      ===================================================== */}
+
+      {/*
+      <Lookbook />
+      */}
+
+
+      {/* =====================================================
+          BEDSIDE COLLECTION - OLD
+      ===================================================== */}
+
+      {/*
+      <BedsideCollection
+        products={
+          data.bedside
+        }
+      />
+      */}
+
+
+      {/* =====================================================
+          FLASH SALE POPUP - DISABLED
+      ===================================================== */}
+
+      {/*
+      <FlashSalePopup />
+      */}
+
+
+      {/* =====================================================
+          VIDEO 02
+      ===================================================== */}
+
+      <section
+        className="
+          bg-[#F7F4EF]
+          py-4
+          sm:py-6
+          lg:py-8
+        "
+      >
+
+        <div
+          className="
+            mx-auto
+            w-full
+            max-w-[1380px]
+            px-4
+            sm:px-6
+            lg:px-8
+          "
+        >
+
+          <div
+            className="
+              relative
+              w-full
+              overflow-hidden
+              rounded-[26px]
+              border
+              border-[#E7DED3]
+              bg-black
+              shadow-[0_20px_70px_rgba(60,45,30,0.08)]
+              aspect-[16/7]
+            "
+          >
+
+            <video
+              src="/videos/0825 (9).mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="
+                absolute
+                inset-0
+                h-full
+                w-full
+                object-cover
+              "
+            />
+
+          </div>
+
         </div>
-      </section> */}
-      
-      
+
+      </section>
 
 
-<CustomerFeedbackGallery />
+      {/* =====================================================
+          CUSTOMER FEEDBACK
+      ===================================================== */}
 
-     
-
-      {/* STORY */}
+      <CustomerFeedbackGallery />
 
 
-      {/* NEWSLETTER */}
-{/* <Newsletter /> */}    </div>
+      {/* =====================================================
+          NEWSLETTER
+      ===================================================== */}
+
+      {/*
+      <Newsletter />
+      */}
+
+    </div>
   );
 }

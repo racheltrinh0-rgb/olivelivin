@@ -92,6 +92,17 @@ export default function BeforeAfterSlider({
 }: BeforeAfterSliderProps) {
   const [position, setPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
+  const productsScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollProducts = (direction: "left" | "right") => {
+    const el = productsScrollRef.current;
+    if (!el) return;
+
+    el.scrollBy({
+      left: direction === "right" ? el.clientWidth * 0.92 : -el.clientWidth * 0.92,
+      behavior: "smooth",
+    });
+  };
 
   const moveSlider = (clientX: number) => {
     const box = containerRef.current;
@@ -136,7 +147,7 @@ export default function BeforeAfterSlider({
 
       <section className="w-full bg-[#F6F4EF] py-7 sm:py-10 md:py-16">
       <div className="mx-auto max-w-[1320px] px-3 sm:px-5">
-        <div className="flex flex-col overflow-hidden rounded-[22px] border border-stone-200/80 bg-white p-2.5 shadow-[0_10px_35px_rgba(38,38,32,0.05)] sm:p-4 lg:grid lg:grid-cols-[0.94fr_1.06fr] lg:gap-4">
+        <div className="flex flex-col overflow-hidden rounded-[22px] border border-stone-200/80 bg-white p-2.5 shadow-[0_10px_35px_rgba(38,38,32,0.05)] sm:p-4 lg:grid lg:grid-cols-[1fr_1.12fr] lg:gap-4">
 
           {/* BEFORE / AFTER */}
           <div
@@ -199,7 +210,7 @@ export default function BeforeAfterSlider({
           </div>
 
           {/* LEFT CONTENT */}
-          <div className="order-2 flex flex-col p-2 sm:p-4 lg:order-1">
+          <div className="order-2 flex min-h-0 flex-col p-2 sm:p-4 lg:order-1 lg:h-full lg:p-5 xl:p-6">
 
             <p className="mb-2 text-[8px] uppercase tracking-[0.32em] text-emerald-800 sm:text-[9px]">
               SIGNATURE FLOOR LIGHTING
@@ -214,7 +225,27 @@ export default function BeforeAfterSlider({
             
 
             {/* PRODUCTS */}
-            <div className="mt-5 grid grid-cols-2 gap-2 sm:gap-2.5 lg:grid-cols-4">
+            <div
+              ref={productsScrollRef}
+              className="
+                mt-5
+                flex
+                w-full
+                min-w-0
+                gap-3
+                overflow-x-auto
+                overscroll-x-contain
+                touch-pan-x
+                cursor-grab
+                active:cursor-grabbing
+                pb-1
+                snap-x
+                snap-mandatory
+                [scrollbar-width:none]
+                [&::-webkit-scrollbar]:hidden
+                sm:gap-3
+              "
+            >
               {products.slice(0, 4).map((product) => {
                 const image = getFloorLampImage(product);
 
@@ -227,7 +258,32 @@ export default function BeforeAfterSlider({
                 return (
                   <div
                     key={product.id}
-                    className="group flex min-w-0 flex-col overflow-hidden rounded-[13px] border border-stone-200/90 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-[0_8px_22px_rgba(38,38,32,0.07)]"
+                    className="
+                      group
+                      flex
+                      w-[82%]
+                      min-w-[82%]
+                      max-w-[280px]
+                      shrink-0
+                      snap-start
+                      flex-col
+                      overflow-hidden
+                      rounded-[13px]
+                      border
+                      border-stone-200/90
+                      bg-white
+                      transition-all
+                      duration-300
+                      hover:-translate-y-0.5
+                      hover:border-stone-300
+                      hover:shadow-[0_8px_22px_rgba(38,38,32,0.07)]
+                      sm:w-[48%]
+                      sm:min-w-[48%]
+                      sm:max-w-none
+                      lg:w-[48%]
+                      lg:min-w-[48%]
+                      lg:max-w-none
+                    "
                   >
                     {/* PRODUCT IMAGE */}
                     <button
@@ -410,16 +466,61 @@ export default function BeforeAfterSlider({
               })}
             </div>
 
+            {/* PRODUCT CAROUSEL CONTROLS */}
+            <div className="mt-1.5 flex min-h-7 items-center justify-between">
+              <span className="text-[8px] text-stone-400 sm:text-[9px]">
+                Vuốt để xem thêm
+              </span>
+
+              <div className="hidden items-center gap-1 lg:flex">
+                <button
+                  type="button"
+                  aria-label="Sản phẩm trước"
+                  onClick={() => scrollProducts("left")}
+                  className="
+                    flex h-7 w-7 items-center justify-center
+                    rounded-full border border-stone-200
+                    bg-white text-stone-600
+                    shadow-[0_2px_8px_rgba(38,38,32,0.06)]
+                    transition-all duration-200
+                    hover:border-stone-300 hover:bg-stone-50
+                    active:scale-95
+                  "
+                >
+                  <span className="text-sm leading-none">‹</span>
+                </button>
+
+                <button
+                  type="button"
+                  aria-label="Sản phẩm tiếp theo"
+                  onClick={() => scrollProducts("right")}
+                  className="
+                    flex h-7 w-7 items-center justify-center
+                    rounded-full border border-stone-200
+                    bg-white text-stone-700
+                    shadow-[0_2px_8px_rgba(38,38,32,0.06)]
+                    transition-all duration-200
+                    hover:border-stone-300 hover:bg-stone-50
+                    active:scale-95
+                  "
+                >
+                  <span className="text-sm leading-none">›</span>
+                </button>
+              </div>
+            </div>
+
             {/* CTA */}
             {/* CTA + SHOPPING BENEFITS */}
 
             <div
               className="
-                mt-6
+                mt-auto
                 flex
                 flex-col
                 items-start
-                gap-4
+                gap-3
+                pt-4
+                lg:pt-4
               "
             >
 
@@ -433,9 +534,10 @@ export default function BeforeAfterSlider({
                 className="
                   group
                   flex w-full items-center justify-between
+                  h-9
                   rounded-[11px]
                   bg-gray-900
-                  px-4 py-2.5
+                  px-4
                   text-[10px]
                   font-medium
                   text-white
@@ -457,23 +559,22 @@ export default function BeforeAfterSlider({
                   grid
                   w-full
                   grid-cols-3
-                  items-center
-                  gap-1
+                  gap-2
                   sm:flex
-                  sm:w-auto
-                  sm:gap-5
+                  sm:w-full
+                  sm:gap-2.5
                 "
               >
 
               {/* FREESHIP */}
 
-              <div className="flex min-w-0 items-center justify-center gap-1.5">
+              <div className="flex min-w-0 items-center gap-1.5 rounded-full border border-[#E7E4DC] bg-[#FAFAF7] px-2 py-1.5 sm:px-2.5">
 
                 <span
                   className="
                     flex
-                    h-7
-                    w-7
+                    h-6
+                    w-6
                     items-center
                     justify-center
                     rounded-full
@@ -498,7 +599,7 @@ export default function BeforeAfterSlider({
                   </svg>
                 </span>
 
-                <span className="min-w-0 text-[8px] leading-4 text-[#6B756A] sm:text-[10px]">
+                <span className="min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
                   <strong className="font-semibold text-[#3F493F]">
                     Freeship
                   </strong>
@@ -511,13 +612,13 @@ export default function BeforeAfterSlider({
 
               {/* RETURN */}
 
-              <div className="flex min-w-0 items-center justify-center gap-1.5">
+              <div className="flex min-w-0 items-center gap-1.5 rounded-full border border-[#E7E4DC] bg-[#FAFAF7] px-2 py-1.5 sm:px-2.5">
 
                 <span
                   className="
                     flex
-                    h-7
-                    w-7
+                    h-6
+                    w-6
                     items-center
                     justify-center
                     rounded-full
@@ -541,7 +642,7 @@ export default function BeforeAfterSlider({
                   </svg>
                 </span>
 
-                <span className="min-w-0 text-[8px] leading-4 text-[#6B756A] sm:text-[10px]">
+                <span className="min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
                   <strong className="font-semibold text-[#3F493F]">
                     Đổi trả
                   </strong>
@@ -554,13 +655,13 @@ export default function BeforeAfterSlider({
 
               {/* VOUCHER */}
 
-              <div className="flex min-w-0 items-center justify-center gap-1.5">
+              <div className="flex min-w-0 items-center gap-1.5 rounded-full border border-[#E7E4DC] bg-[#FAFAF7] px-2 py-1.5 sm:px-2.5">
 
                 <span
                   className="
                     flex
-                    h-7
-                    w-7
+                    h-6
+                    w-6
                     items-center
                     justify-center
                     rounded-full
@@ -586,7 +687,7 @@ export default function BeforeAfterSlider({
                   </svg>
                 </span>
 
-                <span className="min-w-0 text-[8px] leading-4 text-[#6B756A] sm:text-[10px]">
+                <span className="min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
                   <strong className="font-semibold text-[#3F493F]">
                     Voucher 50K
                   </strong>

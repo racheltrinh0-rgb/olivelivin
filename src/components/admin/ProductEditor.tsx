@@ -53,6 +53,10 @@ const [description, setDescription] = useState(
   product.featured ?? false
 );
 
+const [newArrival, setNewArrival] = useState(
+  product.new_arrival ?? false
+);
+
 const [bestSeller, setBestSeller] = useState(
   product.best_seller ?? false
 );
@@ -166,6 +170,7 @@ async function save() {
     const { error } = await supabase
       .from("products")
       .update({
+  new_arrival: newArrival,
   featured,
   best_seller: bestSeller,
   top_seller: topSeller,
@@ -454,11 +459,11 @@ if (error) throw error;
           </div>
 
           <input
-            type="checkbox"
-            checked={featured}
-            onChange={(e) => setFeatured(e.target.checked)}
-            className="h-4 w-4 shrink-0 rounded accent-[#8C6B4D]"
-          />
+  type="checkbox"
+  checked={newArrival}
+  onChange={(e) => setNewArrival(e.target.checked)}
+  className="h-5 w-5 shrink-0 rounded accent-[#8C6B4D]"
+/>
         </label>
 
         {/* BEST SELLER */}

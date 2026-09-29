@@ -10,7 +10,6 @@ export function calculateVoucherDiscount(
   voucher: VoucherDisplay | null,
   subtotal: number
 ): number {
-
   if (!voucher) return 0;
 
   if (subtotal < voucher.min_order) {
@@ -18,7 +17,6 @@ export function calculateVoucherDiscount(
   }
 
   switch (voucher.type) {
-
     case "fixed":
       return Math.min(
         voucher.value,
@@ -26,34 +24,29 @@ export function calculateVoucherDiscount(
       );
 
     case "percent": {
-
       let discount =
         subtotal *
         voucher.value /
         100;
 
       if (
+        voucher.max_discount != null &&
         voucher.max_discount > 0
       ) {
-
         discount = Math.min(
           discount,
           voucher.max_discount
         );
-
       }
 
       return Math.round(
         discount
       );
-
     }
 
     default:
       return 0;
-
   }
-
 }
 
 /* ============================================================
@@ -65,32 +58,23 @@ export function calculateShippingDiscount(
   shippingFee: number,
   subtotal: number
 ): number {
-
   if (!voucher) return 0;
 
-  if (
-    voucher.type !==
-    "shipping"
-  ) {
-
+  if (voucher.type !== "shipping") {
     return 0;
-
   }
 
-  if (
-    subtotal <
-    voucher.min_order
-  ) {
-
+  if (subtotal < voucher.min_order) {
     return 0;
-
   }
 
+  /*
+   * Không bao giờ giảm vượt phí ship thực tế.
+   */
   return Math.min(
-    shippingFee,
-    voucher.value
+    Math.max(0, shippingFee),
+    Math.max(0, voucher.value)
   );
-
 }
 
 /* ============================================================
@@ -100,11 +84,9 @@ export function calculateShippingDiscount(
 export function calculateVoucherSaving(
   discount: number,
   shipping: number
-) {
-
+): number {
   return (
-    discount +
-    shipping
+    Math.max(0, discount) +
+    Math.max(0, shipping)
   );
-
 }

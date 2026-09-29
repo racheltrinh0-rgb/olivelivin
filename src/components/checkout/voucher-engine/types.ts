@@ -1,47 +1,53 @@
 import type {
   VoucherDisplay,
-  VoucherSummary,
+  ShippingMethod,
 } from "../voucher.types";
 
 export interface VoucherEngineInput {
 
-
+  vouchers: VoucherDisplay[];
 
   subtotal: number;
 
   shippingFee: number;
 
-  vouchers: VoucherDisplay[];
-
-  selectedDiscount?: VoucherDisplay | null;
-
-  selectedShipping?: VoucherDisplay | null;
+  shippingMethod: ShippingMethod;
 
   cartItems: any[];
 
+  selectedDiscount:
+    | VoucherDisplay
+    | null;
+
+  selectedShipping:
+    | VoucherDisplay
+    | null;
 }
 
-export interface VoucherEngineResult
-  extends VoucherSummary {}
+export interface VoucherEngineResult {
+  discountVoucher:
+    | VoucherDisplay
+    | null;
 
-export interface VoucherRuleResult {
+  shippingVoucher:
+    | VoucherDisplay
+    | null;
 
-  available: boolean;
+  discountAmount: number;
 
-  reason?: string;
+  shippingDiscount: number;
 
+  shipping: number;
+
+  totalDiscount: number;
 }
 
 export interface VoucherMatchContext {
-
   subtotal: number;
 
-  products?: string[];
+  shippingFee: number;
 
-  categories?: string[];
+  shippingMethod: ShippingMethod;
 
-  memberLevel?: string;
-
-  birthday?: boolean;
-
+  cartItems: any[];
 }

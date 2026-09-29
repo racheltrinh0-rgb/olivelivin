@@ -560,6 +560,7 @@ const payload = {
   subtotal,
 
   // Ship
+  shipping_method: shippingMethod,
   shipping_fee: shippingFee,
   shipping_discount: voucherSummary.shippingDiscount,
 
@@ -774,6 +775,7 @@ const orderSuccess = {
   payment_method: paymentMethod,
 
   subtotal,
+  shippingMethod,
   shipping: shippingFee,
 
   total,
@@ -1704,6 +1706,7 @@ return;
                   <CheckoutVoucher
                     subtotal={subtotal}
                     shippingFee={shippingFee}
+                    shippingMethod={shippingMethod}
                     phone={phoneValue}
                     cartItems={items}
                     onChange={setVoucherSummary}

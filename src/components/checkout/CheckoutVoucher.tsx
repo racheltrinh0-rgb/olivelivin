@@ -24,6 +24,7 @@ import type {
 export default function CheckoutVoucher({
   subtotal,
   shippingFee,
+  shippingMethod,
   phone,
   cartItems,
   onChange,
@@ -94,13 +95,19 @@ export default function CheckoutVoucher({
       selectBestDiscountVoucher(
         normalVouchers,
         subtotal,
+        cartItems,
       ),
-    [normalVouchers, subtotal],
+    [normalVouchers, subtotal, cartItems],
   );
 
   const bestShipping = useMemo(
-    () => selectBestShippingVoucher(normalVouchers, subtotal),
-    [normalVouchers, subtotal],
+    () =>
+      selectBestShippingVoucher(
+        normalVouchers,
+        subtotal,
+        shippingMethod,
+      ),
+    [normalVouchers, subtotal, shippingMethod],
   );
 
   useEffect(() => {
@@ -110,7 +117,25 @@ export default function CheckoutVoucher({
   }, [autoSelect, bestDiscount, selectedDiscount]);
 
   useEffect(() => {
-    if (!selectedShipping && bestShipping) {
+    /*
+     * Shipping voucher phải re-evaluate mỗi khi:
+     * - subtotal thay đổi
+     * - shipping method thay đổi
+     * - danh sách voucher thay đổi
+     *
+     * Business rule:
+     * EXPRESS + đủ điều kiện -> ưu tiên EXPRESS voucher.
+     * EXPRESS + không đủ điều kiện -> fallback STANDARD.
+     * STANDARD -> chỉ STANDARD/generic voucher.
+     */
+    if (!bestShipping) {
+      if (selectedShipping !== null) {
+        setSelectedShipping(null);
+      }
+      return;
+    }
+
+    if (selectedShipping?.id !== bestShipping.id) {
       setSelectedShipping(bestShipping);
     }
   }, [bestShipping, selectedShipping]);
@@ -123,6 +148,8 @@ export default function CheckoutVoucher({
         vouchers,
         subtotal,
         shippingFee,
+        shippingMethod,
+        cartItems,
         selectedDiscount,
         selectedShipping,
       }),
@@ -130,6 +157,8 @@ export default function CheckoutVoucher({
       vouchers,
       subtotal,
       shippingFee,
+      shippingMethod,
+      cartItems,
       selectedDiscount,
       selectedShipping,
     ],
@@ -186,6 +215,32 @@ export default function CheckoutVoucher({
       }
     }
   }, [autoSelect, customerVouchers, selectedCustomerVoucher, subtotal]);
+
+  const isShippingVoucherDisabled = (
+    voucher: VoucherDisplay,
+  ) => {
+    if (voucher.type !== "shipping") {
+      return subtotal < voucher.min_order;
+    }
+
+    if (subtotal < voucher.min_order) {
+      return true;
+    }
+
+    /*
+     * Giao thường không được dùng voucher EXPRESS.
+     */
+    if (shippingMethod === "standard") {
+      return voucher.shipping_method === "express";
+    }
+
+    /*
+     * Hỏa tốc:
+     * - EXPRESS voucher: hợp lệ
+     * - STANDARD/generic: hợp lệ để fallback
+     */
+    return false;
+  };
 
   const finalTotal =
     subtotal +
@@ -671,6 +726,12 @@ export default function CheckoutVoucher({
         applyType,
 
         applyId,
+
+        shipping_method:
+          data.shipping_method === "express" ||
+          data.shipping_method === "standard"
+            ? data.shipping_method
+            : null,
       } as VoucherDisplay;
 
       /*
@@ -684,9 +745,25 @@ export default function CheckoutVoucher({
        */
       if (engineType === "shipping") {
         /*
-         * SLOT 1 chỉ có 1 Freeship.
-         * Nếu khách nhập mã Freeship mới, mã mới thay thế
-         * mã Freeship đang được chọn.
+         * Voucher EXPRESS chỉ được nhập khi đang chọn
+         * giao HỎA TỐC.
+         */
+        if (
+          shippingMethod === "standard" &&
+          mappedVoucher.shipping_method === "express"
+        ) {
+          toast.error(
+            "Voucher này chỉ áp dụng cho giao hỏa tốc.",
+          );
+          return;
+        }
+
+        /*
+         * Minimum order đã được kiểm tra phía trên.
+         *
+         * Với EXPRESS:
+         * - EXPRESS voucher được ưu tiên bởi engine.
+         * - STANDARD voucher được phép làm fallback.
          */
         setSelectedShipping(
           mappedVoucher,
@@ -714,7 +791,10 @@ export default function CheckoutVoucher({
 
       const appliedDiscount =
         engineType === "shipping"
-          ? shippingFee
+          ? Math.min(
+              Math.max(0, shippingFee),
+              Math.max(0, Number(mappedVoucher.value ?? 0)),
+            )
           : calculateVoucherDiscount(
               mappedVoucher,
               subtotal,
@@ -722,7 +802,7 @@ export default function CheckoutVoucher({
 
       toast.success(
         engineType === "shipping"
-          ? `Áp dụng mã ${code} thành công! Miễn phí vận chuyển.`
+          ? `Áp dụng mã ${code} thành công! Giảm ${appliedDiscount.toLocaleString("vi-VN")}đ phí vận chuyển.`
           : `Áp dụng mã ${code} thành công! Giảm ${appliedDiscount.toLocaleString("vi-VN")}đ.`,
       );
     } catch (error) {
@@ -827,7 +907,7 @@ export default function CheckoutVoucher({
                   voucher={voucher}
                   bestVoucher={bestShipping}
                   selected={selectedShipping?.id === voucher.id}
-                  disabled={subtotal < voucher.min_order}
+                  disabled={isShippingVoucherDisabled(voucher)}
                   saving={
                     summary.shippingVoucher?.id === voucher.id
                       ? summary.shippingDiscount

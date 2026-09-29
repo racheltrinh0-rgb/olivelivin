@@ -8,8 +8,11 @@ export type VoucherType =
   | "percent"
   | "shipping";
 
-export interface MarketingVoucher {
+export type ShippingMethod =
+  | "standard"
+  | "express";
 
+export interface MarketingVoucher {
   id: string;
 
   code: string;
@@ -48,10 +51,12 @@ export interface MarketingVoucher {
 
   apply_id: string | null;
 
+  shipping_method:
+    | ShippingMethod
+    | null;
 }
 
 export interface WelcomeVoucher {
-
   id: string;
 
   full_name: string;
@@ -69,11 +74,9 @@ export interface WelcomeVoucher {
   is_used: boolean;
 
   created_at: string;
-
 }
 
 export interface VoucherDisplay {
-
   id: string;
 
   code: string;
@@ -88,7 +91,7 @@ export interface VoucherDisplay {
 
   min_order: number;
 
-  max_discount: number;
+  max_discount: number | null;
 
   isWelcome: boolean;
 
@@ -106,10 +109,45 @@ export interface VoucherDisplay {
 
   applyId?: string | null;
 
+  /*
+   * SHIPPING METHOD
+   *
+   * null     = voucher cũ / generic
+   * standard = giao thường
+   * express  = hỏa tốc
+   */
+  shipping_method:
+    | ShippingMethod
+    | null;
+
+  /*
+   * Giữ lại các field runtime
+   * đang được Checkout sử dụng.
+   */
+  quantity?: number | null;
+
+  used?: number;
+
+  usage_per_customer?: number | null;
+
+  active?: boolean;
+
+  manual_apply?: boolean;
+
+  auto_apply?: boolean;
+
+  is_personal?: boolean;
+
+  personal?: boolean;
+
+  customer_voucher?: boolean;
+
+  voucher_group?: string | null;
+
+  category?: string | null;
 }
 
 export interface VoucherSummary {
-
   discountVoucher: VoucherDisplay | null;
 
   shippingVoucher: VoucherDisplay | null;
@@ -122,20 +160,23 @@ export interface VoucherSummary {
 
   totalDiscount: number;
 
+  customerVoucher?: VoucherDisplay | null;
+
+  customerDiscount?: number;
 }
 
 export interface CheckoutVoucherProps {
-
   subtotal: number;
 
   shippingFee: number;
 
+  shippingMethod: ShippingMethod;
+
   phone: string;
 
-  cartItems: any[]; // tạm thời dùng any
+  cartItems: any[];
 
   onChange: (
     summary: VoucherSummary
   ) => void;
-
 }

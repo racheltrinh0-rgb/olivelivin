@@ -26,6 +26,17 @@ export interface VoucherForm {
 
   type: string;
 
+  /**
+   * Phương thức áp dụng cho voucher freeship.
+   * null = voucher không giới hạn phương thức / voucher cũ
+   * standard = giao thường
+   * express = hỏa tốc
+   */
+  shipping_method:
+    | "standard"
+    | "express"
+    | null;
+
   value: number;
 
   min_order: number;
@@ -170,6 +181,31 @@ async function downloadPNG() {
       generateVoucherCode()
     );
 
+  }
+
+  function handleTypeChange(type: string) {
+    onChange({
+      ...voucher,
+      type,
+      shipping_method:
+        type === "shipping"
+          ? (voucher.shipping_method ?? null)
+          : null,
+    });
+  }
+
+  function handleSave() {
+    if (
+      voucher.type === "shipping" &&
+      !voucher.shipping_method
+    ) {
+      alert(
+        "Vui lòng chọn phương thức vận chuyển: Giao thường hoặc Hỏa tốc."
+      );
+      return;
+    }
+
+    onSave();
   }
 
   return (
@@ -373,10 +409,7 @@ Loại Voucher
 className="w-full rounded-xl border p-3"
 value={voucher.type}
 onChange={(e)=>
-update(
-"type",
-e.target.value
-)
+handleTypeChange(e.target.value)
 }
 >
 
@@ -413,6 +446,91 @@ Mua X tặng Y
 </select>
 
 </div>
+
+{/* SHIPPING METHOD */}
+{voucher.type === "shipping" && (
+  <div className="md:col-span-2">
+    <label className="mb-2 block text-sm font-medium">
+      Phương thức vận chuyển
+    </label>
+
+    <div className="grid gap-3 sm:grid-cols-2">
+      <button
+        type="button"
+        onClick={() =>
+          update("shipping_method", "standard")
+        }
+        className={`rounded-2xl border p-4 text-left transition ${
+          voucher.shipping_method === "standard"
+            ? "border-orange-500 bg-orange-50 ring-1 ring-orange-500"
+            : "border-neutral-200 hover:border-orange-300 hover:bg-orange-50/50"
+        }`}
+      >
+        <div className="flex items-start gap-3">
+          <span
+            className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+              voucher.shipping_method === "standard"
+                ? "border-orange-500"
+                : "border-neutral-300"
+            }`}
+          >
+            {voucher.shipping_method === "standard" && (
+              <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
+            )}
+          </span>
+
+          <div>
+            <p className="font-semibold text-neutral-900">
+              Giao thường
+            </p>
+            <p className="mt-1 text-sm text-neutral-500">
+              Voucher áp dụng cho phương thức giao hàng tiêu chuẩn.
+            </p>
+          </div>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        onClick={() =>
+          update("shipping_method", "express")
+        }
+        className={`rounded-2xl border p-4 text-left transition ${
+          voucher.shipping_method === "express"
+            ? "border-orange-500 bg-orange-50 ring-1 ring-orange-500"
+            : "border-neutral-200 hover:border-orange-300 hover:bg-orange-50/50"
+        }`}
+      >
+        <div className="flex items-start gap-3">
+          <span
+            className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+              voucher.shipping_method === "express"
+                ? "border-orange-500"
+                : "border-neutral-300"
+            }`}
+          >
+            {voucher.shipping_method === "express" && (
+              <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
+            )}
+          </span>
+
+          <div>
+            <p className="font-semibold text-neutral-900">
+              Hỏa tốc
+            </p>
+            <p className="mt-1 text-sm text-neutral-500">
+              Voucher áp dụng cho phương thức giao hàng hỏa tốc.
+            </p>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <p className="mt-2 text-xs text-neutral-500">
+      Có thể đặt đơn tối thiểu 999.000đ cho voucher hỏa tốc.
+    </p>
+  </div>
+)}
 
 <div>
 
@@ -939,7 +1057,7 @@ Number(e.target.value)
     </button>
 
     <button
-      onClick={onSave}
+      onClick={handleSave}
       className="
         rounded-xl
 

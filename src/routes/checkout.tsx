@@ -1973,6 +1973,46 @@ return;
 
                       <section>
                         <h4 className="text-[12px] font-semibold text-[#222222]">
+                          Giao hàng hỏa tốc
+                        </h4>
+
+                        <div className="mt-3 space-y-2">
+                          <div className="flex items-start justify-between gap-4 rounded-lg bg-[#F5F6F3] px-3 py-2.5">
+                            <span className="text-[10.5px] text-[#555853]">
+                              Đặt trước 17:00
+                            </span>
+                            <span className="max-w-[65%] text-right text-[10.5px] font-semibold leading-4 text-[#4F604E]">
+                              Xử lý và giao trong ngày
+                            </span>
+                          </div>
+
+                          <div className="flex items-start justify-between gap-4 rounded-lg bg-[#F5F6F3] px-3 py-2.5">
+                            <span className="text-[10.5px] text-[#555853]">
+                              Đặt sau 17:00
+                            </span>
+                            <span className="max-w-[65%] text-right text-[10.5px] font-semibold leading-4 text-[#4F604E]">
+                              Chuyển sang xử lý từ 09:00 ngày hôm sau
+                            </span>
+                          </div>
+
+                          <div className="flex items-start justify-between gap-4 rounded-lg bg-[#F5F6F3] px-3 py-2.5">
+                            <span className="text-[10.5px] text-[#555853]">
+                              Thời gian giao
+                            </span>
+                            <span className="max-w-[65%] text-right text-[10.5px] font-semibold leading-4 text-[#4F604E]">
+                              Trong vòng 2 giờ kể từ khi Olive Living xác nhận đơn hàng
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="mt-3 text-[10.5px] leading-[1.6] text-[#777B72]">
+                          Thời gian giao hỏa tốc có thể thay đổi tùy khu vực,
+                          tình trạng vận chuyển và thời điểm đơn hàng được xác nhận.
+                        </p>
+                      </section>
+
+                      <section>
+                        <h4 className="text-[12px] font-semibold text-[#222222]">
                           Trường hợp giao hàng chậm
                         </h4>
                         <p className="mt-2 text-[10.5px] leading-[1.6] text-[#5F625C]">

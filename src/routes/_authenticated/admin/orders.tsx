@@ -27,6 +27,12 @@ export const Route = createFileRoute("/_authenticated/admin/orders")({
   component: OrdersAdminPage,
 });
 
+function getShippingMethodLabel(method: string | null | undefined) {
+  if (method === "express" || method === "fast") return "Hỏa tốc";
+  if (method === "standard") return "Tiêu chuẩn";
+  return "—";
+}
+
 function OrdersAdminPage() {
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -756,12 +762,13 @@ function isMatchDate(orderDate: string) {
             className="grid items-center gap-x-3 border-b border-[#ECECE7] bg-[#FAFAF7] px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#8A8D84]"
             style={{
               gridTemplateColumns:
-                "minmax(0,1.45fr) minmax(0,1.12fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,1fr) minmax(0,1.12fr) minmax(0,1.05fr) minmax(64px,.62fr)",
+                "minmax(0,1.35fr) minmax(0,1.05fr) minmax(0,.95fr) minmax(0,.82fr) minmax(0,.9fr) minmax(0,.98fr) minmax(0,1.05fr) minmax(0,1fr) minmax(64px,.55fr)",
             }}
           >
             <div>Đơn hàng</div>
             <div>Khách hàng</div>
             <div>Thanh toán</div>
+            <div>Hình thức VC</div>
             <div>Voucher</div>
             <div className="text-right pr-2">Tổng tiền</div>
             <div className="pl-1">Trạng thái</div>
@@ -785,7 +792,7 @@ function isMatchDate(orderDate: string) {
                   }`}
                   style={{
                     gridTemplateColumns:
-                      "minmax(0,1.45fr) minmax(0,1.12fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,1fr) minmax(0,1.12fr) minmax(0,1.05fr) minmax(64px,.62fr)",
+                      "minmax(0,1.35fr) minmax(0,1.05fr) minmax(0,.95fr) minmax(0,.82fr) minmax(0,.9fr) minmax(0,.98fr) minmax(0,1.05fr) minmax(0,1fr) minmax(64px,.55fr)",
                   }}
                 >
                   {/* Order */}
@@ -838,6 +845,21 @@ function isMatchDate(orderDate: string) {
                         </span>
                       )}
                     </div>
+                  </div>
+
+                  {/* Shipping method */}
+                  <div className="min-w-0 pr-1">
+                    <span
+                      className={`inline-flex max-w-full items-center rounded-full border px-2 py-1 text-[9px] font-semibold ${
+                        order.shipping_method === "express" || order.shipping_method === "fast"
+                          ? "border-[#D7D9FA] bg-[#F4F4FF] text-[#6265A5]"
+                          : order.shipping_method === "standard"
+                            ? "border-[#E8E8E3] bg-[#F7F7F4] text-[#62665D]"
+                            : "border-[#E8E8E3] bg-[#FAFAF7] text-[#9A9D95]"
+                      }`}
+                    >
+                      {getShippingMethodLabel(order.shipping_method)}
+                    </span>
                   </div>
 
                   {/* Voucher */}
@@ -1049,6 +1071,15 @@ function isMatchDate(orderDate: string) {
                         {order.discount_voucher_code ||
                           order.shipping_voucher_code ||
                           "Không có"}
+                      </p>
+                    </div>
+
+                    <div className="col-span-2 rounded-xl border border-[#E8E8E3] bg-[#FAFAF7] px-3 py-2.5">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#9A9D95]">
+                        Hình thức vận chuyển
+                      </p>
+                      <p className="mt-1 text-[11px] font-semibold text-[#454941]">
+                        {getShippingMethodLabel(order.shipping_method)}
                       </p>
                     </div>
                   </div>
@@ -1351,6 +1382,15 @@ function isMatchDate(orderDate: string) {
                     </p>
                     <p className="mt-0.5 truncate text-[10px] font-semibold uppercase text-[#454941] sm:text-[11px]">
                       {selectedOrder.payment_method || "—"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-[7px] font-semibold uppercase tracking-[0.11em] text-[#A0A39B] sm:text-[9px]">
+                      Hình thức vận chuyển
+                    </p>
+                    <p className="mt-0.5 truncate text-[10px] font-semibold text-[#454941] sm:text-[11px]">
+                      {getShippingMethodLabel(selectedOrder.shipping_method)}
                     </p>
                   </div>
 

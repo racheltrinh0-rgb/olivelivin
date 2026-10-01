@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { formatVND } from "@/lib/format";
 import { getImageUrl } from "@/lib/storage";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Truck } from "lucide-react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
@@ -13,6 +13,7 @@ interface Product {
   image_url: string | null;
   stock?: number;
   color_preview?: string[];
+  express_available?: boolean;
 
   /**
    * Social proof fields.
@@ -148,7 +149,7 @@ function getSocialProof(product: Product) {
   };
 }
 
-export default function HomeProductCard({
+export function ProductCard({
   product,
   badge,
   highlight = false,
@@ -385,17 +386,62 @@ export default function HomeProductCard({
               {formatVND(originalPrice)}
             </div>
 
-            <div
-              className="
-                mt-0.5
-                text-[19px]
-                font-semibold
-                leading-tight
-                tracking-[-0.015em]
-                text-[#3A3733]
-              "
-            >
-              {formatVND(salePrice)}
+            <div className="mt-0.5 flex min-w-0 items-center gap-2">
+              <div
+                className="
+                  shrink-0
+                  text-[19px]
+                  font-semibold
+                  leading-none
+                  tracking-[-0.015em]
+                  text-[#3A3733]
+                "
+              >
+                {formatVND(salePrice)}
+              </div>
+
+              {product.express_available === true && (
+                <span
+                  className="
+                    inline-flex
+                    h-[22px]
+                    shrink-0
+                    items-center
+                    gap-1
+                    rounded-full
+                    border
+                    border-[#E8D7C8]
+                    bg-[#FFF9F4]
+                    px-2
+                    text-[8px]
+                    font-semibold
+                    leading-none
+                    tracking-[0.01em]
+                    text-[#C85A1A]
+                    shadow-[0_1px_5px_rgba(120,70,35,0.05)]
+                  "
+                  title="Có hỗ trợ giao hỏa tốc"
+                >
+                  <span
+                    className="
+                      flex
+                      h-[14px]
+                      w-[14px]
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-[#FCEBDD]
+                    "
+                  >
+                    <Truck
+                      className="h-[9px] w-[9px]"
+                      strokeWidth={2}
+                    />
+                  </span>
+                  Hỏa tốc
+                </span>
+              )}
             </div>
           </div>
 
@@ -503,3 +549,5 @@ export default function HomeProductCard({
     </Link>
   );
 }
+
+export default ProductCard;

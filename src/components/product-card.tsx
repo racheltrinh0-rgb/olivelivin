@@ -1,23 +1,25 @@
 import { Link } from "@tanstack/react-router";
-import { Star, ShoppingBag, Heart } from "lucide-react";
-
 import { formatVND } from "@/lib/format";
 import { getImageUrl } from "@/lib/storage";
+import { ShoppingCart, Truck } from "lucide-react";
+import { motion } from "framer-motion";
+import clsx from "clsx";
 
-export interface ProductCardProduct {
+interface Product {
   id: string;
   slug: string;
   name: string;
   price: number | string;
-
-  old_price?: number | string;
-
-  discount_percent?: number;
   image_url: string | null;
   stock?: number;
+  color_preview?: string[];
+  express_available?: boolean;
 
-  best_seller?: boolean;
-
+  /**
+   * Social proof fields.
+   * BestSeller.tsx injects these values so every product
+   * can have different rating / review / sold numbers.
+   */
   rating?: number;
   reviewCount?: number;
   reviews?: number;
@@ -26,21 +28,32 @@ export interface ProductCardProduct {
   sold?: number;
   soldCount?: number;
   sold_count?: number;
+}
 
-  likes?: number;
-
+interface Props {
+  product: Product;
   badge?: string;
+  highlight?: boolean;
 }
 
 /**
- * Tạo số ổn định theo từng sản phẩm.
- * Không dùng Math.random() vì giá trị sẽ thay đổi mỗi lần component render.
+ * ============================================================
+ * STABLE RANDOM FALLBACK
+ * ============================================================
+ *
+ * Used only when the product does not already have
+ * rating / review / sold values.
+ *
+ * The result is deterministic:
+ * - Same product = same numbers
+ * - Reload does not change the numbers
+ * - Different products get different numbers
  */
-function stableNumber(
+function stableRandom(
   seed: string,
   min: number,
-  max: number,
-): number {
+  max: number
+) {
   let hash = 0;
 
   for (let i = 0; i < seed.length; i++) {
@@ -51,332 +64,507 @@ function stableNumber(
   const normalized = Math.abs(Math.sin(hash)) % 1;
 
   return Math.floor(
-    min + normalized * (max - min + 1),
-  );
+    normalized * (max - min + 1)
+  ) + min;
 }
 
-function getProductSocialProof(product: ProductCardProduct) {
-  const seed = String(product.id || product.slug || product.name);
+function getSocialProof(product: Product) {
+  const seed = String(
+    product?.id ||
+      product?.slug ||
+      product?.name ||
+      "product"
+  );
 
-  // Ưu tiên dữ liệu thật nếu database/component đã truyền vào.
+  const ratingOptions = [
+    4.7,
+    4.8,
+    4.9,
+    5.0,
+  ];
+
+  const ratingIndex = stableRandom(
+    `${seed}-rating`,
+    0,
+    ratingOptions.length - 1
+  );
+
+  const generatedRating =
+    ratingOptions[ratingIndex];
+
+  const generatedReviews = stableRandom(
+    `${seed}-reviews`,
+    24,
+    386
+  );
+
+  const generatedSold = stableRandom(
+    `${seed}-sold`,
+    48,
+    980
+  );
+
+  /**
+   * Priority:
+   *
+   * 1. rating
+   * 2. reviewCount
+   * 3. reviews
+   * 4. review_count
+   *
+   * If none exists -> deterministic fallback.
+   */
   const rating =
     typeof product.rating === "number"
       ? product.rating
-      : [4.7, 4.8, 4.9, 5.0][
-          stableNumber(seed + "-rating", 0, 3)
-        ];
+      : generatedRating;
 
-  const reviewCount =
-    Number(
-      product.reviewCount ??
-        product.reviews ??
-        product.review_count ??
-        0,
-    ) > 0
-      ? Number(
-          product.reviewCount ??
-            product.reviews ??
-            product.review_count,
-        )
-      : stableNumber(seed + "-reviews", 18, 286);
+  const reviews =
+    typeof product.reviewCount === "number"
+      ? product.reviewCount
+      : typeof product.reviews === "number"
+        ? product.reviews
+        : typeof product.review_count === "number"
+          ? product.review_count
+          : generatedReviews;
 
+  /**
+   * BestSeller injects soldCount / sold_count.
+   * We intentionally prioritize those over product.sold
+   * so the UI can display the randomized social-proof value.
+   */
   const sold =
-    Number(
-      product.sold ??
-        product.soldCount ??
-        product.sold_count ??
-        0,
-    ) > 0
-      ? Number(
-          product.sold ??
-            product.soldCount ??
-            product.sold_count,
-        )
-      : stableNumber(seed + "-sold", 32, 420);
+    typeof product.soldCount === "number"
+      ? product.soldCount
+      : typeof product.sold_count === "number"
+        ? product.sold_count
+        : typeof product.sold === "number"
+          ? product.sold
+          : generatedSold;
 
   return {
     rating,
-    reviewCount,
+    reviews,
     sold,
   };
 }
 
 export function ProductCard({
   product,
-  variant = "default",
-}: {
-  product: ProductCardProduct;
-  variant?: "default" | "best-seller";
-}) {
-  const oldPrice = Number(product.old_price ?? 0);
-  const price = Number(product.price);
+  badge,
+  highlight = false,
+}: Props) {
+  const salePrice = Number(product.price);
+  const originalPrice = Math.round(
+    salePrice * 1.35
+  );
 
-  const socialProof = getProductSocialProof(product);
+  /**
+   * ============================================================
+   * SOCIAL PROOF
+   * ============================================================
+   */
+  const socialProof =
+    getSocialProof(product);
 
   return (
     <Link
       to="/products/$slug"
-      params={{ slug: product.slug }}
-      className={`
-        group
-        relative
-        block
-        overflow-hidden
-        rounded-[10px]
-        border
-        border-[#E8E4DD]
-        bg-white
-        transition-all
-        duration-300
-        hover:-translate-y-[2px]
-        hover:shadow-md
-        ${
-          variant === "best-seller"
-            ? "border-[#F0C8A8]"
-            : ""
-        }
-      `}
+      params={{
+        slug: product.slug,
+      }}
+      className="group block h-full"
     >
-      {/* =================================================
-          IMAGE
-      ================================================== */}
-
-      <div
-        className="
-          relative
-          aspect-[1/0.92]
-          overflow-hidden
-          rounded-t-[10px]
-          bg-[#F7F5F2]
-        "
+      <article
+        className={clsx(
+          `
+            flex
+            h-full
+            flex-col
+            overflow-hidden
+            rounded-[20px]
+            border
+            border-[#E8E1D8]
+            bg-[#FFFDFC]
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:border-[#D9CEC0]
+            hover:shadow-[0_12px_30px_rgba(74,62,48,0.08)]
+          `,
+          highlight &&
+            "border-[#D8C8B7]"
+        )}
       >
-        {/* BEST SELLER */}
-        {variant === "best-seller" && (
-          <span
-            className="
-              absolute
-              left-2
-              top-2
-              z-20
-              rounded-[5px]
-              bg-[#FF7E3F]
-              px-2
-              py-1
-              text-[8px]
-              font-bold
-              tracking-[0.06em]
-              text-white
-            "
-          >
-            BEST SELLER
-          </span>
-        )}
+        {/* ======================================================
+            PRODUCT IMAGE
+        ====================================================== */}
 
-        {/* LIKE */}
-        {variant === "best-seller" && (
-          <div
-            className="
-              absolute
-              right-2
-              top-2
-              z-20
-              flex
-              items-center
-              gap-1
-              rounded-[5px]
-              bg-white/95
-              px-1.5
-              py-1
-              shadow-sm
-              backdrop-blur
-            "
-          >
-            <Heart
-              size={11}
-              className="fill-[#EF4444] text-[#EF4444]"
-            />
-
-            <span className="text-[9px] font-medium text-neutral-700">
-              {product.likes ?? stableNumber(
-                String(product.id) + "-likes",
-                24,
-                188,
-              )}
-            </span>
-          </div>
-        )}
-
-        {/* SẮP HẾT */}
-        {product.stock !== undefined &&
-          product.stock <= 3 &&
-          product.stock > 0 && (
+        <div
+          className="
+            relative
+            aspect-square
+            overflow-hidden
+            bg-[#F6F3EE]
+          "
+        >
+          {product.express_available === true && (
             <span
               className="
                 absolute
-                left-2
-                top-2
-                z-10
-                rounded-[5px]
-                bg-white/90
-                px-1.5
-                py-1
+                right-3
+                top-3
+                z-30
+                inline-flex
+                h-[24px]
+                items-center
+                gap-1.5
+                rounded-full
+                border
+                border-[#E8D7C8]
+                bg-[#FFF9F4]/95
+                px-2.5
                 text-[8px]
-                font-medium
-                text-neutral-700
+                font-semibold
+                leading-none
+                tracking-[0.01em]
+                text-[#C85A1A]
+                shadow-[0_2px_8px_rgba(120,70,35,0.08)]
+                backdrop-blur-[2px]
+                max-[480px]:right-2
+                max-[480px]:top-2
+                max-[480px]:h-[22px]
+                max-[480px]:px-2
+                max-[480px]:text-[7.5px]
               "
+              title="Có hỗ trợ giao hỏa tốc"
             >
-              Sắp hết
+              <span
+                className="
+                  flex
+                  h-[14px]
+                  w-[14px]
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#FCEBDD]
+                "
+              >
+                <Truck
+                  className="h-[9px] w-[9px]"
+                  strokeWidth={2}
+                />
+              </span>
+              <span className="whitespace-nowrap">
+                Hỏa tốc
+              </span>
             </span>
           )}
 
-        {/* HẾT HÀNG */}
-        {product.stock === 0 && (
-          <span
+          {badge && (
+            <span
+              className="
+                absolute
+                left-4
+                top-4
+                z-20
+                rounded-full
+                border
+                border-[#E7DED3]
+                bg-[#FBF8F3]/95
+                px-3
+                py-1.5
+                text-[9px]
+                font-medium
+                uppercase
+                tracking-[0.14em]
+                text-[#6B6258]
+                shadow-[0_2px_8px_rgba(74,62,48,0.05)]
+              "
+            >
+              {badge}
+            </span>
+          )}
+
+          {(product.stock ?? 99) <= 5 && (
+            <span
+              className={clsx(
+                `
+                  absolute
+                  right-4
+                  z-20
+                  rounded-full
+                  border
+                  border-[#E7DED3]
+                  bg-white/90
+                  px-3
+                  py-1.5
+                  text-[9px]
+                  font-medium
+                  text-[#756C63]
+                  shadow-[0_2px_8px_rgba(74,62,48,0.04)]
+                  max-[480px]:right-2
+                  max-[480px]:px-2.5
+                  max-[480px]:py-1
+                  max-[480px]:text-[8px]
+                `,
+                product.express_available
+                  ? "top-11 max-[480px]:top-9"
+                  : "top-4 max-[480px]:top-2"
+              )}
+            >
+              Còn {product.stock}
+            </span>
+          )}
+
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img
+              src={
+                product.image_url
+                  ? getImageUrl(
+                      product.image_url
+                    )
+                  : ""
+              }
+              alt={product.name}
+              loading="lazy"
+              className="
+                h-full
+                w-full
+                object-cover
+                transition-transform
+                duration-500
+                ease-out
+                group-hover:scale-[1.025]
+              "
+            />
+          </div>
+        </div>
+
+        {/* ======================================================
+            CONTENT
+        ====================================================== */}
+
+        <div
+          className="
+            flex
+            flex-1
+            flex-col
+            px-4
+            pb-4
+            pt-4
+            lg:px-5
+            lg:pb-5
+          "
+        >
+          {/* ====================================================
+              PRODUCT NAME
+          ==================================================== */}
+
+          <h3
             className="
-              absolute
-              left-2
-              top-2
-              z-10
-              rounded-[5px]
-              bg-neutral-900/85
-              px-1.5
-              py-1
-              text-[8px]
+              line-clamp-2
+              min-h-[40px]
+              text-[14px]
               font-medium
-              text-white
+              leading-[1.45]
+              tracking-[-0.005em]
+              text-[#393530]
             "
           >
-            Hết hàng
-          </span>
-        )}
+            {product.name}
+          </h3>
 
-        {/* PRODUCT IMAGE */}
-        {product.image_url && (
-          <img
-            src={getImageUrl(product.image_url, "card")}
-            alt={product.name}
-            loading="lazy"
-            className="
-              h-full
-              w-full
-              object-cover
-              transition-transform
-              duration-500
-              group-hover:scale-[1.02]
-            "
-          />
-        )}
-      </div>
+          {/* ====================================================
+              RATING + COLORS
+          ==================================================== */}
 
-      {/* =================================================
-          PRODUCT INFO
-      ================================================== */}
+          <div className="mt-2.5 flex min-h-[18px] items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <span
+                className="
+                  text-[10px]
+                  tracking-[1px]
+                  text-[#B49A63]
+                "
+                aria-label={`Đánh giá ${socialProof.rating.toFixed(1)} trên 5`}
+              >
+                ★★★★★
+              </span>
 
-      <div className="bg-white px-2.5 pb-2.5 pt-2">
+              <span className="text-[10px] text-[#6F6861]">
+                {socialProof.rating.toFixed(1)}
+              </span>
 
-        {/* PRODUCT NAME */}
-        <h3
-          className="
-            line-clamp-2
-            min-h-[30px]
-            text-[11px]
-            font-semibold
-            uppercase
-            leading-[15px]
-            text-[#242424]
-          "
-        >
-          {product.name}
-        </h3>
+              <span className="text-[10px] text-[#AAA29A]">
+                ({socialProof.reviews})
+              </span>
+            </div>
 
-        {/* RATING */}
-        <div className="mt-1 flex items-center gap-1">
-          <Star
-            size={9}
-            className="fill-[#F4B400] text-[#F4B400]"
-          />
+            {product.color_preview?.length ? (
+              <div className="flex items-center gap-1">
+                {product.color_preview
+                  .slice(0, 3)
+                  .map((color, index) => (
+                    <span
+                      key={`${product.id}-${index}`}
+                      className="
+                        h-3
+                        w-3
+                        rounded-full
+                        border
+                        border-white
+                        shadow-[0_1px_3px_rgba(0,0,0,0.12)]
+                        ring-1
+                        ring-[#DDD6CE]
+                      "
+                      style={{
+                        backgroundColor:
+                          color,
+                      }}
+                    />
+                  ))}
 
-          <span className="text-[9px] font-medium text-neutral-700">
-            {socialProof.rating.toFixed(1)}
-          </span>
-
-          <span className="text-[9px] text-neutral-400">
-            · {socialProof.reviewCount} đánh giá
-          </span>
-        </div>
-
-        {/* SOLD */}
-        <p className="mt-0.5 text-[9px] text-neutral-500">
-          Đã bán {socialProof.sold}
-        </p>
-
-        {/* OLD PRICE */}
-        {oldPrice > price && (
-          <p className="mt-1 text-[9px] text-neutral-400 line-through">
-            {formatVND(oldPrice)}
-          </p>
-        )}
-
-        {/* CURRENT PRICE */}
-        <p
-          className="
-            mt-0.5
-            text-[15px]
-            font-semibold
-            leading-5
-            tracking-tight
-            text-[#31966F]
-          "
-        >
-          {formatVND(price)}
-        </p>
-
-        {/* ACTION */}
-        <div className="mt-1.5 flex gap-1">
-
-          {/* BUY */}
-          <div
-            className="
-              flex
-              h-7
-              flex-1
-              items-center
-              justify-center
-              rounded-[6px]
-              bg-[#DDF3E7]
-              text-[9px]
-              font-semibold
-              text-[#62A982]
-              transition-colors
-              group-hover:bg-[#CDEBDD]
-            "
-          >
-            Mua ngay
+                {product.color_preview
+                  .length > 3 && (
+                  <span className="ml-0.5 text-[9px] text-[#9A928A]">
+                    +
+                    {product
+                      .color_preview
+                      .length - 3}
+                  </span>
+                )}
+              </div>
+            ) : null}
           </div>
 
-          {/* CART */}
-          <div
-            className="
-              flex
-              h-7
-              w-7
-              shrink-0
-              items-center
-              justify-center
-              rounded-[6px]
-              border
-              border-[#D6E8DC]
-              bg-[#F7FBF8]
-              text-[#62A982]
-              transition-colors
-              group-hover:bg-[#DDF3E7]
-            "
-          >
-            <ShoppingBag size={12} />
+          {/* ====================================================
+              PRICE
+          ==================================================== */}
+
+          <div className="mt-3">
+            <div className="text-[10px] text-[#A9A19A] line-through">
+              {formatVND(originalPrice)}
+            </div>
+
+            <div
+              className="
+                mt-0.5
+                text-[19px]
+                font-semibold
+                leading-tight
+                tracking-[-0.015em]
+                text-[#3A3733]
+              "
+            >
+              {formatVND(salePrice)}
+            </div>
           </div>
 
+          {/* ====================================================
+              SERVICE INFO + SOLD
+          ==================================================== */}
+
+          <div
+            className="
+              mt-3
+              flex
+              min-w-0
+              items-center
+              gap-2
+              text-[10px]
+              text-[#81786F]
+            "
+          >
+            <span className="shrink-0">
+              Freeship
+            </span>
+
+            <span className="text-[#C8C0B8]">
+              ·
+            </span>
+
+            <span className="shrink-0">
+              Đổi trả 15 ngày
+            </span>
+
+            <span className="text-[#C8C0B8]">
+              ·
+            </span>
+
+            <span
+              className="truncate"
+              title={`${socialProof.sold.toLocaleString(
+                "vi-VN"
+              )} lượt mua`}
+            >
+              {socialProof.sold.toLocaleString(
+                "vi-VN"
+              )} đã bán
+            </span>
+          </div>
+
+          {/* ====================================================
+              CTA
+          ==================================================== */}
+
+          <div className="mt-4 flex items-center gap-2">
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{
+                scale: 0.985,
+              }}
+              className="
+                h-10
+                flex-1
+                rounded-xl
+                bg-[#5E6754]
+                px-3
+                text-[11px]
+                font-medium
+                tracking-[0.01em]
+                text-white
+                transition-colors
+                duration-200
+                hover:bg-[#4F5847]
+              "
+            >
+              Mua ngay
+            </motion.button>
+
+            <button
+              type="button"
+              aria-label="Thêm vào giỏ hàng"
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-[#DDD5CC]
+                bg-[#FAF8F5]
+                text-[#5E5A55]
+                transition-all
+                duration-200
+                hover:border-[#5E6754]
+                hover:bg-[#5E6754]
+                hover:text-white
+              "
+            >
+              <ShoppingCart
+                size={16}
+                strokeWidth={1.7}
+              />
+            </button>
+          </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }
+
+export default ProductCard;

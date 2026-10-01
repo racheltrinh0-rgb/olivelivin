@@ -82,7 +82,8 @@ function ShopPage() {
           category_id,
           best_seller,
           created_at,
-          image_url
+          image_url,
+          express_available
         `);
 
       if (sp.sort === "best") {
@@ -105,6 +106,8 @@ function ShopPage() {
         data?.map((item: any) => ({
           ...item,
           image_url: item.image_url,
+          express_available:
+            item.express_available === true,
         })) ?? []
       );
     },
@@ -893,6 +896,8 @@ function ShopPage() {
                       ...p,
                       old_price:
                         p.compare_at_price,
+                      express_available:
+                        p.express_available === true,
                     }}
                   />
                 ))}

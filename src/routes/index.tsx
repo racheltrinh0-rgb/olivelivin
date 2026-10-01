@@ -61,8 +61,8 @@ const homeData = queryOptions({
       supabase
   .from("products")
   .select(
-    "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
-  )
+  "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
+)
   .eq("featured", true)
   .or("new_arrival.eq.false,new_arrival.is.null")
   .limit(9),
@@ -76,7 +76,7 @@ const homeData = queryOptions({
       supabase
         .from("products")
         .select(
-          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
         )
         .eq("new_arrival", true)
         .order("created_at", { ascending: false })
@@ -90,7 +90,7 @@ const homeData = queryOptions({
       supabase
         .from("products")
         .select(
-          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
         )
         .eq(
           "category_id",
@@ -106,7 +106,7 @@ const homeData = queryOptions({
       supabase
         .from("products")
         .select(
-          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
         )
         .eq("top_seller", true),
 
@@ -118,7 +118,7 @@ const homeData = queryOptions({
       supabase
         .from("products")
         .select(
-          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
         )
         .lte("price", 399000)
         .order("price")
@@ -132,7 +132,7 @@ const homeData = queryOptions({
       supabase
         .from("products")
         .select(
-          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
         )
         .or(
           "name.ilike.%Memphis 32%,name.ilike.%Memphis 20%"
@@ -146,7 +146,7 @@ const homeData = queryOptions({
       supabase
         .from("products")
         .select(
-          "id,slug,name,price,compare_at_price,stock,image_url,color_preview"
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
         )
         .or(
           "name.ilike.%Montara%,name.ilike.%AERO%,name.ilike.%Curva%"
@@ -160,7 +160,7 @@ const homeData = queryOptions({
       supabase
         .from("products")
         .select(
-          "id,slug,name,price,compare_at_price,stock"
+          "id,slug,name,price,compare_at_price,stock,image_url,color_preview,express_available"
         )
         .or(
           "name.ilike.%HALF ROUND%,name.ilike.%MEMPHIS 20%,name.ilike.%BAUHAUS%,name.ilike.%FISHING%"
@@ -225,6 +225,8 @@ const homeData = queryOptions({
         ...p,
         old_price:
           p.compare_at_price,
+        express_available:
+          p.express_available === true,
       }));
 
 

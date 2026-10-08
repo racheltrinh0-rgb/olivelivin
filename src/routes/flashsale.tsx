@@ -510,20 +510,27 @@ function FlashSalePage() {
                 }
 
                 return (
-                  <FlashSaleCard
-                    key={
-                      item.product_id
-                    }
-                    product={{
-                      ...product,
 
-                      discount_percent:
-                        Number(
-                          flashSale.discount_percent ??
-                            0
-                        ),
-                    }}
-                  />
+                  <FlashSaleCard
+  key={item.product_id}
+  product={{
+    ...product,
+
+    discount_percent:
+      Number(
+        flashSale.discount_percent ?? 0
+      ),
+
+    flash_sale_start_at:
+      flashSale.start_at,
+
+    flash_sale_end_at:
+      flashSale.end_at,
+
+    flash_sale_title:
+      flashSale.title,
+  }}
+/>
                 );
               }
             )

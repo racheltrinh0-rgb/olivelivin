@@ -1,5 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import {
+  X,
+  Zap,
+} from "lucide-react";
+
 import { supabase } from "@/integrations/supabase/client";
 
 /* ============================================================
@@ -15,6 +20,7 @@ type CountdownState = {
 
 type ProductItem = {
   product_id: string;
+
   products?: {
     id: string;
     name: string;
@@ -30,13 +36,18 @@ type ProductItem = {
 ============================================================ */
 
 /**
- * Rút gọn tên sản phẩm để card không bị cao.
+ * Rút gọn tên sản phẩm.
  *
  * Ví dụ:
- * "ĐÈN CAO ĐỨNG HALF ROUND SINGLE – THIẾT KẾ TỐI GIẢN"
+ *
+ * ĐÈN CAO ĐỨNG HALF ROUND SINGLE
+ * – THIẾT KẾ TỐI GIẢN
+ *
  * =>
- * "ĐÈN CAO ĐỨNG HALF ROUND SINGLE"
+ *
+ * ĐÈN CAO ĐỨNG HALF ROUND SINGLE
  */
+
 function getShortProductName(
   name?: string | null
 ) {
@@ -44,34 +55,53 @@ function getShortProductName(
     return "";
   }
 
-  let result = name.trim();
+  let result =
+    name.trim();
 
-  // Loại bỏ phần sau dấu "–"
-  result = result.split("–")[0];
+  result =
+    result.split("–")[0];
 
-  // Loại bỏ phần sau dấu "—"
-  result = result.split("—")[0];
+  result =
+    result.split("—")[0];
 
-  // Loại bỏ một số hậu tố thường gặp
-  result = result.replace(
-    /\s*-\s*THIẾT KẾ.*$/i,
-    ""
-  );
+  result =
+    result.replace(
+      /\s*-\s*THIẾT KẾ.*$/i,
+      ""
+    );
 
-  result = result.replace(
-    /\s*-\s*PHONG CÁCH.*$/i,
-    ""
-  );
+  result =
+    result.replace(
+      /\s*-\s*PHONG CÁCH.*$/i,
+      ""
+    );
 
-  result = result.replace(
-    /\s*\|\s*.*$/i,
-    ""
-  );
+  result =
+    result.replace(
+      /\s*-\s*VÂN GỖ.*$/i,
+      ""
+    );
+
+  result =
+    result.replace(
+      /\s*-\s*NGHỆ THUẬT.*$/i,
+      ""
+    );
+
+  result =
+    result.replace(
+      /\s*\|\s*.*$/i,
+      ""
+    );
 
   return result
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/* ============================================================
+   FORMAT PRICE
+============================================================ */
 
 function formatPrice(
   value: number
@@ -80,6 +110,85 @@ function formatPrice(
     value.toLocaleString("vi-VN") +
     "đ"
   );
+}
+
+/* ============================================================
+   FORMAT DATE
+============================================================ */
+
+function formatFlashSaleDate(
+  date?: string | null
+) {
+  if (!date) {
+    return "";
+  }
+
+  return new Date(
+    date
+  ).toLocaleString(
+    "vi-VN",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
+}
+
+/* ============================================================
+   COUNTDOWN CALCULATOR
+============================================================ */
+
+function calculateCountdown(
+  target?: string | null
+): CountdownState {
+  if (!target) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  }
+
+  const diff =
+    new Date(target).getTime() -
+    Date.now();
+
+  if (diff <= 0) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  }
+
+  const totalSeconds =
+    Math.floor(
+      diff / 1000
+    );
+
+  return {
+    days: Math.floor(
+      totalSeconds / 86400
+    ),
+
+    hours: Math.floor(
+      (totalSeconds % 86400) /
+        3600
+    ),
+
+    minutes: Math.floor(
+      (totalSeconds % 3600) /
+        60
+    ),
+
+    seconds:
+      totalSeconds % 60,
+  };
 }
 
 /* ============================================================
@@ -102,6 +211,20 @@ export default function FlashSale() {
     });
 
   /* ==========================================================
+     POPUP STATE
+  ========================================================== */
+
+  const [
+    showStartPopup,
+    setShowStartPopup,
+  ] = useState(false);
+
+  const [
+    selectedProductName,
+    setSelectedProductName,
+  ] = useState("");
+
+  /* ==========================================================
      LOAD FLASH SALE
   ========================================================== */
 
@@ -114,48 +237,80 @@ export default function FlashSale() {
   ========================================================== */
 
   useEffect(() => {
-    if (!sale?.end_at) {
+    if (
+      !sale?.start_at &&
+      !sale?.end_at
+    ) {
       return;
     }
 
     const updateCountdown = () => {
-      const diff =
-        new Date(
-          sale.end_at
-        ).getTime() -
+      const now =
         Date.now();
 
-      if (diff <= 0) {
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+      const startTime =
+        sale?.start_at
+          ? new Date(
+              sale.start_at
+            ).getTime()
+          : null;
+
+      const endTime =
+        sale?.end_at
+          ? new Date(
+              sale.end_at
+            ).getTime()
+          : null;
+
+      /*
+       * ==========================================
+       * CHƯA BẮT ĐẦU
+       * ==========================================
+       */
+
+      if (
+        startTime !== null &&
+        now < startTime
+      ) {
+        setTimeLeft(
+          calculateCountdown(
+            sale.start_at
+          )
+        );
 
         return;
       }
 
-      const totalSeconds =
-        Math.floor(diff / 1000);
+      /*
+       * ==========================================
+       * ĐANG FLASH SALE
+       * ==========================================
+       */
+
+      if (
+        endTime !== null &&
+        now < endTime
+      ) {
+        setTimeLeft(
+          calculateCountdown(
+            sale.end_at
+          )
+        );
+
+        return;
+      }
+
+      /*
+       * ==========================================
+       * ĐÃ KẾT THÚC
+       * ==========================================
+       */
 
       setTimeLeft({
-        days: Math.floor(
-          totalSeconds / 86400
-        ),
-
-        hours: Math.floor(
-          (totalSeconds % 86400) /
-            3600
-        ),
-
-        minutes: Math.floor(
-          (totalSeconds % 3600) /
-            60
-        ),
-
-        seconds:
-          totalSeconds % 60,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
       });
     };
 
@@ -168,12 +323,17 @@ export default function FlashSale() {
       );
 
     return () => {
-      window.clearInterval(timer);
+      window.clearInterval(
+        timer
+      );
     };
-  }, [sale]);
+  }, [
+    sale?.start_at,
+    sale?.end_at,
+  ]);
 
   /* ==========================================================
-     LOAD FLASH SALE + PRODUCTS
+     LOAD SALE + PRODUCTS
   ========================================================== */
 
   async function loadFlashSale() {
@@ -230,7 +390,9 @@ export default function FlashSale() {
       return;
     }
 
-    setSale(flashSale);
+    setSale(
+      flashSale
+    );
 
     /* ========================================================
        LOAD PRODUCTS
@@ -238,9 +400,12 @@ export default function FlashSale() {
 
     const {
       data: saleProducts,
-      error: productsError,
+      error:
+        productsError,
     } = await supabase
-      .from("flash_sale_products")
+      .from(
+        "flash_sale_products"
+      )
       .select(`
         product_id,
         products(
@@ -276,7 +441,7 @@ export default function FlashSale() {
   }
 
   /* ==========================================================
-     NO ACTIVE SALE
+     NO SALE
   ========================================================== */
 
   if (!sale) {
@@ -284,7 +449,43 @@ export default function FlashSale() {
   }
 
   /* ==========================================================
-     VARIABLES
+     SALE STATUS
+  ========================================================== */
+
+  const now =
+    Date.now();
+
+  const startTime =
+    sale?.start_at
+      ? new Date(
+          sale.start_at
+        ).getTime()
+      : null;
+
+  const endTime =
+    sale?.end_at
+      ? new Date(
+          sale.end_at
+        ).getTime()
+      : null;
+
+  const saleHasStarted =
+    startTime === null ||
+    now >= startTime;
+
+  const saleHasEnded =
+    endTime !== null &&
+    now >= endTime;
+
+  const countdownLabel =
+    saleHasEnded
+      ? "Flash Sale đã kết thúc"
+      : saleHasStarted
+        ? "Kết thúc sau"
+        : "Bắt đầu sau";
+
+  /* ==========================================================
+     COLORS
   ========================================================== */
 
   const accentColor =
@@ -293,605 +494,632 @@ export default function FlashSale() {
 
   const discount =
     Number(
-      sale?.discount_percent ?? 0
+      sale?.discount_percent ??
+        0
     );
+
+  /* ==========================================================
+     BUY NOW
+  ========================================================== */
+
+  const handleBuyNow = (
+    product: ProductItem["products"]
+  ) => {
+    if (!product) {
+      return;
+    }
+
+    /*
+     * ==========================================
+     * CHƯA TỚI FLASH SALE
+     * ==========================================
+     */
+
+    if (!saleHasStarted) {
+      setSelectedProductName(
+        getShortProductName(
+          product.name
+        )
+      );
+
+      setShowStartPopup(
+        true
+      );
+
+      return;
+    }
+
+    /*
+     * ==========================================
+     * ĐÃ TỚI FLASH SALE
+     *
+     * Đi thẳng /cart
+     *
+     * Không quay lại /flashsale
+     * ==========================================
+     */
+
+    window.location.href =
+      "/cart";
+  };
 
   /* ==========================================================
      RENDER
   ========================================================== */
 
   return (
-    <section
-      className="
-        w-full
-        py-7
-        sm:py-9
-        lg:py-12
-      "
-    >
-      <div
+    <>
+      <section
         className="
-          mx-auto
           w-full
-          max-w-[1440px]
-          px-4
-          sm:px-6
-          lg:px-8
+          py-7
+          sm:py-9
+          lg:py-12
         "
       >
-
-        {/* ==================================================
-            MAIN CONTAINER
-        ================================================== */}
-
         <div
           className="
-            overflow-hidden
-            rounded-[20px]
-            bg-[#FAF9F6]
+            mx-auto
+            w-full
+            max-w-[1440px]
             px-4
-            py-5
-            sm:rounded-[24px]
             sm:px-6
-            sm:py-6
             lg:px-8
-            lg:py-7
           "
         >
 
           {/* ==================================================
-              HEADER
+              MAIN CONTAINER
           ================================================== */}
 
           <div
             className="
-              flex
-              items-center
-              justify-between
-              gap-4
+              overflow-hidden
+              rounded-[20px]
+              bg-[#FAF9F6]
+              px-4
+              py-5
+              sm:rounded-[24px]
+              sm:px-6
+              sm:py-6
+              lg:px-8
+              lg:py-7
             "
           >
 
-            {/* LABEL */}
+            {/* ==================================================
+                HEADER
+            ================================================== */}
 
             <div
               className="
                 flex
-                min-w-0
                 items-center
-                gap-2
+                justify-between
+                gap-4
               "
             >
-              <span
+
+              {/* LABEL */}
+
+              <div
                 className="
-                  h-1.5
-                  w-1.5
+                  flex
+                  min-w-0
+                  items-center
+                  gap-2
+                "
+              >
+                <span
+                  className="
+                    h-1.5
+                    w-1.5
+                    shrink-0
+                    rounded-full
+                  "
+                  style={{
+                    backgroundColor:
+                      accentColor,
+                  }}
+                />
+
+                <span
+                  className="
+                    truncate
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.2em]
+                    text-neutral-700
+                    sm:text-xs
+                  "
+                >
+                  Flash Sale · 10.10
+                </span>
+              </div>
+
+              {/* VIEW ALL */}
+
+              <Link
+                to="/flashsale"
+                className="
+                  group
+                  inline-flex
                   shrink-0
+                  items-center
+                  gap-1.5
                   rounded-full
+                  border
+                  border-neutral-300
+                  bg-white
+                  px-3
+                  py-1.5
+                  text-[10px]
+                  font-semibold
+                  text-neutral-800
+                  shadow-sm
+                  transition-all
+                  duration-200
+                  hover:border-[#D97745]
+                  hover:bg-[#D97745]
+                  hover:text-white
+                  active:scale-[0.97]
+                  sm:px-4
+                  sm:py-2
+                  sm:text-xs
+                "
+              >
+                Xem tất cả
+
+                <span
+                  className="
+                    transition-transform
+                    duration-200
+                    group-hover:translate-x-0.5
+                  "
+                >
+                  →
+                </span>
+              </Link>
+
+            </div>
+
+            {/* ==================================================
+                TITLE
+            ================================================== */}
+
+            <div
+              className="
+                mt-4
+                flex
+                flex-col
+                gap-4
+                lg:flex-row
+                lg:items-end
+                lg:justify-between
+              "
+            >
+
+              <div
+                className="
+                  min-w-0
+                  flex-1
+                "
+              >
+
+                <h2
+                  className="
+                    font-display
+                    text-[25px]
+                    font-normal
+                    leading-[1.08]
+                    tracking-[-0.025em]
+                    text-neutral-900
+                    sm:text-3xl
+                    lg:text-[40px]
+                  "
+                >
+                  {sale?.title ||
+                    "10.10 Olive Flash Sale"}
+
+                  <span
+                    className="
+                      ml-1.5
+                    "
+                    style={{
+                      color:
+                        accentColor,
+                    }}
+                  >
+                    {discount}%
+                  </span>
+                </h2>
+
+                <p
+                  className="
+                    mt-2
+                    max-w-[760px]
+                    text-[11px]
+                    leading-[1.55]
+                    text-neutral-500
+                    sm:text-sm
+                  "
+                >
+                  {sale?.description}
+                </p>
+
+                {/* =================================================
+                    COUNTDOWN
+                ================================================= */}
+
+                <div
+                  className="
+                    mt-3
+                    flex
+                    flex-wrap
+                    items-center
+                    gap-2
+                  "
+                >
+
+                  <span
+                    className="
+                      mr-1
+                      text-[10px]
+                      font-medium
+                      text-neutral-500
+                      sm:text-xs
+                    "
+                  >
+                    {countdownLabel}
+                  </span>
+
+                  {!saleHasEnded && (
+                    <>
+                      <CountdownBox
+                        value={
+                          timeLeft.days
+                        }
+                        label="ngày"
+                      />
+
+                      <span
+                        className="
+                          text-[10px]
+                          text-neutral-300
+                        "
+                      >
+                        :
+                      </span>
+
+                      <CountdownBox
+                        value={
+                          timeLeft.hours
+                        }
+                        label="giờ"
+                      />
+
+                      <span
+                        className="
+                          text-[10px]
+                          text-neutral-300
+                        "
+                      >
+                        :
+                      </span>
+
+                      <CountdownBox
+                        value={
+                          timeLeft.minutes
+                        }
+                        label="phút"
+                      />
+
+                      <span
+                        className="
+                          text-[10px]
+                          text-neutral-300
+                        "
+                      >
+                        :
+                      </span>
+
+                      <CountdownBox
+                        value={
+                          timeLeft.seconds
+                        }
+                        label="giây"
+                        accent
+                      />
+                    </>
+                  )}
+
+                </div>
+
+              </div>
+
+              {/* MAIN CTA */}
+
+              <Link
+                to="/flashsale"
+                className="
+                  flex
+                  h-9
+                  w-full
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  px-5
+                  text-[11px]
+                  font-semibold
+                  text-white
+                  transition
+                  hover:opacity-90
+                  active:scale-[0.98]
+                  sm:h-10
+                  sm:w-fit
+                  sm:px-6
+                  sm:text-xs
+                  lg:min-w-[140px]
                 "
                 style={{
                   backgroundColor:
                     accentColor,
                 }}
-              />
-
-              <span
-                className="
-                  truncate
-                  text-[10px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.2em]
-                  text-neutral-700
-                  sm:text-xs
-                "
               >
-                Flash Sale · 10.10
-              </span>
-            </div>
-
-            {/* VIEW ALL */}
-
-            <Link
-              to="/flashsale"
-              className="
-                group
-                inline-flex
-                shrink-0
-                items-center
-                gap-1.5
-                rounded-full
-                border
-                border-neutral-300
-                bg-white
-                px-3
-                py-1.5
-                text-[10px]
-                font-semibold
-                text-neutral-800
-                shadow-sm
-                transition-all
-                duration-200
-                hover:border-[#D97745]
-                hover:bg-[#D97745]
-                hover:text-white
-                active:scale-[0.97]
-                sm:px-4
-                sm:py-2
-                sm:text-xs
-              "
-            >
-              Xem tất cả
-
-              <span
-                className="
-                  transition-transform
-                  duration-200
-                  group-hover:translate-x-0.5
-                "
-              >
-                →
-              </span>
-            </Link>
-
-          </div>
-
-          {/* ==================================================
-              TITLE AREA
-          ================================================== */}
-
-          <div
-            className="
-              mt-4
-              flex
-              flex-col
-              gap-4
-              lg:flex-row
-              lg:items-end
-              lg:justify-between
-            "
-          >
-
-            {/* TITLE */}
-
-            <div
-              className="
-                min-w-0
-                flex-1
-              "
-            >
-
-              <h2
-                className="
-                  font-display
-                  text-[25px]
-                  font-normal
-                  leading-[1.08]
-                  tracking-[-0.025em]
-                  text-neutral-900
-                  sm:text-3xl
-                  lg:text-[40px]
-                "
-              >
-                {sale?.title ||
-                  "10.10 Olive Flash Sale"}
-
-                <span
-                  className="
-                    ml-1.5
-                  "
-                  style={{
-                    color:
-                      accentColor,
-                  }}
-                >
-                  {discount}%
+                Mua ngay
+                <span className="ml-1">
+                  →
                 </span>
-              </h2>
+              </Link>
 
-              {/* DESCRIPTION */}
-
-              <p
-                className="
-                  mt-2
-                  max-w-[760px]
-                  text-[11px]
-                  leading-[1.55]
-                  text-neutral-500
-                  sm:text-sm
-                "
-              >
-                {sale?.description}
-              </p>
-
-              {/* =================================================
-                  COUNTDOWN
-              ================================================= */}
-
-              <div
-                className="
-                  mt-3
-                  flex
-                  items-center
-                  gap-1
-                  sm:gap-1.5
-                "
-              >
-
-                <CountdownBox
-                  value={
-                    timeLeft.days
-                  }
-                  label="ngày"
-                />
-
-                <span
-                  className="
-                    text-[10px]
-                    text-neutral-300
-                  "
-                >
-                  :
-                </span>
-
-                <CountdownBox
-                  value={
-                    timeLeft.hours
-                  }
-                  label="giờ"
-                />
-
-                <span
-                  className="
-                    text-[10px]
-                    text-neutral-300
-                  "
-                >
-                  :
-                </span>
-
-                <CountdownBox
-                  value={
-                    timeLeft.minutes
-                  }
-                  label="phút"
-                />
-
-                <span
-                  className="
-                    text-[10px]
-                    text-neutral-300
-                  "
-                >
-                  :
-                </span>
-
-                <CountdownBox
-                  value={
-                    timeLeft.seconds
-                  }
-                  label="giây"
-                  accent
-                />
-
-              </div>
             </div>
 
             {/* ==================================================
-                MAIN CTA
+                PRODUCTS
             ================================================== */}
 
-            <Link
-              to="/flashsale"
+            <div
               className="
-                flex
-                h-9
-                w-full
-                shrink-0
-                items-center
-                justify-center
-                rounded-full
-                px-5
-                text-[11px]
-                font-semibold
-                text-white
-                transition
-                hover:opacity-90
-                active:scale-[0.98]
-                sm:h-10
-                sm:w-fit
-                sm:px-6
-                sm:text-xs
-                lg:min-w-[140px]
+                mt-5
+                grid
+                grid-cols-2
+                gap-x-2.5
+                gap-y-5
+                sm:mt-6
+                sm:gap-4
+                lg:grid-cols-4
               "
-              style={{
-                backgroundColor:
-                  accentColor,
-              }}
             >
-              Mua ngay
-              <span className="ml-1">
-                →
-              </span>
-            </Link>
 
-          </div>
+              {products
+                .slice(0, 4)
+                .map(
+                  (
+                    item: ProductItem
+                  ) => {
 
-          {/* ==================================================
-              PRODUCTS
-          ================================================== */}
+                    const product =
+                      item.products;
 
-          <div
-            className="
-              mt-5
-              grid
-              grid-cols-2
-              gap-x-2.5
-              gap-y-5
-              sm:mt-6
-              sm:gap-4
-              lg:grid-cols-4
-            "
-          >
+                    if (!product) {
+                      return null;
+                    }
 
-            {products
-              .slice(0, 4)
-              .map(
-                (
-                  item: ProductItem
-                ) => {
+                    /* ==========================================
+                       PRICE
+                    ========================================== */
 
-                  const product =
-                    item.products;
+                    const oldPrice =
+                      Number(
+                        product.price ??
+                          0
+                      );
 
-                  if (!product) {
-                    return null;
-                  }
+                    const salePrice =
+                      Math.round(
+                        oldPrice *
+                          (100 -
+                            discount) /
+                          100
+                      );
 
-                  /* ==========================================
-                     PRICE
-                  ========================================== */
+                    const saving =
+                      oldPrice -
+                      salePrice;
 
-                  const oldPrice =
-                    Number(
-                      product.price ??
-                        0
-                    );
+                    const percent =
+                      oldPrice > 0
+                        ? Math.round(
+                            ((oldPrice -
+                              salePrice) /
+                              oldPrice) *
+                              100
+                          )
+                        : 0;
 
-                  const salePrice =
-                    Math.round(
-                      oldPrice *
-                        (100 -
-                          discount) /
-                        100
-                    );
+                    /* ==========================================
+                       NAME
+                    ========================================== */
 
-                  const saving =
-                    oldPrice -
-                    salePrice;
+                    const displayName =
+                      getShortProductName(
+                        product.name
+                      );
 
-                  const percent =
-                    oldPrice > 0
-                      ? Math.round(
-                          ((oldPrice -
-                            salePrice) /
-                            oldPrice) *
-                            100
-                        )
-                      : 0;
+                    /* ==========================================
+                       EXPRESS
+                    ========================================== */
 
-                  /* ==========================================
-                     PRODUCT NAME
-                  ========================================== */
+                    const isExpress =
+                      product.express_available ===
+                      true;
 
-                  const displayName =
-                    getShortProductName(
-                      product.name
-                    );
-
-                  /* ==========================================
-                     EXPRESS
-                  ========================================== */
-
-                  const isExpress =
-                    product.express_available ===
-                    true;
-
-                  return (
-                    <Link
-                      key={
-                        product.id
-                      }
-                      to="/flashsale"
-                      className="
-                        group
-                        min-w-0
-                      "
-                    >
-
-                      {/* ====================================
-                          IMAGE
-                      ==================================== */}
-
+                    return (
                       <div
+                        key={
+                          product.id
+                        }
                         className="
-                          relative
-                          aspect-square
-                          overflow-hidden
-                          rounded-xl
-                          bg-[#F1EFEB]
-                          sm:rounded-2xl
+                          group
+                          min-w-0
                         "
                       >
 
-                        <img
-                          src={
-                            product.image_url ||
-                            "/placeholder.svg"
-                          }
-                          alt={
-                            product.name
-                          }
-                          loading="lazy"
-                          className="
-                            h-full
-                            w-full
-                            object-cover
-                            transition-transform
-                            duration-500
-                            group-hover:scale-[1.02]
-                          "
-                        />
-
-                        {/* DISCOUNT */}
-
-                        {percent >
-                          0 && (
-                          <span
-                            className="
-                              absolute
-                              left-2
-                              top-2
-                              rounded-md
-                              bg-[#FF3B30]
-                              px-1.5
-                              py-1
-                              text-[9px]
-                              font-semibold
-                              leading-none
-                              text-white
-                              sm:left-3
-                              sm:top-3
-                              sm:px-2
-                              sm:text-[10px]
-                            "
-                          >
-                            -{percent}%
-                          </span>
-                        )}
-
-                        {/* EXPRESS */}
-
-                        {isExpress && (
-                          <span
-                            className="
-                              absolute
-                              bottom-2
-                              left-2
-                              rounded-md
-                              bg-white/95
-                              px-1.5
-                              py-1
-                              text-[8px]
-                              font-semibold
-                              leading-none
-                              text-[#E8753C]
-                              shadow-sm
-                              backdrop-blur-sm
-                              sm:bottom-3
-                              sm:left-3
-                              sm:px-2
-                              sm:text-[9px]
-                            "
-                          >
-                            Hỏa tốc
-                          </span>
-                        )}
-
-                      </div>
-
-                      {/* ====================================
-                          PRODUCT INFO
-                      ==================================== */}
-
-                      <div
-                        className="
-                          pt-2
-                          sm:pt-2.5
-                        "
-                      >
-
-                        {/* PRODUCT NAME */}
-
-                        <h3
-                          className="
-                            line-clamp-2
-                            min-h-[30px]
-                            text-[10px]
-                            font-medium
-                            leading-[1.4]
-                            tracking-[-0.01em]
-                            text-neutral-700
-                            sm:min-h-[34px]
-                            sm:text-xs
-                          "
-                        >
-                          {displayName}
-                        </h3>
-
-                        {/* PRICE */}
+                        {/* ====================================
+                            IMAGE
+                        ==================================== */}
 
                         <div
                           className="
-                            mt-1
-                            flex
-                            items-baseline
-                            gap-1.5
-                            whitespace-nowrap
+                            relative
+                            aspect-square
+                            overflow-hidden
+                            rounded-xl
+                            bg-[#F1EFEB]
+                            sm:rounded-2xl
                           "
                         >
 
-                          <span
+                          <img
+                            src={
+                              product.image_url ||
+                              "/placeholder.svg"
+                            }
+                            alt={
+                              product.name
+                            }
+                            loading="lazy"
                             className="
-                              text-[15px]
-                              font-semibold
-                              leading-none
-                              tracking-tight
-                              sm:text-base
+                              h-full
+                              w-full
+                              object-cover
+                              transition-transform
+                              duration-500
+                              group-hover:scale-[1.02]
                             "
-                            style={{
-                              color:
-                                accentColor,
-                            }}
-                          >
-                            {formatPrice(
-                              salePrice
-                            )}
-                          </span>
+                          />
 
-                          <span
-                            className="
-                              text-[8px]
-                              text-neutral-400
-                              line-through
-                              sm:text-[10px]
-                            "
-                          >
-                            {formatPrice(
-                              oldPrice
-                            )}
-                          </span>
+                          {/* DISCOUNT */}
+
+                          {percent >
+                            0 && (
+                            <span
+                              className="
+                                absolute
+                                left-2
+                                top-2
+                                rounded-md
+                                bg-[#FF3B30]
+                                px-1.5
+                                py-1
+                                text-[9px]
+                                font-semibold
+                                leading-none
+                                text-white
+                                sm:left-3
+                                sm:top-3
+                                sm:px-2
+                                sm:text-[10px]
+                              "
+                            >
+                              -{percent}%
+                            </span>
+                          )}
+
+                          {/* EXPRESS */}
+
+                          {isExpress && (
+                            <span
+                              className="
+                                absolute
+                                bottom-2
+                                left-2
+                                inline-flex
+                                items-center
+                                gap-1
+                                rounded-md
+                                bg-white/95
+                                px-1.5
+                                py-1
+                                text-[8px]
+                                font-semibold
+                                leading-none
+                                text-[#E8753C]
+                                shadow-sm
+                                backdrop-blur-sm
+                                sm:bottom-3
+                                sm:left-3
+                                sm:px-2
+                                sm:text-[9px]
+                              "
+                            >
+                              <Zap
+                                size={9}
+                                strokeWidth={
+                                  2.2
+                                }
+                                fill="currentColor"
+                              />
+
+                              Hỏa tốc
+                            </span>
+                          )}
 
                         </div>
 
-                        {/* SAVING */}
+                        {/* ====================================
+                            PRODUCT INFO
+                        ==================================== */}
 
-                        {saving >
-                          0 && (
-                          <p
+                        <div
+                          className="
+                            pt-2
+                            sm:pt-2.5
+                          "
+                        >
+
+                          {/* NAME */}
+
+                          <h3
+                            className="
+                              line-clamp-2
+                              min-h-[30px]
+                              text-[10px]
+                              font-medium
+                              leading-[1.4]
+                              tracking-[-0.01em]
+                              text-neutral-700
+                              sm:min-h-[34px]
+                              sm:text-xs
+                            "
+                            title={
+                              product.name
+                            }
+                          >
+                            {displayName}
+                          </h3>
+
+                          {/* PRICE */}
+
+                          <div
                             className="
                               mt-1
-                              text-[8px]
-                              leading-none
-                              text-neutral-400
-                              sm:text-[10px]
+                              flex
+                              items-baseline
+                              gap-1.5
+                              whitespace-nowrap
                             "
                           >
-                            Tiết kiệm{" "}
 
                             <span
                               className="
-                                font-medium
+                                text-[15px]
+                                font-semibold
+                                leading-none
+                                tracking-tight
+                                sm:text-base
                               "
                               style={{
                                 color:
@@ -899,57 +1127,375 @@ export default function FlashSale() {
                               }}
                             >
                               {formatPrice(
-                                saving
+                                salePrice
                               )}
                             </span>
-                          </p>
-                        )}
 
-                        {/* BUY BUTTON */}
+                            {oldPrice >
+                              salePrice && (
+                              <span
+                                className="
+                                  text-[8px]
+                                  text-neutral-400
+                                  line-through
+                                  sm:text-[10px]
+                                "
+                              >
+                                {formatPrice(
+                                  oldPrice
+                                )}
+                              </span>
+                            )}
 
-                        <div
-                          className="
-                            mt-2
-                            flex
-                            h-8
-                            items-center
-                            justify-center
-                            rounded-full
-                            text-[9px]
-                            font-semibold
-                            text-white
-                            transition
-                            group-hover:opacity-90
-                            sm:h-9
-                            sm:text-[11px]
-                          "
-                          style={{
-                            backgroundColor:
-                              accentColor,
-                          }}
-                        >
-                          Mua ngay
-                          <span className="ml-1">
-                            →
-                          </span>
+                          </div>
+
+                          {/* SAVING */}
+
+                          {saving > 0 && (
+                            <p
+                              className="
+                                mt-1
+                                text-[8px]
+                                leading-none
+                                text-neutral-400
+                                sm:text-[10px]
+                              "
+                            >
+                              Tiết kiệm{" "}
+
+                              <span
+                                className="
+                                  font-medium
+                                "
+                                style={{
+                                  color:
+                                    accentColor,
+                                }}
+                              >
+                                {formatPrice(
+                                  saving
+                                )}
+                              </span>
+                            </p>
+                          )}
+
+                          {/* ==================================
+                              BUY NOW
+                          ================================== */}
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleBuyNow(
+                                product
+                              )
+                            }
+                            className="
+                              mt-2
+                              flex
+                              h-8
+                              w-full
+                              items-center
+                              justify-center
+                              rounded-full
+                              text-[9px]
+                              font-semibold
+                              text-white
+                              transition
+                              hover:opacity-90
+                              active:scale-[0.98]
+                              sm:h-9
+                              sm:text-[11px]
+                            "
+                            style={{
+                              backgroundColor:
+                                accentColor,
+                            }}
+                          >
+                            Mua ngay
+
+                            <span className="ml-1">
+                              →
+                            </span>
+                          </button>
+
                         </div>
-
                       </div>
-                    </Link>
-                  );
-                }
-              )}
+                    );
+                  }
+                )}
+
+            </div>
 
           </div>
-
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* ========================================================
+          FLASH SALE NOT STARTED POPUP
+      ======================================================== */}
+
+      {showStartPopup && (
+        <div
+          className="
+            fixed
+            inset-0
+            z-[9999]
+            flex
+            items-center
+            justify-center
+            bg-black/40
+            px-5
+            backdrop-blur-[3px]
+          "
+          onClick={() =>
+            setShowStartPopup(
+              false
+            )
+          }
+        >
+
+          <div
+            className="
+              relative
+              w-full
+              max-w-[390px]
+              overflow-hidden
+              rounded-2xl
+              bg-white
+              p-6
+              shadow-2xl
+            "
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+
+            {/* CLOSE */}
+
+            <button
+              type="button"
+              aria-label="Đóng"
+              onClick={() =>
+                setShowStartPopup(
+                  false
+                )
+              }
+              className="
+                absolute
+                right-4
+                top-4
+                flex
+                h-8
+                w-8
+                items-center
+                justify-center
+                rounded-full
+                bg-neutral-100
+                text-neutral-500
+                transition
+                hover:bg-neutral-200
+              "
+            >
+              <X size={16} />
+            </button>
+
+            {/* ICON */}
+
+            <div
+              className="
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-full
+                bg-[#FFF3EC]
+                text-xl
+              "
+            >
+              🔥
+            </div>
+
+            {/* TITLE */}
+
+            <h3
+              className="
+                mt-4
+                pr-8
+                font-display
+                text-2xl
+                leading-tight
+                text-neutral-900
+              "
+            >
+              Flash Sale
+              chưa bắt đầu
+            </h3>
+
+            {/* PRODUCT */}
+
+            {selectedProductName && (
+              <p
+                className="
+                  mt-2
+                  text-sm
+                  font-medium
+                  text-neutral-800
+                "
+              >
+                {selectedProductName}
+              </p>
+            )}
+
+            {/* DESCRIPTION */}
+
+            <p
+              className="
+                mt-2
+                text-sm
+                leading-6
+                text-neutral-500
+              "
+            >
+              Sản phẩm này sẽ được
+              áp dụng mức giá Flash
+              Sale khi chương trình
+              chính thức bắt đầu.
+            </p>
+
+            {/* START DATE */}
+
+            {sale?.start_at && (
+              <div
+                className="
+                  mt-5
+                  rounded-xl
+                  bg-[#FAF9F6]
+                  px-4
+                  py-3
+                "
+              >
+                <p
+                  className="
+                    text-[10px]
+                    font-medium
+                    uppercase
+                    tracking-[0.12em]
+                    text-neutral-400
+                  "
+                >
+                  Bắt đầu lúc
+                </p>
+
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    font-semibold
+                    text-[#E8753C]
+                  "
+                >
+                  {formatFlashSaleDate(
+                    sale.start_at
+                  )}
+                </p>
+              </div>
+            )}
+
+            {/* COUNTDOWN */}
+
+            {!saleHasStarted && (
+              <div
+                className="
+                  mt-4
+                  flex
+                  items-center
+                  justify-center
+                  gap-1.5
+                "
+              >
+
+                <MiniTime
+                  value={
+                    timeLeft.days
+                  }
+                  label="ngày"
+                />
+
+                <span className="text-neutral-300">
+                  :
+                </span>
+
+                <MiniTime
+                  value={
+                    timeLeft.hours
+                  }
+                  label="giờ"
+                />
+
+                <span className="text-neutral-300">
+                  :
+                </span>
+
+                <MiniTime
+                  value={
+                    timeLeft.minutes
+                  }
+                  label="phút"
+                />
+
+                <span className="text-neutral-300">
+                  :
+                </span>
+
+                <MiniTime
+                  value={
+                    timeLeft.seconds
+                  }
+                  label="giây"
+                />
+
+              </div>
+            )}
+
+            {/* CLOSE */}
+
+            <button
+              type="button"
+              onClick={() =>
+                setShowStartPopup(
+                  false
+                )
+              }
+              className="
+                mt-5
+                flex
+                h-11
+                w-full
+                items-center
+                justify-center
+                rounded-full
+                bg-[#E8753C]
+                text-sm
+                font-semibold
+                text-white
+                transition
+                hover:bg-[#DF6A32]
+              "
+            >
+              Đã hiểu
+            </button>
+
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
 /* ============================================================
-   COMPACT COUNTDOWN
+   COUNTDOWN BOX
 ============================================================ */
 
 function CountdownBox({
@@ -992,7 +1538,9 @@ function CountdownBox({
           }
         `}
       >
-        {String(value).padStart(
+        {String(
+          value
+        ).padStart(
           2,
           "0"
         )}
@@ -1006,6 +1554,63 @@ function CountdownBox({
           tracking-wide
           text-neutral-400
           sm:text-[8px]
+        "
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
+/* ============================================================
+   POPUP MINI TIME
+============================================================ */
+
+function MiniTime({
+  value,
+  label,
+}: {
+  value: number;
+  label: string;
+}) {
+  return (
+    <div
+      className="
+        flex
+        min-w-[45px]
+        flex-col
+        items-center
+        rounded-lg
+        border
+        border-neutral-200
+        bg-white
+        px-2
+        py-1.5
+      "
+    >
+      <span
+        className="
+          text-sm
+          font-semibold
+          leading-none
+          text-neutral-900
+        "
+      >
+        {String(
+          value
+        ).padStart(
+          2,
+          "0"
+        )}
+      </span>
+
+      <span
+        className="
+          mt-1
+          text-[7px]
+          uppercase
+          tracking-wide
+          text-neutral-400
         "
       >
         {label}

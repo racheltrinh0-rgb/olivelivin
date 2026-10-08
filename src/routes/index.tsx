@@ -431,6 +431,8 @@ function HomePage() {
 
       <Vouchers />
 
+      <FlashSale />
+
 
       {/* =====================================================
           MOST LOVED
@@ -531,6 +533,8 @@ function HomePage() {
       {/* =====================================================
           MEMPHIS COLLECTION
       ===================================================== */}
+
+      
 
       <FeaturedCollectionShowcaseReverse
         products={

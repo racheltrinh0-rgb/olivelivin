@@ -1,304 +1,562 @@
-import { ShoppingBag, Truck, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  ArrowUpRight,
+  Flame,
+} from "lucide-react";
+
 import { Link } from "@tanstack/react-router";
 
 interface FlashSaleCardProps {
   product: any;
 }
 
-function formatPrice(price: number) {
-  return Number(price).toLocaleString("vi-VN") + "đ";
+function formatPrice(
+  price: number | null | undefined
+) {
+  return (
+    new Intl.NumberFormat("vi-VN").format(
+      Number(price ?? 0)
+    ) + "đ"
+  );
 }
 
 export default function FlashSaleCard({
   product,
 }: FlashSaleCardProps) {
 
-  // ===============================
-  // PRICE
-  // ===============================
+  /* ==========================================================
+     PRICE
+  ========================================================== */
 
-  const oldPrice = Number(product.price ?? 0);
-
-  const percent = Number(
-    product.discount_percent ?? 0
+  const oldPrice = Number(
+    product?.price ?? 0
   );
 
-  const salePrice = Math.round(
-    oldPrice * (100 - percent) / 100
+  const percent = Math.max(
+    0,
+    Number(
+      product?.discount_percent ?? 0
+    )
   );
+
+  const salePrice =
+    percent > 0
+      ? Math.round(
+          oldPrice *
+            (100 - percent) /
+            100
+        )
+      : oldPrice;
 
   const saving = Math.max(
     0,
     oldPrice - salePrice
   );
 
-  // ===============================
-  // DEMO DATA
-  // ===============================
+  /* ==========================================================
+     PRODUCT DATA
+  ========================================================== */
+
+  const stock =
+    Number(
+      product?.stock ?? 0
+    );
+
+  /*
+   * Dùng sold nếu database đã có.
+   * Nếu chưa có thì dùng giá mặc định ổn định,
+   * không random mỗi lần render.
+   */
 
   const sold =
-    Math.floor(Math.random() * 180) + 80;
+    Number(
+      product?.sold ??
+        product?.sold_count ??
+        0
+    );
 
-  const remain =
-    Math.floor(Math.random() * 8) + 3;
+  /*
+   * Nếu chưa có sold data,
+   * không hiển thị số giả.
+   */
 
-  const progress = Math.min(
-    100,
-    Math.round((sold / 260) * 100)
-  );
+  const hasSoldData =
+    sold > 0;
 
-  // ===============================
-  // BADGE
-  // ===============================
+  /*
+   * Progress:
+   * ưu tiên dữ liệu thật nếu có.
+   */
 
-  let badgeText = "FLASH SALE";
+  const progress =
+    hasSoldData
+      ? Math.min(
+          100,
+          Math.max(
+            0,
+            Math.round(
+              (sold /
+                Math.max(
+                  sold + stock,
+                  1
+                )) *
+                100
+            )
+          )
+        )
+      : 0;
 
-  if (percent >= 50) {
+  /* ==========================================================
+     IMAGE
+  ========================================================== */
 
-    badgeText = "HOT";
+  const imageUrl =
+    product?.image_url ||
+    product?.image ||
+    "";
 
-  } else if (percent >= 40) {
+  /* ==========================================================
+     BADGE
+  ========================================================== */
 
-    badgeText = "SIÊU DEAL";
-
-  } else if (percent >= 30) {
-
-    badgeText = "GIÁ TỐT";
-
-  }
+  const badgeText =
+    percent > 0
+      ? `-${percent}%`
+      : "FLASH";
 
   return (
-
-    <div
+    <article
       className="
         group
+        min-w-0
         overflow-hidden
-        rounded-3xl
+        rounded-[18px]
         border
-        border-neutral-200
+        border-[#E7E3DC]
         bg-white
-        shadow-sm
+        shadow-[0_2px_12px_rgba(40,35,28,0.05)]
         transition-all
         duration-300
+
         hover:-translate-y-1
-        hover:shadow-xl
+        hover:border-[#D8D2C9]
+        hover:shadow-[0_12px_30px_rgba(40,35,28,0.10)]
+
+        sm:rounded-[20px]
       "
     >
 
-      {/* IMAGE */}
+      {/* ======================================================
+          IMAGE
+      ====================================================== */}
 
-      <div className="relative overflow-hidden">
+      <Link
+        to="/products/$slug"
+        params={{
+          slug:
+            product?.slug ?? "",
+        }}
+        className="
+          block
+          overflow-hidden
+        "
+      >
 
-        {!!percent && (
+        <div
+          className="
+            relative
+            aspect-square
+            overflow-hidden
+            bg-[#F5F3EF]
+          "
+        >
 
-          <div className="absolute left-3 top-3 z-20">
-
-            <div className="overflow-hidden rounded-xl shadow-lg">
-
-              <div className="rounded-xl bg-red-600 px-2.5 py-1.5">
-
-  <p className="text-lg font-black leading-none text-white">
-
-    -{percent}%
-
-  </p>
-
-</div>
-
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={
+                product?.name ??
+                "Product"
+              }
+              loading="lazy"
+              className="
+                h-full
+                w-full
+                object-cover
+                transition-transform
+                duration-500
+                group-hover:scale-[1.025]
+              "
+            />
+          ) : (
+            <div
+              className="
+                flex
+                h-full
+                w-full
+                items-center
+                justify-center
+                text-xs
+                text-neutral-400
+              "
+            >
+              No image
             </div>
+          )}
+
+          {/* SALE BADGE */}
+
+          {percent > 0 && (
+            <div
+              className="
+                absolute
+                left-2.5
+                top-2.5
+                flex
+                items-center
+                gap-1
+                rounded-full
+                bg-[#20231F]
+                px-2.5
+                py-1.5
+                text-[10px]
+                font-semibold
+                leading-none
+                text-white
+                shadow-sm
+
+                sm:left-3
+                sm:top-3
+                sm:px-3
+                sm:py-1.5
+              "
+            >
+              <Flame
+                className="
+                  h-3
+                  w-3
+                  text-[#FF6A00]
+                "
+                strokeWidth={2}
+              />
+
+              {badgeText}
+            </div>
+          )}
+
+          {/* EXPRESS */}
+
+          {product?.express_available && (
+            <div
+              className="
+                absolute
+                right-2.5
+                top-2.5
+                rounded-full
+                bg-white/95
+                px-2
+                py-1
+                text-[8px]
+                font-semibold
+                uppercase
+                tracking-[0.04em]
+                text-[#536A59]
+                shadow-sm
+                backdrop-blur
+
+                sm:right-3
+                sm:top-3
+              "
+            >
+              HỎA TỐC
+            </div>
+          )}
+
+        </div>
+
+      </Link>
+
+      {/* ======================================================
+          CONTENT
+      ====================================================== */}
+
+      <div
+        className="
+          min-w-0
+          p-3
+
+          sm:p-3.5
+        "
+      >
+
+        {/* ====================================================
+            PRODUCT NAME
+        ==================================================== */}
+
+        <Link
+          to="/products/$slug"
+          params={{
+            slug:
+              product?.slug ?? "",
+          }}
+          className="block"
+        >
+          <h3
+            className="
+              min-h-[38px]
+              overflow-hidden
+              text-[12px]
+              font-medium
+              leading-[1.55]
+              tracking-[-0.01em]
+              text-[#292C28]
+
+              line-clamp-2
+
+              sm:min-h-[42px]
+              sm:text-[13px]
+              sm:leading-5
+            "
+          >
+            {product?.name ??
+              "Sản phẩm"}
+          </h3>
+        </Link>
+
+        {/* ====================================================
+            PRICE
+        ==================================================== */}
+
+        <div
+          className="
+            mt-2.5
+            min-w-0
+          "
+        >
+
+          <div
+            className="
+              flex
+              min-w-0
+              items-baseline
+              gap-1.5
+              overflow-hidden
+            "
+          >
+
+            {/* SALE PRICE */}
+
+            <span
+              className="
+                min-w-0
+                shrink
+                whitespace-nowrap
+                text-[clamp(18px,5vw,24px)]
+                font-bold
+                leading-none
+                tracking-[-0.045em]
+                text-[#F05A32]
+
+                sm:text-[25px]
+              "
+            >
+              {formatPrice(
+                salePrice
+              )}
+            </span>
+
+            {/* OLD PRICE */}
+
+            {oldPrice >
+              salePrice && (
+              <span
+                className="
+                  min-w-0
+                  shrink
+                  whitespace-nowrap
+                  truncate
+                  text-[9px]
+                  leading-none
+                  text-neutral-400
+                  line-through
+
+                  sm:text-[11px]
+                "
+              >
+                {formatPrice(
+                  oldPrice
+                )}
+              </span>
+            )}
 
           </div>
 
-        )}
+          {/* SAVING */}
 
-        <img
-          src={product.image_url}
-          alt={product.name}
+          {saving > 0 && (
+            <p
+              className="
+                mt-1
+                truncate
+                text-[10px]
+                leading-4
+                text-neutral-500
+
+                sm:text-[11px]
+              "
+            >
+              Tiết kiệm{" "}
+              <span className="font-medium text-[#536A59]">
+                {formatPrice(
+                  saving
+                )}
+              </span>
+            </p>
+          )}
+
+        </div>
+
+        {/* ====================================================
+            SALE STATUS
+        ==================================================== */}
+
+        <div
           className="
-            aspect-square
-            w-full
-            object-cover
-            transition
-            duration-500
-            group-hover:scale-105
+            mt-3
           "
-        />
+        >
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-2
+              text-[9px]
+              leading-4
+
+              sm:text-[10px]
+            "
+          >
+
+            <span
+              className="
+                shrink-0
+                text-neutral-500
+              "
+            >
+              Flash Sale
+            </span>
+
+            {stock > 0 && (
+              <span
+                className="
+                  shrink-0
+                  font-medium
+                  text-[#F05A32]
+                "
+              >
+                Còn {stock}
+              </span>
+            )}
+
+          </div>
+
+          {/* PROGRESS */}
+
+          {hasSoldData && (
+            <div
+              className="
+                mt-1.5
+                h-[3px]
+                overflow-hidden
+                rounded-full
+                bg-[#EEEAE4]
+              "
+            >
+              <div
+                className="
+                  h-full
+                  rounded-full
+                  bg-[#F05A32]
+                  transition-all
+                  duration-500
+                "
+                style={{
+                  width: `${progress}%`,
+                }}
+              />
+            </div>
+          )}
+
+          {hasSoldData && (
+            <p
+              className="
+                mt-1
+                truncate
+                text-[9px]
+                text-neutral-400
+              "
+            >
+              Đã bán {sold}
+            </p>
+          )}
+
+        </div>
+
+        {/* ====================================================
+            BUTTON
+        ==================================================== */}
+
+        <Link
+          to="/products/$slug"
+          params={{
+            slug:
+              product?.slug ?? "",
+          }}
+          className="
+            mt-3
+            flex
+            w-full
+            items-center
+            justify-center
+            gap-1.5
+            rounded-full
+            border
+            border-[#6C706B]
+            bg-white
+            px-3
+            py-2
+            text-[11px]
+            font-medium
+            text-[#30342F]
+            transition-all
+            duration-200
+
+            hover:border-[#30342F]
+            hover:bg-[#30342F]
+            hover:text-white
+
+            active:scale-[0.98]
+
+            sm:py-2.5
+            sm:text-xs
+          "
+        >
+          <span>
+            Xem sản phẩm
+          </span>
+
+          <ArrowUpRight
+            className="
+              h-3.5
+              w-3.5
+              shrink-0
+            "
+            strokeWidth={1.8}
+          />
+        </Link>
+
       </div>
-
-      {/* CONTENT */}
-
-      <div className="space-y-2.5 p-3.5">
-
-        {/* PRODUCT NAME */}
-<h3
-  className="
-    h-[48px]
-    overflow-hidden
-    text-[14px]
-    font-medium
-    leading-6
-    text-neutral-800
-    line-clamp-2
-  "
->
-  {product.name}
-</h3>
-
-{/* PRICE */}
-
-<div className="space-y-3">
-
-  {/* Giá gốc */}
-
-  <div className="flex items-center gap-3">
-
-    <span className="text-sm text-neutral-400 line-through">
-
-      {formatPrice(oldPrice)}
-
-    </span>
-
-  
-
-  </div>
-
-  {/* Giá Flash */}
-
-  <div className="flex items-end gap-2">
-
-    <span className="text-[30px] leading-none font-black text-[#F97316]">
-
-      {formatPrice(salePrice)}
-
-    </span>
-
-  </div>
-
-</div>
-
-{/* TIẾT KIỆM */}
-
-{!!saving && (
-
-<div className="flex items-center justify-between rounded-lg bg-orange-50 px-2.5 py-1">
-
-   <p className="text-[9px] font-medium text-orange-500">
-
-  Tiết kiệm
-
-</p>
-
-<p className="text-sm font-bold text-[#F97316]">
-
-  {formatPrice(saving)}
-
-</p>
-
-   
-
-  </div>
-
-)}
-
-{/* BADGES */}
-
-<div className="mt-2 flex gap-2">
-
-  <div className="flex-1 rounded-full bg-green-50 py-1 text-center">
-
-    <span className="text-[10px] font-medium text-green-700">
-
-      🚚 Freeship
-
-    </span>
-
-  </div>
-
-  <div className="flex-1 rounded-full bg-blue-50 py-1 text-center">
-
-    <span className="text-[10px] font-medium text-blue-700">
-
-      ↩ 15 ngày
-
-    </span>
-
-  </div>
-
-</div>
-
-{/* TỒN KHO */}
-
-<div className="mt-2 flex items-center justify-between text-xs">
-
-  <span className="font-semibold text-orange-500">
-
-    Còn {remain}
-
-  </span>
-
-  <span className="text-neutral-500">
-
-    Đã bán {sold}
-
-  </span>
-
-</div>
-
-{/* PROGRESS */}
-
-<div className="mt-2 mb-4 h-1.5 overflow-hidden rounded-full bg-neutral-200">
-
-  <div
-    className="h-full rounded-full bg-[#F97316]"
-    style={{
-      width: `${progress}%`,
-    }}
-  />
-
-</div>
-
-{/* BUTTON */}
-
-<Link
-  to="/products/$slug"
-  params={{
-    slug: product.slug,
-  }}
-  className="block"
->
-
-  <Button
-    className="
-      h-10
-      w-full
-      rounded-2xl
-      bg-[#F97316]
-      text-[13px]
-      font-medium
-      tracking-tight
-      text-white
-      transition-all
-      duration-300
-      hover:bg-[#EA580C]
-      hover:shadow-lg
-    "
-  >
-
-    <ShoppingBag className="mr-1.5 h-4 w-4 shrink-0" />
-
-    <span>
-      Mua Flash Sale
-    </span>
-
-  </Button>
-
-</Link>
-
-</div>
-
-</div>
-
+    </article>
   );
-
 }

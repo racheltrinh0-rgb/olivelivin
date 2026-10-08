@@ -28,12 +28,12 @@ import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import FlashSalePopup from "@/components/FlashSalePopup";
 import { supabase } from "@/integrations/supabase/client";
 
 import FloatingContact from "@/components/FloatingContact";
 import FloatingShipping from "@/components/FloatingShipping";
 import SetagoVoucherPopup from "@/components/SetagoVoucherPopup";
-
 
 /* =========================================================
    404
@@ -43,7 +43,6 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
       <div className="text-center">
-
         <p className="font-display text-7xl">
           404
         </p>
@@ -68,12 +67,10 @@ function NotFoundComponent() {
         >
           Về trang chủ
         </a>
-
       </div>
     </div>
   );
 }
-
 
 /* =========================================================
    ERROR
@@ -106,7 +103,6 @@ function ErrorComponent({
       "
     >
       <div>
-
         <p className="font-display text-3xl">
           Có lỗi xảy ra
         </p>
@@ -116,6 +112,7 @@ function ErrorComponent({
         </p>
 
         <button
+          type="button"
           onClick={() => {
             router.invalidate();
             reset();
@@ -133,12 +130,10 @@ function ErrorComponent({
         >
           Thử lại
         </button>
-
       </div>
     </div>
   );
 }
-
 
 /* =========================================================
    ROOT ROUTE
@@ -148,86 +143,61 @@ export const Route =
   createRootRouteWithContext<{
     queryClient: QueryClient;
   }>()({
-
     head: () => ({
       meta: [
-
         {
           charSet: "utf-8",
         },
-
         {
           name: "viewport",
-          content:
-            "width=device-width, initial-scale=1",
+          content: "width=device-width, initial-scale=1",
         },
-
         {
-          title:
-            "OLIVE — Đèn decor tối giản",
+          title: "OLIVE — Đèn decor tối giản",
         },
-
         {
           name: "description",
           content:
             "Nội thất tối giản, vật liệu bền vững. Sofa, bàn, ghế, giường, tủ kệ. Giao hàng toàn quốc.",
         },
-
         {
           property: "og:title",
-          content:
-            "OLIVE — Đèn decor tối giản",
+          content: "OLIVE — Đèn decor tối giản",
         },
-
         {
           property: "og:description",
-          content:
-            "Nội thất tối giản, vật liệu bền vững.",
+          content: "Nội thất tối giản, vật liệu bền vững.",
         },
-
         {
           property: "og:type",
           content: "website",
         },
-
         {
           name: "twitter:card",
-          content:
-            "summary_large_image",
+          content: "summary_large_image",
         },
       ],
 
       links: [
-
-        /* =================================================
-           WEBSITE FAVICON
-        ================================================== */
-
+        /* WEBSITE FAVICON */
         {
           rel: "icon",
           type: "image/png",
           href: "/favicon.png",
         },
-
         {
           rel: "shortcut icon",
           type: "image/png",
           href: "/favicon.png",
         },
 
-        /* =================================================
-           MOBILE / APPLE ICON
-        ================================================== */
-
+        /* MOBILE / APPLE ICON */
         {
           rel: "apple-touch-icon",
           href: "/favicon.png",
         },
 
-        /* =================================================
-           MAIN CSS
-        ================================================== */
-
+        /* MAIN CSS */
         {
           rel: "stylesheet",
           href: appCss,
@@ -236,16 +206,10 @@ export const Route =
     }),
 
     shellComponent: RootShell,
-
     component: RootComponent,
-
-    notFoundComponent:
-      NotFoundComponent,
-
-    errorComponent:
-      ErrorComponent,
+    notFoundComponent: NotFoundComponent,
+    errorComponent: ErrorComponent,
   });
-
 
 /* =========================================================
    ROOT SHELL
@@ -258,41 +222,24 @@ function RootShell({
 }) {
   return (
     <html lang="vi">
-
       <head>
-
         <HeadContent />
 
-        {/* =================================================
-            OLIVE LIVING — ORGANIZATION SCHEMA
-        ================================================== */}
-
+        {/* OLIVE LIVING — ORGANIZATION SCHEMA */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              "@context":
-                "https://schema.org",
-
-              "@type":
-                "Organization",
-
-              name:
-                "OLIVE LIVING",
-
-              url:
-                "https://olivelivingvn.com",
-
-              logo:
-                "https://olivelivingvn.com/favicon.png",
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "OLIVE LIVING",
+              url: "https://olivelivingvn.com",
+              logo: "https://olivelivingvn.com/favicon.png",
             }),
           }}
         />
 
-        {/* =================================================
-            Google Ads
-        ================================================== */}
-
+        {/* Google Ads */}
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=AW-18304524589"
@@ -304,16 +251,12 @@ function RootShell({
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-
 gtag('config', 'AW-18304524589');
 `,
           }}
         />
 
-        {/* =================================================
-            Meta Pixel
-        ================================================== */}
-
+        {/* Meta Pixel */}
         <script
           id="meta-pixel"
           dangerouslySetInnerHTML={{
@@ -341,10 +284,7 @@ fbq('track', 'PageView');
           }}
         />
 
-        {/* =================================================
-            Google Tag Manager
-        ================================================== */}
-
+        {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -375,20 +315,11 @@ f.parentNode.insertBefore(j,f);
 `,
           }}
         />
-
-        {/* End Google Tag Manager */}
-
       </head>
 
-
       <body>
-
-        {/* =================================================
-            META PIXEL + GOOGLE TAG MANAGER NOSCRIPT
-        ================================================== */}
-
+        {/* META PIXEL + GOOGLE TAG MANAGER NOSCRIPT */}
         <noscript>
-
           <img
             height="1"
             width="1"
@@ -408,32 +339,22 @@ f.parentNode.insertBefore(j,f);
               visibility: "hidden",
             }}
           />
-
         </noscript>
-
-        {/* End Google Tag Manager (noscript) */}
-
 
         {children}
 
         <Scripts />
-
       </body>
-
     </html>
   );
 }
-
 
 /* =========================================================
    ROOT COMPONENT
 ========================================================= */
 
 function RootComponent() {
-
-  const {
-    queryClient,
-  } = Route.useRouteContext();
+  const { queryClient } = Route.useRouteContext();
 
   const router = useRouter();
 
@@ -442,19 +363,14 @@ function RootComponent() {
     setHideFloating,
   ] = useState(false);
 
-
   /* =================================================
      AUTH STATE
   ================================================== */
 
   useEffect(() => {
-
-    const {
-      data: sub,
-    } =
+    const { data: sub } =
       supabase.auth.onAuthStateChange(
         (event) => {
-
           if (
             event !== "SIGNED_IN" &&
             event !== "SIGNED_OUT" &&
@@ -465,40 +381,28 @@ function RootComponent() {
 
           router.invalidate();
 
-          if (
-            event !== "SIGNED_OUT"
-          ) {
+          if (event !== "SIGNED_OUT") {
             queryClient.invalidateQueries();
           }
-
         },
       );
 
     return () =>
       sub.subscription.unsubscribe();
-
   }, [
     router,
     queryClient,
   ]);
-
 
   /* =================================================
      RENDER
   ================================================== */
 
   return (
-
-    <QueryClientProvider
-      client={queryClient}
-    >
-
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
-
         <CartProvider>
-
           <>
-
             {/* <SetagoVoucherPopup /> */}
 
             <div
@@ -508,19 +412,18 @@ function RootComponent() {
                 flex-col
               "
             >
-
               <SiteHeader />
+
+              {/* 10.10 FLASH SALE POPUP */}
+              <FlashSalePopup />
 
               <main className="flex-1">
                 <Outlet />
               </main>
 
               <SiteFooter />
-
             </div>
-
           </>
-
 
           {/* =================================================
               FLOATING CONTACT
@@ -528,7 +431,6 @@ function RootComponent() {
 
           {!hideFloating && (
             <>
-
               <FloatingContact
                 onClose={() =>
                   setHideFloating(true)
@@ -536,20 +438,14 @@ function RootComponent() {
               />
 
               {/* <FloatingShipping /> */}
-
             </>
           )}
-
 
           <Toaster
             position="top-center"
           />
-
         </CartProvider>
-
       </AuthProvider>
-
     </QueryClientProvider>
-
   );
 }

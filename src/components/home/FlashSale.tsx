@@ -1,457 +1,1015 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { FlashSaleCard } from "@/components/flashsale";
 
+/* ============================================================
+   TYPES
+============================================================ */
 
+type CountdownState = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
+type ProductItem = {
+  product_id: string;
+  products?: {
+    id: string;
+    name: string;
+    price: number;
+    slug?: string | null;
+    image_url?: string | null;
+    express_available?: boolean | null;
+  } | null;
+};
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+/**
+ * Rút gọn tên sản phẩm để card không bị cao.
+ *
+ * Ví dụ:
+ * "ĐÈN CAO ĐỨNG HALF ROUND SINGLE – THIẾT KẾ TỐI GIẢN"
+ * =>
+ * "ĐÈN CAO ĐỨNG HALF ROUND SINGLE"
+ */
+function getShortProductName(
+  name?: string | null
+) {
+  if (!name) {
+    return "";
+  }
+
+  let result = name.trim();
+
+  // Loại bỏ phần sau dấu "–"
+  result = result.split("–")[0];
+
+  // Loại bỏ phần sau dấu "—"
+  result = result.split("—")[0];
+
+  // Loại bỏ một số hậu tố thường gặp
+  result = result.replace(
+    /\s*-\s*THIẾT KẾ.*$/i,
+    ""
+  );
+
+  result = result.replace(
+    /\s*-\s*PHONG CÁCH.*$/i,
+    ""
+  );
+
+  result = result.replace(
+    /\s*\|\s*.*$/i,
+    ""
+  );
+
+  return result
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function formatPrice(
+  value: number
+) {
+  return (
+    value.toLocaleString("vi-VN") +
+    "đ"
+  );
+}
+
+/* ============================================================
+   COMPONENT
+============================================================ */
 
 export default function FlashSale() {
+  const [sale, setSale] =
+    useState<any>(null);
 
-  const [sale, setSale] = useState<any>(null);
+  const [products, setProducts] =
+    useState<ProductItem[]>([]);
 
-  const [products, setProducts] = useState<any[]>([]);
-  
-  const [timeLeft, setTimeLeft] = useState("");
+  const [timeLeft, setTimeLeft] =
+    useState<CountdownState>({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
+
+  /* ==========================================================
+     LOAD FLASH SALE
+  ========================================================== */
 
   useEffect(() => {
     loadFlashSale();
   }, []);
 
+  /* ==========================================================
+     COUNTDOWN
+  ========================================================== */
+
   useEffect(() => {
-
-  if (!sale?.end_at) return;
-
-  const timer = setInterval(() => {
-
-    const diff =
-      new Date(sale.end_at).getTime() -
-      Date.now();
-
-    if (diff <= 0) {
-
-      setTimeLeft("Đã kết thúc");
-
-      clearInterval(timer);
-
+    if (!sale?.end_at) {
       return;
-
     }
 
-    const days = Math.floor(
-      diff / (1000 * 60 * 60 * 24)
+    const updateCountdown = () => {
+      const diff =
+        new Date(
+          sale.end_at
+        ).getTime() -
+        Date.now();
+
+      if (diff <= 0) {
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+
+        return;
+      }
+
+      const totalSeconds =
+        Math.floor(diff / 1000);
+
+      setTimeLeft({
+        days: Math.floor(
+          totalSeconds / 86400
+        ),
+
+        hours: Math.floor(
+          (totalSeconds % 86400) /
+            3600
+        ),
+
+        minutes: Math.floor(
+          (totalSeconds % 3600) /
+            60
+        ),
+
+        seconds:
+          totalSeconds % 60,
+      });
+    };
+
+    updateCountdown();
+
+    const timer =
+      window.setInterval(
+        updateCountdown,
+        1000
+      );
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [sale]);
+
+  /* ==========================================================
+     LOAD FLASH SALE + PRODUCTS
+  ========================================================== */
+
+  async function loadFlashSale() {
+    const now =
+      new Date().toISOString();
+
+    console.log(
+      "FLASH SALE NOW:",
+      now
     );
 
-    const hours = Math.floor(
-      (diff / (1000 * 60 * 60)) % 24
+    const {
+      data: flashSale,
+      error,
+    } = await supabase
+      .from("flash_sales")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", {
+        ascending: false,
+      })
+      .limit(1)
+      .maybeSingle();
+
+    console.log(
+      "FLASH SALE:",
+      flashSale
     );
 
-    const minutes = Math.floor(
-      (diff / (1000 * 60)) % 60
+    if (error) {
+      console.error(
+        "FLASH SALE ERROR:",
+        error
+      );
+    }
+
+    if (!flashSale) {
+      return;
+    }
+
+    /* ========================================================
+       CHECK EXPIRED
+    ======================================================== */
+
+    const endTime =
+      new Date(
+        flashSale.end_at
+      ).getTime();
+
+    if (
+      !Number.isNaN(endTime) &&
+      Date.now() > endTime
+    ) {
+      return;
+    }
+
+    setSale(flashSale);
+
+    /* ========================================================
+       LOAD PRODUCTS
+    ======================================================== */
+
+    const {
+      data: saleProducts,
+      error: productsError,
+    } = await supabase
+      .from("flash_sale_products")
+      .select(`
+        product_id,
+        products(
+          id,
+          name,
+          price,
+          slug,
+          image_url,
+          express_available
+        )
+      `)
+      .eq(
+        "flash_sale_id",
+        flashSale.id
+      );
+
+    if (productsError) {
+      console.error(
+        "FLASH SALE PRODUCTS ERROR:",
+        productsError
+      );
+    }
+
+    console.log(
+      "FLASH SALE PRODUCTS:",
+      saleProducts
     );
 
-    const seconds = Math.floor(
-      (diff / 1000) % 60
+    setProducts(
+      (saleProducts ??
+        []) as ProductItem[]
+    );
+  }
+
+  /* ==========================================================
+     NO ACTIVE SALE
+  ========================================================== */
+
+  if (!sale) {
+    return null;
+  }
+
+  /* ==========================================================
+     VARIABLES
+  ========================================================== */
+
+  const accentColor =
+    sale?.banner_color ||
+    "#D97745";
+
+  const discount =
+    Number(
+      sale?.discount_percent ?? 0
     );
 
-    setTimeLeft(
-      `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`
-    );
-
-  }, 1000);
-
-  return () => clearInterval(timer);
-
-}, [sale]);
-
- async function loadFlashSale() {
-
-  const now = new Date().toISOString();
-
-  console.log("NOW", now);
-
- const { data: flashSale, error } = await supabase
-  .from("flash_sales")
-  .select("*")
-  .eq("active", true)
-  .order("created_at", {
-    ascending: false,
-  })
-  .limit(1)
-  .maybeSingle();
-
-  console.log("FLASH SALE", flashSale);
-  console.log("ERROR", error);
-
-  if (!flashSale) return;
-
-  const endTime = new Date(flashSale.end_at).getTime();
-
-if (Date.now() > endTime) {
-  return;
-}
-
-  setSale(flashSale);
-
-  const { data: saleProducts } = await supabase
-  .from("flash_sale_products")
-  .select(`
-    product_id,
-    products(
-  id,
-  name,
-  price,
-  slug,
-  image_url
-)
-  `)
-  .eq("flash_sale_id", flashSale.id);
-
-console.log("SALE PRODUCTS", saleProducts);
-
-setProducts(saleProducts ?? []);
-
-}
-
-if (!sale) return null;
+  /* ==========================================================
+     RENDER
+  ========================================================== */
 
   return (
-    
-    <section className="w-full py-14">
-
-  <div className="mx-auto w-full max-w-screen-2xl px-2 sm:px-3 lg:px-6">
-
+    <section
+      className="
+        w-full
+        py-7
+        sm:py-9
+        lg:py-12
+      "
+    >
       <div
-  style={{
-    borderColor: sale?.banner_color || "#D97745",
-  }}
-  className="
-    relative
-    overflow-hidden
+        className="
+          mx-auto
+          w-full
+          max-w-[1440px]
+          px-4
+          sm:px-6
+          lg:px-8
+        "
+      >
 
-    rounded-[32px]
-
-    border-2
-    border-transparent
-
-    bg-gradient-to-br
-    from-[#FFF8F2]
-    via-white
-    to-[#FFF5EC]
-
-    p-6
-    lg:p-8
-
-    shadow-[0_0_50px_rgba(217,119,69,.18)]
-  "
->
-
-        {/* Glow */}
-
-        <div className="absolute -left-24 -top-24 h-56 w-56 rounded-full bg-orange-300/20 blur-[100px]" />
-
-        <div className="absolute -bottom-24 -right-24 h-56 w-56 rounded-full bg-orange-200/20 blur-[100px]" />
-
-        {/* Shine */}
+        {/* ==================================================
+            MAIN CONTAINER
+        ================================================== */}
 
         <div
           className="
-            pointer-events-none
-
-            absolute
-
-            left-[-30%]
-            top-0
-
-            h-full
-            w-40
-
-            rotate-12
-
-            animate-pulse
-
-            bg-gradient-to-r
-            from-transparent
-            via-white/70
-            to-transparent
+            overflow-hidden
+            rounded-[20px]
+            bg-[#FAF9F6]
+            px-4
+            py-5
+            sm:rounded-[24px]
+            sm:px-6
+            sm:py-6
+            lg:px-8
+            lg:py-7
           "
-        />
+        >
 
-        <div className="relative z-10">
+          {/* ==================================================
+              HEADER
+          ================================================== */}
 
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-4
+            "
+          >
 
-            <div>
+            {/* LABEL */}
 
-             <span
-  style={{
-    backgroundColor: sale?.banner_color || "#D97745",
-  }}
-  className="
-    rounded-full
-    px-4
-    py-1.5
-    text-sm
-    font-semibold
-    uppercase
-    tracking-[.25em]
-    text-white
-  "
->
-  🔥 FLASH SALE
-</span>
+            <div
+              className="
+                flex
+                min-w-0
+                items-center
+                gap-2
+              "
+            >
+              <span
+                className="
+                  h-1.5
+                  w-1.5
+                  shrink-0
+                  rounded-full
+                "
+                style={{
+                  backgroundColor:
+                    accentColor,
+                }}
+              />
 
-              <h2 className="mt-4 font-display text-3xl lg:text-5xl">
-
-               {sale?.title}
-
-<span className="mx-2 text-[#D97745]">
-  {sale?.discount_percent}%
-</span>
-
-              </h2>
-
-              <p className="mt-2 text-neutral-600">
-
-                {sale?.description}
-
-              </p>
-
-              {timeLeft && (
-  <div
-    className="
-      mt-5
-      inline-flex
-      items-center
-      gap-2
-
-      rounded-full
-
-      bg-white/80
-
-      px-4
-      py-1.5
-
-      text-[15px]
-      font-semibold
-
-      text-[#D97745]
-
-      shadow-sm
-    "
-  >
-    ⏰ Kết thúc sau: {timeLeft}
-  </div>
-)}
-
+              <span
+                className="
+                  truncate
+                  text-[10px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.2em]
+                  text-neutral-700
+                  sm:text-xs
+                "
+              >
+                Flash Sale · 10.10
+              </span>
             </div>
 
-           <Link
-  to="/flashsale"
-  style={{
-    backgroundColor: sale?.banner_color || "#D97745",
-  }}
-  className="
-    inline-flex
-    h-12
+            {/* VIEW ALL */}
 
-    items-center
-    justify-center
+            <Link
+              to="/flashsale"
+              className="
+                group
+                inline-flex
+                shrink-0
+                items-center
+                gap-1.5
+                rounded-full
+                border
+                border-neutral-300
+                bg-white
+                px-3
+                py-1.5
+                text-[10px]
+                font-semibold
+                text-neutral-800
+                shadow-sm
+                transition-all
+                duration-200
+                hover:border-[#D97745]
+                hover:bg-[#D97745]
+                hover:text-white
+                active:scale-[0.97]
+                sm:px-4
+                sm:py-2
+                sm:text-xs
+              "
+            >
+              Xem tất cả
 
-    rounded-full
-
-    px-8
-
-    font-semibold
-
-    text-white
-
-    transition
-  "
->
-              Mua ngay →
+              <span
+                className="
+                  transition-transform
+                  duration-200
+                  group-hover:translate-x-0.5
+                "
+              >
+                →
+              </span>
             </Link>
 
           </div>
 
-          {/* CARD */}
+          {/* ==================================================
+              TITLE AREA
+          ================================================== */}
 
           <div
- className="
-mt-8
-grid
-grid-cols-[REPEAT(2,MINMAX(170PX,1FR))]
-gap-1.5
-md:grid-cols-[REPEAT(2,MINMAX(170PX,1FR))]
-lg:grid-cols-4
-"
->
+            className="
+              mt-4
+              flex
+              flex-col
+              gap-4
+              lg:flex-row
+              lg:items-end
+              lg:justify-between
+            "
+          >
 
-            {products.slice(0, 4).map((item: any) => {
+            {/* TITLE */}
 
-  const product = item.products;
+            <div
+              className="
+                min-w-0
+                flex-1
+              "
+            >
 
-  if (!product) return null;
+              <h2
+                className="
+                  font-display
+                  text-[25px]
+                  font-normal
+                  leading-[1.08]
+                  tracking-[-0.025em]
+                  text-neutral-900
+                  sm:text-3xl
+                  lg:text-[40px]
+                "
+              >
+                {sale?.title ||
+                  "10.10 Olive Flash Sale"}
 
- const image = product.image_url;
+                <span
+                  className="
+                    ml-1.5
+                  "
+                  style={{
+                    color:
+                      accentColor,
+                  }}
+                >
+                  {discount}%
+                </span>
+              </h2>
 
-const oldPrice = Number(product.price);
+              {/* DESCRIPTION */}
 
-const salePrice = Math.round(
-  oldPrice * (100 - sale.discount_percent) / 100
-);
+              <p
+                className="
+                  mt-2
+                  max-w-[760px]
+                  text-[11px]
+                  leading-[1.55]
+                  text-neutral-500
+                  sm:text-sm
+                "
+              >
+                {sale?.description}
+              </p>
 
-const percent =
-  oldPrice > 0
-    ? Math.round(
-        ((oldPrice - salePrice) / oldPrice) * 100
-      )
-    : 0;
+              {/* =================================================
+                  COUNTDOWN
+              ================================================= */}
 
-const saving = oldPrice - salePrice;  
+              <div
+                className="
+                  mt-3
+                  flex
+                  items-center
+                  gap-1
+                  sm:gap-1.5
+                "
+              >
 
-  return (
+                <CountdownBox
+                  value={
+                    timeLeft.days
+                  }
+                  label="ngày"
+                />
 
-    <Link
-  key={product.id}
-  to="/flashsale"
-  className="
-group
-flex
-flex-col
-overflow-hidden
-rounded-2xl
-border
-border-[#F3E4D7]
-bg-white
-p-3
-transition-all
-duration-300
-hover:-translate-y-1
-hover:shadow-lg
-"
-    >
+                <span
+                  className="
+                    text-[10px]
+                    text-neutral-300
+                  "
+                >
+                  :
+                </span>
 
-      
-<div className="-mx-2 -mt-2 relative">
+                <CountdownBox
+                  value={
+                    timeLeft.hours
+                  }
+                  label="giờ"
+                />
 
- <div className="absolute left-3 top-3 z-10 rounded-lg bg-red-500 px-3 py-1.5">
+                <span
+                  className="
+                    text-[10px]
+                    text-neutral-300
+                  "
+                >
+                  :
+                </span>
 
-  <span className="text-sm font-bold text-white">
+                <CountdownBox
+                  value={
+                    timeLeft.minutes
+                  }
+                  label="phút"
+                />
 
-    -{percent}%
+                <span
+                  className="
+                    text-[10px]
+                    text-neutral-300
+                  "
+                >
+                  :
+                </span>
 
-  </span>
+                <CountdownBox
+                  value={
+                    timeLeft.seconds
+                  }
+                  label="giây"
+                  accent
+                />
 
-</div>
+              </div>
+            </div>
 
-<img
-  src={image}
-  className="
-      aspect-[1/1]
-      w-full
-      rounded-t-2xl
-      rounded-b-none
-      object-cover
-    "
-/>
+            {/* ==================================================
+                MAIN CTA
+            ================================================== */}
 
-</div>
+            <Link
+              to="/flashsale"
+              className="
+                flex
+                h-9
+                w-full
+                shrink-0
+                items-center
+                justify-center
+                rounded-full
+                px-5
+                text-[11px]
+                font-semibold
+                text-white
+                transition
+                hover:opacity-90
+                active:scale-[0.98]
+                sm:h-10
+                sm:w-fit
+                sm:px-6
+                sm:text-xs
+                lg:min-w-[140px]
+              "
+              style={{
+                backgroundColor:
+                  accentColor,
+              }}
+            >
+              Mua ngay
+              <span className="ml-1">
+                →
+              </span>
+            </Link>
 
-      <h3
-  className="
-    mt-2
-    min-h-[40px]
+          </div>
 
-    line-clamp-2
+          {/* ==================================================
+              PRODUCTS
+          ================================================== */}
 
-    text-[15px]
-    font-medium
+          <div
+            className="
+              mt-5
+              grid
+              grid-cols-2
+              gap-x-2.5
+              gap-y-5
+              sm:mt-6
+              sm:gap-4
+              lg:grid-cols-4
+            "
+          >
 
-    leading-6
+            {products
+              .slice(0, 4)
+              .map(
+                (
+                  item: ProductItem
+                ) => {
 
-    text-[#2F2F2F]
-  "
->
-  {product.name}
-</h3>
-    
-<div className="mt-2">
+                  const product =
+                    item.products;
 
-  <p className="text-[11px] text-neutral-400 line-through">
+                  if (!product) {
+                    return null;
+                  }
 
-    {oldPrice.toLocaleString("vi-VN")}đ
+                  /* ==========================================
+                     PRICE
+                  ========================================== */
 
-  </p>
+                  const oldPrice =
+                    Number(
+                      product.price ??
+                        0
+                    );
 
-  <p
-  className="
-    mt-1
-   text-[20px]
-md:text-[22px]
-    font-bold
-    leading-none
-    tracking-tight
-    text-[#F97316]
-  "
->
-  {salePrice.toLocaleString("vi-VN")}đ
-</p>
+                  const salePrice =
+                    Math.round(
+                      oldPrice *
+                        (100 -
+                          discount) /
+                        100
+                    );
 
-</div>
+                  const saving =
+                    oldPrice -
+                    salePrice;
 
+                  const percent =
+                    oldPrice > 0
+                      ? Math.round(
+                          ((oldPrice -
+                            salePrice) /
+                            oldPrice) *
+                            100
+                        )
+                      : 0;
 
-<div className="mt-2 rounded-lg bg-orange-50 px-2 py-1.5">
+                  /* ==========================================
+                     PRODUCT NAME
+                  ========================================== */
 
-  <p className="text-[10px] text-orange-500">
+                  const displayName =
+                    getShortProductName(
+                      product.name
+                    );
 
-    Tiết kiệm
+                  /* ==========================================
+                     EXPRESS
+                  ========================================== */
 
-  </p>
+                  const isExpress =
+                    product.express_available ===
+                    true;
 
-  <p className="text-[13px] font-semibold text-[#F97316]">
+                  return (
+                    <Link
+                      key={
+                        product.id
+                      }
+                      to="/flashsale"
+                      className="
+                        group
+                        min-w-0
+                      "
+                    >
 
-    {saving.toLocaleString("vi-VN")}đ
+                      {/* ====================================
+                          IMAGE
+                      ==================================== */}
 
-  </p>
+                      <div
+                        className="
+                          relative
+                          aspect-square
+                          overflow-hidden
+                          rounded-xl
+                          bg-[#F1EFEB]
+                          sm:rounded-2xl
+                        "
+                      >
 
-</div>
+                        <img
+                          src={
+                            product.image_url ||
+                            "/placeholder.svg"
+                          }
+                          alt={
+                            product.name
+                          }
+                          loading="lazy"
+                          className="
+                            h-full
+                            w-full
+                            object-cover
+                            transition-transform
+                            duration-500
+                            group-hover:scale-[1.02]
+                          "
+                        />
 
-<div className="mt-2">
+                        {/* DISCOUNT */}
 
-  <div
-    className="
-      rounded-xl
-      bg-[#F97316]
-      py-1.5
-      text-center
-      text-[15px]
-      font-semibold
-      text-white
-      transition
-      group-hover:bg-[#EA580C]
-    "
-  >
+                        {percent >
+                          0 && (
+                          <span
+                            className="
+                              absolute
+                              left-2
+                              top-2
+                              rounded-md
+                              bg-[#FF3B30]
+                              px-1.5
+                              py-1
+                              text-[9px]
+                              font-semibold
+                              leading-none
+                              text-white
+                              sm:left-3
+                              sm:top-3
+                              sm:px-2
+                              sm:text-[10px]
+                            "
+                          >
+                            -{percent}%
+                          </span>
+                        )}
 
-    Mua ngay →
+                        {/* EXPRESS */}
 
-  </div>
+                        {isExpress && (
+                          <span
+                            className="
+                              absolute
+                              bottom-2
+                              left-2
+                              rounded-md
+                              bg-white/95
+                              px-1.5
+                              py-1
+                              text-[8px]
+                              font-semibold
+                              leading-none
+                              text-[#E8753C]
+                              shadow-sm
+                              backdrop-blur-sm
+                              sm:bottom-3
+                              sm:left-3
+                              sm:px-2
+                              sm:text-[9px]
+                            "
+                          >
+                            Hỏa tốc
+                          </span>
+                        )}
 
-</div>
-     
-    </Link>
+                      </div>
 
-  );
+                      {/* ====================================
+                          PRODUCT INFO
+                      ==================================== */}
 
-})}
+                      <div
+                        className="
+                          pt-2
+                          sm:pt-2.5
+                        "
+                      >
+
+                        {/* PRODUCT NAME */}
+
+                        <h3
+                          className="
+                            line-clamp-2
+                            min-h-[30px]
+                            text-[10px]
+                            font-medium
+                            leading-[1.4]
+                            tracking-[-0.01em]
+                            text-neutral-700
+                            sm:min-h-[34px]
+                            sm:text-xs
+                          "
+                        >
+                          {displayName}
+                        </h3>
+
+                        {/* PRICE */}
+
+                        <div
+                          className="
+                            mt-1
+                            flex
+                            items-baseline
+                            gap-1.5
+                            whitespace-nowrap
+                          "
+                        >
+
+                          <span
+                            className="
+                              text-[15px]
+                              font-semibold
+                              leading-none
+                              tracking-tight
+                              sm:text-base
+                            "
+                            style={{
+                              color:
+                                accentColor,
+                            }}
+                          >
+                            {formatPrice(
+                              salePrice
+                            )}
+                          </span>
+
+                          <span
+                            className="
+                              text-[8px]
+                              text-neutral-400
+                              line-through
+                              sm:text-[10px]
+                            "
+                          >
+                            {formatPrice(
+                              oldPrice
+                            )}
+                          </span>
+
+                        </div>
+
+                        {/* SAVING */}
+
+                        {saving >
+                          0 && (
+                          <p
+                            className="
+                              mt-1
+                              text-[8px]
+                              leading-none
+                              text-neutral-400
+                              sm:text-[10px]
+                            "
+                          >
+                            Tiết kiệm{" "}
+
+                            <span
+                              className="
+                                font-medium
+                              "
+                              style={{
+                                color:
+                                  accentColor,
+                              }}
+                            >
+                              {formatPrice(
+                                saving
+                              )}
+                            </span>
+                          </p>
+                        )}
+
+                        {/* BUY BUTTON */}
+
+                        <div
+                          className="
+                            mt-2
+                            flex
+                            h-8
+                            items-center
+                            justify-center
+                            rounded-full
+                            text-[9px]
+                            font-semibold
+                            text-white
+                            transition
+                            group-hover:opacity-90
+                            sm:h-9
+                            sm:text-[11px]
+                          "
+                          style={{
+                            backgroundColor:
+                              accentColor,
+                          }}
+                        >
+                          Mua ngay
+                          <span className="ml-1">
+                            →
+                          </span>
+                        </div>
+
+                      </div>
+                    </Link>
+                  );
+                }
+              )}
 
           </div>
 
         </div>
-
       </div>
-
-       </div>
-
     </section>
+  );
+}
+
+/* ============================================================
+   COMPACT COUNTDOWN
+============================================================ */
+
+function CountdownBox({
+  value,
+  label,
+  accent = false,
+}: {
+  value: number;
+  label: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className="
+        flex
+        min-w-[37px]
+        flex-col
+        items-center
+        rounded-md
+        border
+        border-neutral-200
+        bg-white
+        px-1.5
+        py-1
+        sm:min-w-[44px]
+        sm:px-2
+        sm:py-1.5
+      "
+    >
+      <span
+        className={`
+          text-[11px]
+          font-semibold
+          leading-none
+          sm:text-sm
+          ${
+            accent
+              ? "text-[#D97745]"
+              : "text-neutral-800"
+          }
+        `}
+      >
+        {String(value).padStart(
+          2,
+          "0"
+        )}
+      </span>
+
+      <span
+        className="
+          mt-1
+          text-[6px]
+          uppercase
+          tracking-wide
+          text-neutral-400
+          sm:text-[8px]
+        "
+      >
+        {label}
+      </span>
+    </div>
   );
 }

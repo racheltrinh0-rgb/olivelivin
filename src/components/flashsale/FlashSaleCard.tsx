@@ -1,147 +1,131 @@
+import { Link } from "@tanstack/react-router";
 import {
-  ArrowUpRight,
-  Flame,
+  Heart,
+  ShoppingBag,
+  Zap,
 } from "lucide-react";
 
-import { Link } from "@tanstack/react-router";
+type FlashSaleCardProps = {
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    slug?: string | null;
+    image_url?: string | null;
+    stock?: number | null;
+    express_available?: boolean | null;
+    discount_percent?: number | null;
+  };
+};
 
-interface FlashSaleCardProps {
-  product: any;
-}
+/* ============================================================
+   RÚT GỌN TÊN SẢN PHẨM
+============================================================ */
 
-function formatPrice(
-  price: number | null | undefined
+function getShortProductName(
+  name?: string
 ) {
-  return (
-    new Intl.NumberFormat("vi-VN").format(
-      Number(price ?? 0)
-    ) + "đ"
+  if (!name) return "";
+
+  let result = name.trim();
+
+  /*
+   * Bỏ phần mô tả sau dấu –
+   *
+   * Ví dụ:
+   * ĐÈN CÂY ĐỨNG HALF ROUND TIMBER GRAIN
+   * – VÂN GỖ CỔ ĐIỂN
+   *
+   * =>
+   *
+   * ĐÈN CÂY ĐỨNG HALF ROUND TIMBER GRAIN
+   */
+  result = result.split("–")[0];
+
+  /*
+   * Bỏ phần mô tả sau dấu —
+   */
+  result = result.split("—")[0];
+
+  /*
+   * Bỏ các hậu tố mô tả phổ biến
+   */
+  result = result.replace(
+    /\s*-\s*THIẾT KẾ.*$/i,
+    ""
   );
+
+  result = result.replace(
+    /\s*-\s*PHONG CÁCH.*$/i,
+    ""
+  );
+
+  result = result.replace(
+    /\s*-\s*VÂN GỖ.*$/i,
+    ""
+  );
+
+  result = result.replace(
+    /\s*-\s*NGHỆ THUẬT.*$/i,
+    ""
+  );
+
+  result = result.replace(
+    /\s*\|\s*.*$/i,
+    ""
+  );
+
+  return result
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-export default function FlashSaleCard({
+/* ============================================================
+   COMPONENT
+============================================================ */
+
+export function FlashSaleCard({
   product,
 }: FlashSaleCardProps) {
-
-  /* ==========================================================
-     PRICE
-  ========================================================== */
-
   const oldPrice = Number(
-    product?.price ?? 0
+    product.price ?? 0
   );
 
-  const percent = Math.max(
-    0,
-    Number(
-      product?.discount_percent ?? 0
-    )
+  const discount = Number(
+    product.discount_percent ?? 0
   );
 
-  const salePrice =
-    percent > 0
-      ? Math.round(
-          oldPrice *
-            (100 - percent) /
-            100
-        )
-      : oldPrice;
-
-  const saving = Math.max(
-    0,
-    oldPrice - salePrice
+  const salePrice = Math.round(
+    oldPrice *
+      (100 - discount) /
+      100
   );
 
-  /* ==========================================================
-     PRODUCT DATA
-  ========================================================== */
+  const saving =
+    oldPrice - salePrice;
 
-  const stock =
-    Number(
-      product?.stock ?? 0
+  const isExpress =
+    product.express_available === true;
+
+  const isOutOfStock =
+    Number(product.stock ?? 0) <= 0;
+
+  const shortName =
+    getShortProductName(
+      product.name
     );
-
-  /*
-   * Dùng sold nếu database đã có.
-   * Nếu chưa có thì dùng giá mặc định ổn định,
-   * không random mỗi lần render.
-   */
-
-  const sold =
-    Number(
-      product?.sold ??
-        product?.sold_count ??
-        0
-    );
-
-  /*
-   * Nếu chưa có sold data,
-   * không hiển thị số giả.
-   */
-
-  const hasSoldData =
-    sold > 0;
-
-  /*
-   * Progress:
-   * ưu tiên dữ liệu thật nếu có.
-   */
-
-  const progress =
-    hasSoldData
-      ? Math.min(
-          100,
-          Math.max(
-            0,
-            Math.round(
-              (sold /
-                Math.max(
-                  sold + stock,
-                  1
-                )) *
-                100
-            )
-          )
-        )
-      : 0;
-
-  /* ==========================================================
-     IMAGE
-  ========================================================== */
-
-  const imageUrl =
-    product?.image_url ||
-    product?.image ||
-    "";
-
-  /* ==========================================================
-     BADGE
-  ========================================================== */
-
-  const badgeText =
-    percent > 0
-      ? `-${percent}%`
-      : "FLASH";
 
   return (
-    <article
+    <Link
+      to="/product/$slug"
+      params={{
+        slug:
+          product.slug || "",
+      }}
       className="
         group
+        block
         min-w-0
-        overflow-hidden
-        rounded-[18px]
-        border
-        border-[#E7E3DC]
-        bg-white
-        shadow-[0_2px_12px_rgba(40,35,28,0.05)]
-        transition-all
-        duration-300
-
-        hover:-translate-y-1
-        hover:border-[#D8D2C9]
-        hover:shadow-[0_12px_30px_rgba(40,35,28,0.10)]
-
-        sm:rounded-[20px]
       "
     >
 
@@ -149,178 +133,171 @@ export default function FlashSaleCard({
           IMAGE
       ====================================================== */}
 
-      <Link
-        to="/products/$slug"
-        params={{
-          slug:
-            product?.slug ?? "",
-        }}
+      <div
         className="
-          block
+          relative
+          aspect-square
           overflow-hidden
+          rounded-2xl
+          bg-[#F5F3EF]
         "
       >
 
-        <div
+        {/* PRODUCT IMAGE */}
+
+        <img
+          src={
+            product.image_url ||
+            "/placeholder.svg"
+          }
+          alt={product.name}
+          loading="lazy"
           className="
-            relative
-            aspect-square
-            overflow-hidden
-            bg-[#F5F3EF]
+            h-full
+            w-full
+            object-cover
+            transition-transform
+            duration-500
+            ease-out
+            group-hover:scale-[1.025]
+          "
+        />
+
+        {/* ====================================================
+            DISCOUNT
+        ==================================================== */}
+
+        {discount > 0 && (
+          <span
+            className="
+              absolute
+              left-2.5
+              top-2.5
+              rounded-md
+              bg-[#FF3B30]
+              px-2
+              py-1.5
+              text-[10px]
+              font-semibold
+              leading-none
+              text-white
+              sm:left-3
+              sm:top-3
+              sm:text-xs
+            "
+          >
+            -{discount}%
+          </span>
+        )}
+
+        {/* ====================================================
+            WISHLIST
+        ==================================================== */}
+
+        <button
+          type="button"
+          aria-label="Thêm vào yêu thích"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          className="
+            absolute
+            right-2.5
+            top-2.5
+            flex
+            h-8
+            w-8
+            items-center
+            justify-center
+            rounded-full
+            bg-white/95
+            text-neutral-700
+            shadow-sm
+            backdrop-blur-sm
+            transition
+            hover:bg-white
+            hover:text-neutral-900
+            sm:right-3
+            sm:top-3
           "
         >
+          <Heart
+            size={15}
+            strokeWidth={1.7}
+          />
+        </button>
 
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={
-                product?.name ??
-                "Product"
-              }
-              loading="lazy"
-              className="
-                h-full
-                w-full
-                object-cover
-                transition-transform
-                duration-500
-                group-hover:scale-[1.025]
-              "
+        {/* ====================================================
+            EXPRESS
+        ==================================================== */}
+
+        {isExpress && (
+          <div
+            className="
+              absolute
+              bottom-2.5
+              left-2.5
+              inline-flex
+              items-center
+              gap-1
+              rounded-md
+              bg-white/95
+              px-2
+              py-1.5
+              text-[9px]
+              font-semibold
+              leading-none
+              text-[#E8753C]
+              shadow-sm
+              backdrop-blur-sm
+              sm:bottom-3
+              sm:left-3
+              sm:text-[10px]
+            "
+          >
+            <Zap
+              size={10}
+              strokeWidth={2.3}
+              fill="currentColor"
             />
-          ) : (
-            <div
-              className="
-                flex
-                h-full
-                w-full
-                items-center
-                justify-center
-                text-xs
-                text-neutral-400
-              "
-            >
-              No image
-            </div>
-          )}
 
-          {/* SALE BADGE */}
+            Hỏa tốc
+          </div>
+        )}
 
-          {percent > 0 && (
-            <div
-              className="
-                absolute
-                left-2.5
-                top-2.5
-                flex
-                items-center
-                gap-1
-                rounded-full
-                bg-[#20231F]
-                px-2.5
-                py-1.5
-                text-[10px]
-                font-semibold
-                leading-none
-                text-white
-                shadow-sm
-
-                sm:left-3
-                sm:top-3
-                sm:px-3
-                sm:py-1.5
-              "
-            >
-              <Flame
-                className="
-                  h-3
-                  w-3
-                  text-[#FF6A00]
-                "
-                strokeWidth={2}
-              />
-
-              {badgeText}
-            </div>
-          )}
-
-          {/* EXPRESS */}
-
-          {product?.express_available && (
-            <div
-              className="
-                absolute
-                right-2.5
-                top-2.5
-                rounded-full
-                bg-white/95
-                px-2
-                py-1
-                text-[8px]
-                font-semibold
-                uppercase
-                tracking-[0.04em]
-                text-[#536A59]
-                shadow-sm
-                backdrop-blur
-
-                sm:right-3
-                sm:top-3
-              "
-            >
-              HỎA TỐC
-            </div>
-          )}
-
-        </div>
-
-      </Link>
+      </div>
 
       {/* ======================================================
-          CONTENT
+          PRODUCT INFO
       ====================================================== */}
 
       <div
         className="
-          min-w-0
-          p-3
-
-          sm:p-3.5
+          pt-3
         "
       >
 
         {/* ====================================================
-            PRODUCT NAME
+            NAME
         ==================================================== */}
 
-        <Link
-          to="/products/$slug"
-          params={{
-            slug:
-              product?.slug ?? "",
-          }}
-          className="block"
+        <h3
+          className="
+            line-clamp-2
+            min-h-[32px]
+            text-[11px]
+            font-medium
+            leading-[1.45]
+            tracking-[-0.01em]
+            text-neutral-800
+            sm:min-h-[36px]
+            sm:text-sm
+          "
+          title={product.name}
         >
-          <h3
-            className="
-              min-h-[38px]
-              overflow-hidden
-              text-[12px]
-              font-medium
-              leading-[1.55]
-              tracking-[-0.01em]
-              text-[#292C28]
-
-              line-clamp-2
-
-              sm:min-h-[42px]
-              sm:text-[13px]
-              sm:leading-5
-            "
-          >
-            {product?.name ??
-              "Sản phẩm"}
-          </h3>
-        </Link>
+          {shortName}
+        </h3>
 
         {/* ====================================================
             PRICE
@@ -328,235 +305,156 @@ export default function FlashSaleCard({
 
         <div
           className="
-            mt-2.5
-            min-w-0
+            mt-1.5
+            flex
+            items-baseline
+            gap-2
+            whitespace-nowrap
           "
         >
 
-          <div
+          <span
             className="
-              flex
-              min-w-0
-              items-baseline
-              gap-1.5
-              overflow-hidden
+              text-[17px]
+              font-semibold
+              leading-none
+              tracking-tight
+              text-[#E8753C]
+              sm:text-lg
             "
           >
+            {salePrice.toLocaleString(
+              "vi-VN"
+            )}
+            đ
+          </span>
 
-            {/* SALE PRICE */}
-
+          {oldPrice > salePrice && (
             <span
               className="
-                min-w-0
-                shrink
-                whitespace-nowrap
-                text-[clamp(18px,5vw,24px)]
-                font-bold
-                leading-none
-                tracking-[-0.045em]
-                text-[#F05A32]
-
-                sm:text-[25px]
+                text-[9px]
+                text-neutral-400
+                line-through
+                sm:text-[10px]
               "
             >
-              {formatPrice(
-                salePrice
+              {oldPrice.toLocaleString(
+                "vi-VN"
               )}
+              đ
             </span>
-
-            {/* OLD PRICE */}
-
-            {oldPrice >
-              salePrice && (
-              <span
-                className="
-                  min-w-0
-                  shrink
-                  whitespace-nowrap
-                  truncate
-                  text-[9px]
-                  leading-none
-                  text-neutral-400
-                  line-through
-
-                  sm:text-[11px]
-                "
-              >
-                {formatPrice(
-                  oldPrice
-                )}
-              </span>
-            )}
-
-          </div>
-
-          {/* SAVING */}
-
-          {saving > 0 && (
-            <p
-              className="
-                mt-1
-                truncate
-                text-[10px]
-                leading-4
-                text-neutral-500
-
-                sm:text-[11px]
-              "
-            >
-              Tiết kiệm{" "}
-              <span className="font-medium text-[#536A59]">
-                {formatPrice(
-                  saving
-                )}
-              </span>
-            </p>
           )}
 
         </div>
 
         {/* ====================================================
-            SALE STATUS
+            SAVING
+        ==================================================== */}
+
+        {saving > 0 && (
+          <p
+            className="
+              mt-1.5
+              text-[9px]
+              leading-none
+              text-neutral-400
+              sm:text-[10px]
+            "
+          >
+            Tiết kiệm{" "}
+            <span
+              className="
+                font-medium
+                text-[#E8753C]
+              "
+            >
+              {saving.toLocaleString(
+                "vi-VN"
+              )}
+              đ
+            </span>
+          </p>
+        )}
+
+        {/* ====================================================
+            ACTIONS
         ==================================================== */}
 
         <div
           className="
             mt-3
+            flex
+            items-center
+            gap-2
           "
         >
+
+          {/* BUY */}
 
           <div
             className="
               flex
+              h-9
+              flex-1
               items-center
-              justify-between
-              gap-2
-              text-[9px]
-              leading-4
-
-              sm:text-[10px]
+              justify-center
+              rounded-full
+              bg-[#E8753C]
+              px-3
+              text-[10px]
+              font-semibold
+              text-white
+              transition
+              duration-200
+              group-hover:bg-[#DF6A32]
+              sm:h-10
+              sm:text-xs
             "
           >
-
-            <span
-              className="
-                shrink-0
-                text-neutral-500
-              "
-            >
-              Flash Sale
+            Mua ngay
+            <span className="ml-1">
+              →
             </span>
-
-            {stock > 0 && (
-              <span
-                className="
-                  shrink-0
-                  font-medium
-                  text-[#F05A32]
-                "
-              >
-                Còn {stock}
-              </span>
-            )}
-
           </div>
 
-          {/* PROGRESS */}
+          {/* CART */}
 
-          {hasSoldData && (
-            <div
-              className="
-                mt-1.5
-                h-[3px]
-                overflow-hidden
-                rounded-full
-                bg-[#EEEAE4]
-              "
-            >
-              <div
-                className="
-                  h-full
-                  rounded-full
-                  bg-[#F05A32]
-                  transition-all
-                  duration-500
-                "
-                style={{
-                  width: `${progress}%`,
-                }}
-              />
-            </div>
-          )}
-
-          {hasSoldData && (
-            <p
-              className="
-                mt-1
-                truncate
-                text-[9px]
-                text-neutral-400
-              "
-            >
-              Đã bán {sold}
-            </p>
-          )}
+          <button
+            type="button"
+            aria-label="Thêm vào giỏ hàng"
+            disabled={isOutOfStock}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+            className="
+              flex
+              h-9
+              w-9
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              border
+              border-neutral-200
+              bg-white
+              text-neutral-700
+              transition
+              hover:border-neutral-300
+              hover:bg-neutral-50
+              sm:h-10
+              sm:w-10
+            "
+          >
+            <ShoppingBag
+              size={15}
+              strokeWidth={1.7}
+            />
+          </button>
 
         </div>
 
-        {/* ====================================================
-            BUTTON
-        ==================================================== */}
-
-        <Link
-          to="/products/$slug"
-          params={{
-            slug:
-              product?.slug ?? "",
-          }}
-          className="
-            mt-3
-            flex
-            w-full
-            items-center
-            justify-center
-            gap-1.5
-            rounded-full
-            border
-            border-[#6C706B]
-            bg-white
-            px-3
-            py-2
-            text-[11px]
-            font-medium
-            text-[#30342F]
-            transition-all
-            duration-200
-
-            hover:border-[#30342F]
-            hover:bg-[#30342F]
-            hover:text-white
-
-            active:scale-[0.98]
-
-            sm:py-2.5
-            sm:text-xs
-          "
-        >
-          <span>
-            Xem sản phẩm
-          </span>
-
-          <ArrowUpRight
-            className="
-              h-3.5
-              w-3.5
-              shrink-0
-            "
-            strokeWidth={1.8}
-          />
-        </Link>
-
       </div>
-    </article>
+    </Link>
   );
 }

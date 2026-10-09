@@ -1887,7 +1887,7 @@ const cartItem = {
 
                     title={color.name}
 
-                    className={`relative h-11 w-11 overflow-hidden border bg-white transition ${
+                    className={`relative h-11 w-11 overflow-hidden rounded-lg border bg-white transition ${
 
                       selectedColor?.id === color.id
 
@@ -2179,7 +2179,7 @@ const cartItem = {
 
             <div className="grid grid-cols-[108px_minmax(0,1fr)] gap-2">
 
-              <div className="flex h-12 items-center justify-between border border-neutral-300">
+              <div className="flex h-12 items-center justify-between overflow-hidden rounded-xl border border-neutral-300 bg-white">
 
                 <motion.button
 
@@ -2239,7 +2239,7 @@ const cartItem = {
 
                 disabled={!inStock}
 
-                className="h-12 bg-[#1F2A1F] px-4 text-[10px] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-[#344334] disabled:cursor-not-allowed disabled:bg-neutral-300"
+                className="h-12 rounded-xl bg-[#1F2A1F] px-4 text-[10px] font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-200 hover:bg-[#344334] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-300"
 
               >
 
@@ -2263,7 +2263,7 @@ const cartItem = {
 
               disabled={!inStock}
 
-              className="mt-2 h-10 w-full border border-neutral-300 bg-white text-[9px] font-medium uppercase tracking-[0.12em] text-neutral-700 transition hover:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2 h-11 w-full rounded-xl border border-[#0878E8] bg-[#0878E8] text-[10px] font-bold uppercase tracking-[0.12em] text-white transition-colors duration-200 hover:border-[#0668CC] hover:bg-[#0668CC] active:scale-[0.99] disabled:cursor-not-allowed disabled:border-neutral-300 disabled:bg-neutral-300 disabled:text-white"
 
             >
 

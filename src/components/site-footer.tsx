@@ -1,45 +1,16 @@
 import { Instagram, Facebook, Mail, ArrowRight } from "lucide-react";
-
 export function SiteFooter() {
   const paymentMethods = [
-    {
-      name: "Visa",
-      src: "https://cdn.simpleicons.org/visa/1434CB",
-      className: "h-[22px] w-[38px]",
-    },
-    {
-      name: "Mastercard",
-      src: "https://cdn.simpleicons.org/mastercard",
-      className: "h-[22px] w-[38px]",
-    },
-    {
-      name: "American Express",
-      src: "https://cdn.simpleicons.org/americanexpress",
-      className: "h-[23px] w-[38px]",
-    },
-    {
-      name: "PayPal",
-      src: "https://cdn.simpleicons.org/paypal",
-      className: "h-[23px] w-[38px]",
-    },
-    {
-      name: "Diners Club",
-      src: "https://cdn.simpleicons.org/dinersclub",
-      className: "h-[23px] w-[38px]",
-    },
-    {
-      name: "Discover",
-      src: "https://cdn.simpleicons.org/discover",
-      className: "h-[23px] w-[38px]",
-    },
+    { name: "Visa", src: "/images/visa.png", className: "h-[22px] w-[38px]" },
+    { name: "Mastercard", src: "/images/mastercard.png", className: "h-[22px] w-[38px]" },
+    { name: "PayPal", src: "/images/PayPal%20(1).png", className: "h-[23px] w-[38px]" },
+    { name: "Diners Club", src: "/images/Diners%20Club.png", className: "h-[23px] w-[38px]" },
+    { name: "Discover", src: "/images/discover.png", className: "h-[23px] w-[38px]" },
   ];
-
   const linkClass =
     "w-fit text-[14px] leading-6 text-neutral-700 transition-colors duration-200 hover:text-neutral-950";
-
   const headingClass =
     "mb-4 text-[13px] font-semibold tracking-[-0.01em] text-neutral-950";
-
   return (
     <footer className="relative mt-12 overflow-hidden border-t border-neutral-200 bg-[#F7F7F5] sm:mt-20">
       {/* =========================================================
@@ -61,18 +32,15 @@ export function SiteFooter() {
             <path d="M-130 113C35 42 135 174 292 104S522 54 662 130s215 104 358 25 258-112 420-7 280 99 440 11" />
             <path d="M-140 136C30 64 145 198 304 126S535 78 674 152s220 110 366 32 265-116 430-10 290 102 450 14" />
             <path d="M-145 159C24 86 154 222 316 149S548 102 686 175s224 115 373 39 272-120 438-14 298 105 458 17" />
-
             <path d="M-100 286C75 205 175 344 340 270s260-108 400-8 230 126 372 36 270-114 438-8 285 108 465 7" />
             <path d="M-110 311C65 225 182 369 351 295s267-112 408-9 236 131 380 40 277-119 448-12 295 112 475 9" />
             <path d="M-120 336C55 245 190 394 362 320s274-116 416-10 242 136 388 44 284-124 458-16 305 116 485 12" />
             <path d="M-130 361C45 265 198 419 374 345s281-120 424-11 248 141 396 48 291-129 468-20 315 120 495 15" />
-
             <path d="M-90 515C85 432 185 555 342 488s263-98 400-8 230 118 370 33 268-103 432-6 288 103 472 9" />
             <path d="M-105 540C75 455 192 582 354 513s271-101 410-10 237 123 380 39 276-108 446-10 299 108 484 14" />
             <path d="M-120 565C65 478 200 609 366 538s279-105 420-12 244 128 390 44 285-113 460-15 310 112 496 19" />
             <path d="M-135 590C55 501 208 637 378 563s287-109 430-14 251 133 400 49 294-118 474-20 321 116 508 24" />
           </g>
-
           <g fill="none" stroke="#E5E3DF" strokeWidth="0.8">
             <path d="M175 -10C225 62 305 30 350 96s27 126 108 146 155-10 183 69 20 128 104 154 158-10 214 64 38 126 123 154 163-5 240 66 37 103 118 128" />
             <path d="M205 -18C258 57 332 35 372 101s31 130 112 151 159-7 188 71 21 131 107 158 160-7 217 68 40 130 126 159 165-2 244 69 40 106 122 131" />
@@ -83,7 +51,6 @@ export function SiteFooter() {
           </g>
         </svg>
       </div>
-
       <div className="relative z-10">
         <div className="container-x">
           {/* =====================================================
@@ -115,7 +82,6 @@ export function SiteFooter() {
                       +
                     </span>
                   </summary>
-
                   <nav className="flex flex-col gap-2 pb-4 pt-1">
                     <a href="/lien-he" className={linkClass}>Liên hệ</a>
                     <a href="/shipping" className={linkClass}>Chính sách giao hàng</a>
@@ -123,7 +89,6 @@ export function SiteFooter() {
                     <a href="/thanh-toan" className={linkClass}>Chính sách thanh toán</a>
                   </nav>
                 </details>
-
                 <details className="group">
                   <summary className="flex cursor-pointer list-none items-center justify-between py-3.5 text-[14px] font-semibold text-neutral-950 [&::-webkit-details-marker]:hidden">
                     About
@@ -131,14 +96,12 @@ export function SiteFooter() {
                       +
                     </span>
                   </summary>
-
                   <nav className="flex flex-col gap-2 pb-4 pt-1">
                     <a href="/" className={linkClass}>About Olive Living</a>
                     <a href="/shop" className={linkClass}>Our Collection</a>
                     <a href="/lien-he" className={linkClass}>Contact Us</a>
                   </nav>
                 </details>
-
                 <details className="group">
                   <summary className="flex cursor-pointer list-none items-center justify-between py-3.5 text-[14px] font-semibold text-neutral-950 [&::-webkit-details-marker]:hidden">
                     Sales
@@ -146,7 +109,6 @@ export function SiteFooter() {
                       +
                     </span>
                   </summary>
-
                   <nav className="flex flex-col gap-2 pb-4 pt-1">
                     <a href="/shop" className={linkClass}>Tất cả sản phẩm</a>
                     <a href="/shop?category=den-ban" className={linkClass}>Đèn bàn</a>
@@ -154,10 +116,8 @@ export function SiteFooter() {
                     <a href="/shop?category=den-dung" className={linkClass}>Đèn đứng</a>
                   </nav>
                 </details>
-
               </div>
             </div>
-
             {/* ================= DESKTOP NAV ================= */}
             <div className="hidden lg:contents">
               {/* SUPPORT */}
@@ -170,7 +130,6 @@ export function SiteFooter() {
                   <a href="/thanh-toan" className={linkClass}>Chính sách thanh toán</a>
                 </nav>
               </div>
-
               {/* ABOUT */}
               <div>
                 <p className={headingClass}>About</p>
@@ -180,7 +139,6 @@ export function SiteFooter() {
                   <a href="/lien-he" className={linkClass}>Contact Us</a>
                 </nav>
               </div>
-
               {/* SALES */}
               <div>
                 <p className={headingClass}>Sales</p>
@@ -192,19 +150,16 @@ export function SiteFooter() {
                 </nav>
               </div>
             </div>
-
             {/* NEWSLETTER */}
             <div className="mt-7 lg:mt-0 lg:pl-2 xl:pl-5">
               <p className="max-w-[430px] text-[13px] leading-5 text-neutral-800 sm:text-[14px]">
                 Explore with us! Sign up to receive exclusive access to
                 product drops, new collections, and more.
               </p>
-
               <form className="mt-4 flex h-10 max-w-[390px] gap-2 sm:h-11">
                 <label className="sr-only" htmlFor="footer-email">
                   Email
                 </label>
-
                 <input
                   id="footer-email"
                   type="email"
@@ -226,7 +181,6 @@ export function SiteFooter() {
                     focus:border-neutral-400
                   "
                 />
-
                 <button
                   type="submit"
                   className="
@@ -256,7 +210,6 @@ export function SiteFooter() {
               </form>
             </div>
           </div>
-
           {/* =====================================================
               BRAND + SOCIALS
               Reference places brand on bottom-left and socials
@@ -280,7 +233,6 @@ export function SiteFooter() {
                 OLIVE LIVING
               </a>
             </div>
-
             <div className="flex flex-wrap items-center gap-3">
               <a
                 href="https://www.instagram.com/olivelivingvn/"
@@ -302,7 +254,6 @@ export function SiteFooter() {
               >
                 <Instagram size={18} strokeWidth={1.8} />
               </a>
-
               <a
                 href="https://www.facebook.com/oliveliving/"
                 target="_blank"
@@ -323,7 +274,6 @@ export function SiteFooter() {
               >
                 <Facebook size={18} strokeWidth={1.8} />
               </a>
-
               <a
                 href="mailto:hello@olivelivingvn.com"
                 aria-label="Email"
@@ -342,7 +292,6 @@ export function SiteFooter() {
               >
                 <Mail size={18} strokeWidth={1.8} />
               </a>
-
               {/* Payment methods are kept from the existing footer data. */}
               <div className="ml-1 hidden h-7 items-center gap-2 border-l border-neutral-300 pl-4 sm:flex">
                 {paymentMethods.slice(0, 4).map((payment) => (
@@ -359,31 +308,22 @@ export function SiteFooter() {
               </div>
             </div>
           </div>
-
-          {/* MOBILE PAYMENT METHODS */}
-          <div className="flex items-center justify-center gap-2 border-t border-neutral-300 py-3 sm:hidden">
-            <p className="mr-1 text-[8px] uppercase tracking-[0.12em] text-neutral-400">
-              Thanh toán
-            </p>
-
+          {/* MOBILE PAYMENT METHODS — card images only, one row */}
+          <div className="flex items-center justify-center gap-3 border-t border-neutral-300 py-3 sm:hidden">
             {paymentMethods.map((payment) => (
-              <div
+              <img
                 key={payment.name}
-                className="flex h-6 w-9 items-center justify-center rounded-[4px] border border-neutral-200 bg-white"
+                src={payment.src}
+                alt={payment.name}
                 title={payment.name}
-              >
-                <img
-                  src={payment.src}
-                  alt={payment.name}
-                  className={`${payment.className} max-h-[17px] max-w-[30px] object-contain opacity-80`}
-                  loading="lazy"
-                  draggable={false}
-                />
-              </div>
+                className="h-8 w-[48px] shrink-0 object-contain"
+                loading="lazy"
+                draggable={false}
+              />
             ))}
           </div>
-        </div>
 
+                </div>
         {/* =====================================================
             BOTTOM LEGAL BAR
             Uses only real routes/data already present in the footer.
@@ -408,7 +348,6 @@ export function SiteFooter() {
             <p>
               © {new Date().getFullYear()} Olive Living. All rights reserved.
             </p>
-
             <nav className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
               <a
                 href="/chinh-sach-doi-hang"
@@ -416,44 +355,36 @@ export function SiteFooter() {
               >
                 Mua hàng
               </a>
-
               <span aria-hidden="true" className="text-neutral-300">
                 |
               </span>
-
               <a
                 href="/shipping"
                 className="transition hover:text-neutral-950"
               >
                 Giao hàng
               </a>
-
               <span aria-hidden="true" className="text-neutral-300">
                 |
               </span>
-
               <a
                 href="/thanh-toan"
                 className="transition hover:text-neutral-950"
               >
                 Thanh toán
               </a>
-
               <span aria-hidden="true" className="text-neutral-300">
                 |
               </span>
-
               <a
                 href="/lien-he"
                 className="transition hover:text-neutral-950"
               >
                 Liên hệ
               </a>
-
               <span aria-hidden="true" className="text-neutral-300">
                 |
               </span>
-
               <span>Vietnam</span>
             </nav>
           </div>

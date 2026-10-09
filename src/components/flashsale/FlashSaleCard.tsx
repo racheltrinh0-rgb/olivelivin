@@ -308,7 +308,7 @@ export function FlashSaleCard({
       ====================================================== */}
 
       <Link
-        to="/product/$slug"
+        to="/products/$slug"
         params={{
           slug:
             product.slug || "",

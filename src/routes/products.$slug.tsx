@@ -145,17 +145,13 @@ category_id,
 
 
 product_images(
-
-id,
-
-image_url,
-
-sort_order,
-
-color_id,
-
-is_lifestyle
-
+  id,
+  image_url,
+  thumbnail_url,
+  image_type,
+  sort_order,
+  color_id,
+  is_lifestyle
 ),
 
 
@@ -425,7 +421,7 @@ console.log("Product name:", product.name);
         {
 
           image_url: product.image_url,
-
+          image_type: "image",
           color_id: null,
 
         },
@@ -1095,42 +1091,36 @@ async function loadAccessories() {
 
 
 const gallery = Array.from(
-
   new Map(
-
     (
-
       selectedColor
-
         ? [
-
             ...allImages.filter(
-
               (img: any) =>
-
+                img.image_type === "video" ||
                 img.color_id === selectedColor.id
-
             ),
-
             ...allImages.filter(
-
               (img: any) =>
-
-                img.is_lifestyle === true
-
+                img.is_lifestyle === true &&
+                img.image_type !== "video"
             ),
-
           ]
-
         : allImages
-
-    ).map((img: any) => [img.id, img])
-
+    ).map((img: any, index: number) => [
+      img.id ?? `${img.image_url}-${index}`,
+      img,
+    ])
   ).values()
-
 );
 
+  const selectedMedia = gallery.find(
+    (img: any) => img.image_url === selectedImage
+  );
 
+  const isVideoMedia = (item: any) =>
+    item?.image_type === "video" ||
+    /\\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(item?.image_url || "");
 
   const visibleGallery = showAllImages
 
@@ -1140,13 +1130,10 @@ const gallery = Array.from(
 
 
 
+  // Lifestyle section supports both lifestyle images and videos.
   const lifestyleGallery = allImages.filter(
-
-  (img: any) =>
-
-    img.is_lifestyle === true
-
-);
+    (img: any) => img.is_lifestyle === true
+  );
 
 
 
@@ -1484,17 +1471,31 @@ const cartItem = {
 
               >
 
-                <img
-
-                  src={img.image_url}
-
-                  alt={`${product.name} ${index + 1}`}
-
-                  className="h-full w-full object-cover"
-
-                  loading={index === 0 ? "eager" : "lazy"}
-
-                />
+                {isVideoMedia(img) ? (
+                  <div className="relative h-full w-full bg-neutral-900">
+                    <video
+                      src={img.image_url}
+                      poster={img.thumbnail_url || undefined}
+                      className="h-full w-full object-cover"
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/20 text-white">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/65 text-xs">▶</span>
+                    </span>
+                    <span className="absolute bottom-1 left-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold uppercase text-white">
+                      Video
+                    </span>
+                  </div>
+                ) : (
+                  <img
+                    src={img.image_url}
+                    alt={`${product.name} ${index + 1}`}
+                    className="h-full w-full object-cover"
+                    loading={index === 0 ? "eager" : "lazy"}
+                  />
+                )}
 
               </button>
 
@@ -1533,19 +1534,27 @@ const cartItem = {
             <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-[#F5F4F1]">
 
               {selectedImage ? (
-
-                <img
-
-                  key={selectedImage}
-
-                  src={selectedImage}
-
-                  alt={product.name}
-
-                  className="h-full w-full object-cover"
-
-                />
-
+                isVideoMedia(selectedMedia) ? (
+                  <video
+                    key={selectedImage}
+                    src={selectedImage}
+                    controls
+                    autoPlay={false}
+                    playsInline
+                    preload="metadata"
+                    className="h-full w-full object-contain"
+                    aria-label={`${product.name} video`}
+                  >
+                    Trình duyệt của bạn không hỗ trợ phát video.
+                  </video>
+                ) : (
+                  <img
+                    key={selectedImage}
+                    src={selectedImage}
+                    alt={product.name}
+                    className="h-full w-full object-cover"
+                  />
+                )
               ) : (
 
                 <div className="text-xs text-neutral-400">
@@ -3185,41 +3194,34 @@ index % 3 === 0
 
 
 
-<img
-
-src={img.image_url}
-
-alt={product.name}
-
-loading="lazy"
-
-className="
-
-block
-
-
-
-w-full
-
-
-
-object-cover
-
-
-
-transition-all
-
-
-
-duration-700
-
-
-
-hover:scale-[1.03]
-
-"
-
-/>
+{isVideoMedia(img) ? (
+  <div className="relative overflow-hidden bg-black">
+    <video
+      key={img.id ?? img.image_url}
+      src={img.image_url}
+      poster={img.thumbnail_url || undefined}
+      controls
+      playsInline
+      preload="metadata"
+      aria-label={`${product.name} video`}
+      className="block max-h-[720px] w-full object-contain"
+    >
+      Trình duyệt của bạn không hỗ trợ phát video.
+    </video>
+    {img.thumbnail_url && (
+      <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
+        Video
+      </span>
+    )}
+  </div>
+) : (
+  <img
+    src={img.image_url}
+    alt={product.name}
+    loading="lazy"
+    className="block w-full object-cover transition-all duration-700 hover:scale-[1.03]"
+  />
+)}
 
 
 

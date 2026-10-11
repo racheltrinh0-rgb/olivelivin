@@ -10,6 +10,8 @@ import { formatVND } from "@/lib/format";
 
 import { useCart } from "@/lib/cart";
 
+import FloatingFlashSaleBadge from "@/components/FloatingFlashSaleBadge";
+
 import { Trees } from "lucide-react";
 
 import {
@@ -3850,6 +3852,9 @@ index % 3 === 0
           </div>
         </section>
       )}
+
+      {/* FLOATING FLASH SALE — stays above the mobile sticky buy bar */}
+      <FloatingFlashSaleBadge />
 
       {/* MOBILE STICKY BUY — compact premium bar */}
       <div

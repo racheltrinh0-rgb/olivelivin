@@ -85,7 +85,7 @@ export function SiteFooter() {
                   <nav className="flex flex-col gap-2 pb-4 pt-1">
                     <a href="/lien-he" className={linkClass}>Liên hệ</a>
                     <a href="/shipping" className={linkClass}>Chính sách giao hàng</a>
-                    <a href="/chinh-sach-doi-hang" className={linkClass}>Chính sách mua hàng</a>
+                    <a href="/chinh-sach-doi-hang" className={linkClass}>Chính sách đổi hàng</a>
                     <a href="/thanh-toan" className={linkClass}>Chính sách thanh toán</a>
                   </nav>
                 </details>

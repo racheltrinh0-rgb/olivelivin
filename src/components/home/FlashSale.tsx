@@ -3626,25 +3626,21 @@ export default function FlashSale() {
 
                             </button>
 
-                            <button
+                            
+<button
+  type="button"
+  onClick={() => handleAddToCart(product, salePrice)}
+  aria-label={`Thêm ${product.name} vào giỏ hàng`}
+  title="Thêm vào giỏ hàng"
+  className="flex h-8 w-10 shrink-0 items-center justify-center rounded-full border border-neutral-300 bg-white p-0 text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-50 active:scale-[0.98] sm:h-9 sm:w-11"
+>
+  <ShoppingCart
+    size={13}
+    className="shrink-0"
+    aria-hidden="true"
+  />
+</button>
 
-                              type="button"
-
-                              onClick={() => handleAddToCart(product, salePrice)}
-
-                              aria-label={`Thêm ${product.name} vào giỏ hàng`}
-
-                              title="Thêm vào giỏ hàng"
-
-                              className="flex h-8 min-w-0 items-center justify-center gap-0.5 overflow-hidden rounded-full border border-neutral-300 bg-white px-0.5 text-[10px] font-semibold leading-none text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-50 active:scale-[0.98] sm:h-9 sm:gap-1 sm:px-2 sm:text-xs"
-
-                            >
-
-                              <ShoppingCart size={12} className="shrink-0" aria-hidden="true" />
-
-                              <span className="hidden truncate sm:inline">Thêm giỏ</span>
-
-                            </button>
 
                           </div>
 

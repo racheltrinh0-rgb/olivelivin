@@ -32,6 +32,8 @@ import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as VoucherRegisterBackupRouteImport } from './routes/voucher-register.backup'
 import { Route as AuthenticatedAdminAccessoriesRouteImport } from './routes/_authenticated/admin/accessories'
 import { Route as AuthenticatedAdminFlashSaleRouteImport } from './routes/_authenticated/admin/flash-sale'
+import { Route as AuthenticatedAdminMysteryJackpotRouteImport } from './routes/_authenticated/admin/mystery-jackpot'
+import { Route as AuthenticatedAdminMysteryJackpotInterestsRouteImport } from './routes/_authenticated/admin/mystery-jackpot-interests'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin/orders'
 import { Route as AuthenticatedAdminPotentialCustomersRouteImport } from './routes/_authenticated/admin/potential-customers'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin/products'
@@ -158,6 +160,18 @@ const AuthenticatedAdminFlashSaleRoute =
     path: '/admin/flash-sale',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminMysteryJackpotRoute =
+  AuthenticatedAdminMysteryJackpotRouteImport.update({
+    id: '/admin/mystery-jackpot',
+    path: '/admin/mystery-jackpot',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminMysteryJackpotInterestsRoute =
+  AuthenticatedAdminMysteryJackpotInterestsRouteImport.update({
+    id: '/admin/mystery-jackpot-interests',
+    path: '/admin/mystery-jackpot-interests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminOrdersRoute =
   AuthenticatedAdminOrdersRouteImport.update({
     id: '/admin/orders',
@@ -236,6 +250,8 @@ export interface FileRoutesByFullPath {
   '/voucher-register/backup': typeof VoucherRegisterBackupRoute
   '/admin/accessories': typeof AuthenticatedAdminAccessoriesRoute
   '/admin/flash-sale': typeof AuthenticatedAdminFlashSaleRoute
+  '/admin/mystery-jackpot': typeof AuthenticatedAdminMysteryJackpotRoute
+  '/admin/mystery-jackpot-interests': typeof AuthenticatedAdminMysteryJackpotInterestsRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/potential-customers': typeof AuthenticatedAdminPotentialCustomersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
@@ -269,6 +285,8 @@ export interface FileRoutesByTo {
   '/voucher-register/backup': typeof VoucherRegisterBackupRoute
   '/admin/accessories': typeof AuthenticatedAdminAccessoriesRoute
   '/admin/flash-sale': typeof AuthenticatedAdminFlashSaleRoute
+  '/admin/mystery-jackpot': typeof AuthenticatedAdminMysteryJackpotRoute
+  '/admin/mystery-jackpot-interests': typeof AuthenticatedAdminMysteryJackpotInterestsRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/potential-customers': typeof AuthenticatedAdminPotentialCustomersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
@@ -304,6 +322,8 @@ export interface FileRoutesById {
   '/voucher-register/backup': typeof VoucherRegisterBackupRoute
   '/_authenticated/admin/accessories': typeof AuthenticatedAdminAccessoriesRoute
   '/_authenticated/admin/flash-sale': typeof AuthenticatedAdminFlashSaleRoute
+  '/_authenticated/admin/mystery-jackpot': typeof AuthenticatedAdminMysteryJackpotRoute
+  '/_authenticated/admin/mystery-jackpot-interests': typeof AuthenticatedAdminMysteryJackpotInterestsRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/potential-customers': typeof AuthenticatedAdminPotentialCustomersRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
@@ -339,6 +359,8 @@ export interface FileRouteTypes {
     | '/voucher-register/backup'
     | '/admin/accessories'
     | '/admin/flash-sale'
+    | '/admin/mystery-jackpot'
+    | '/admin/mystery-jackpot-interests'
     | '/admin/orders'
     | '/admin/potential-customers'
     | '/admin/products'
@@ -372,6 +394,8 @@ export interface FileRouteTypes {
     | '/voucher-register/backup'
     | '/admin/accessories'
     | '/admin/flash-sale'
+    | '/admin/mystery-jackpot'
+    | '/admin/mystery-jackpot-interests'
     | '/admin/orders'
     | '/admin/potential-customers'
     | '/admin/products'
@@ -406,6 +430,8 @@ export interface FileRouteTypes {
     | '/voucher-register/backup'
     | '/_authenticated/admin/accessories'
     | '/_authenticated/admin/flash-sale'
+    | '/_authenticated/admin/mystery-jackpot'
+    | '/_authenticated/admin/mystery-jackpot-interests'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/potential-customers'
     | '/_authenticated/admin/products'
@@ -602,6 +628,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFlashSaleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/mystery-jackpot': {
+      id: '/_authenticated/admin/mystery-jackpot'
+      path: '/admin/mystery-jackpot'
+      fullPath: '/admin/mystery-jackpot'
+      preLoaderRoute: typeof AuthenticatedAdminMysteryJackpotRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/mystery-jackpot-interests': {
+      id: '/_authenticated/admin/mystery-jackpot-interests'
+      path: '/admin/mystery-jackpot-interests'
+      fullPath: '/admin/mystery-jackpot-interests'
+      preLoaderRoute: typeof AuthenticatedAdminMysteryJackpotInterestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/orders': {
       id: '/_authenticated/admin/orders'
       path: '/admin/orders'
@@ -702,6 +742,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminAccessoriesRoute: typeof AuthenticatedAdminAccessoriesRoute
   AuthenticatedAdminFlashSaleRoute: typeof AuthenticatedAdminFlashSaleRoute
+  AuthenticatedAdminMysteryJackpotRoute: typeof AuthenticatedAdminMysteryJackpotRoute
+  AuthenticatedAdminMysteryJackpotInterestsRoute: typeof AuthenticatedAdminMysteryJackpotInterestsRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminPotentialCustomersRoute: typeof AuthenticatedAdminPotentialCustomersRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRouteWithChildren
@@ -714,6 +756,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminAccessoriesRoute: AuthenticatedAdminAccessoriesRoute,
   AuthenticatedAdminFlashSaleRoute: AuthenticatedAdminFlashSaleRoute,
+  AuthenticatedAdminMysteryJackpotRoute: AuthenticatedAdminMysteryJackpotRoute,
+  AuthenticatedAdminMysteryJackpotInterestsRoute:
+    AuthenticatedAdminMysteryJackpotInterestsRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
   AuthenticatedAdminPotentialCustomersRoute:
     AuthenticatedAdminPotentialCustomersRoute,

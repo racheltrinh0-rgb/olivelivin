@@ -473,3 +473,84 @@ border-top:1px solid #E5E5E5;
   75% { opacity: 1; }
   100% { transform: translateX(450%) skewX(-12deg); opacity: 0; }
 }
+
+/* Mystery Jackpot - Question Mark Animation */
+
+.mystery-question-orb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  animation: mystery-float 2.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Vòng sáng bên ngoài */
+.mystery-question-orb::before {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border: 1px solid rgba(255, 77, 0, 0.32);
+  border-radius: 50%;
+  animation: mystery-ring 5s linear infinite;
+  pointer-events: none;
+}
+
+/* Quầng sáng */
+.mystery-question-orb::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: rgba(255, 77, 0, 0.2);
+  filter: blur(12px);
+  z-index: -1;
+  animation: mystery-glow 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Dấu hỏi */
+.mystery-question-mark {
+  display: inline-block;
+  color: #fff;
+  font-weight: 800;
+  transform-origin: center;
+  text-shadow: 0 2px 12px rgba(255, 255, 255, 0.15);
+  animation: mystery-bounce 2.4s ease-in-out infinite;
+}
+
+/* Chuyển động nổi */
+@keyframes mystery-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Dấu hỏi nhún */
+@keyframes mystery-bounce {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  40% { transform: scale(1.08) rotate(-3deg); }
+  60% { transform: scale(1.03) rotate(3deg); }
+}
+
+/* Vòng tròn xoay */
+@keyframes mystery-ring {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+/* Pulse ánh sáng */
+@keyframes mystery-glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.96); }
+  50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+/* Tôn trọng cài đặt giảm chuyển động */
+@media (prefers-reduced-motion: reduce) {
+  .mystery-question-orb,
+  .mystery-question-orb::before,
+  .mystery-question-orb::after,
+  .mystery-question-mark {
+    animation: none !important;
+  }
+}

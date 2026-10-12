@@ -11,6 +11,7 @@ import NewArrival from "@/components/home/NewArrival";
 import Collections from "@/components/home/Collections";
 import Lookbook from "@/components/home/Lookbook";
 import FlashSale from "@/components/home/FlashSale";
+import MysteryJackpotDeals from "@/components/home/MysteryJackpotDeals";
 import Newsletter from "@/components/home/Newsletter";
 import Vouchers from "@/components/home/Vouchers";
 import BedsideCollection from "@/components/home/BedsideCollection";
@@ -431,6 +432,9 @@ function HomePage() {
 
       <Vouchers />
 
+      <MysteryJackpotDeals />
+
+
       <FlashSale />
 
 
@@ -585,7 +589,7 @@ function HomePage() {
           FLASH SALE
       ===================================================== */}
 
-      <FlashSale />
+     
 
 
       {/* =====================================================

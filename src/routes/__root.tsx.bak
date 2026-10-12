@@ -151,29 +151,31 @@ export const Route =
           content: "width=device-width, initial-scale=1",
         },
         {
-          title: "OLIVE â€” ÄÃ¨n decor tá»‘i giáº£n",
-        },
-        {
-          name: "description",
-          content:
-            "Ná»™i tháº¥t tá»‘i giáº£n, váº­t liá»‡u bá»n vá»¯ng. Sofa, bÃ n, gháº¿, giÆ°á»ng, tá»§ ká»‡. Giao hÃ ng toÃ n quá»‘c.",
-        },
-        {
-          property: "og:title",
-          content: "OLIVE â€” ÄÃ¨n decor tá»‘i giáº£n",
-        },
-        {
-          property: "og:description",
-          content: "Ná»™i tháº¥t tá»‘i giáº£n, váº­t liá»‡u bá»n vá»¯ng.",
-        },
-        {
-          property: "og:type",
-          content: "website",
-        },
-        {
-          name: "twitter:card",
-          content: "summary_large_image",
-        },
+         {
+  title: "OLIVE LIVING | Đèn trang trí, nội thất và decor",
+},
+{
+  name: "description",
+  content:
+    "Khám phá đèn trang trí, nội thất và decor tối giản cho không gian sống hiện đại.",
+},
+{
+  property: "og:title",
+  content: "OLIVE LIVING | Đèn trang trí, nội thất và decor",
+},
+{
+  property: "og:description",
+  content:
+    "Khám phá đèn trang trí, nội thất và decor tối giản cho không gian sống hiện đại.",
+},
+{
+  property: "og:type",
+  content: "website",
+},
+{
+  property: "og:url",
+  content: "https://olivelivingvn.com/",
+},
       ],
 
       links: [

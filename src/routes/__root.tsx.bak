@@ -1,4 +1,4 @@
-import {
+﻿import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -32,8 +32,6 @@ import FlashSalePopup from "@/components/FlashSalePopup";
 import { supabase } from "@/integrations/supabase/client";
 
 import FloatingContact from "@/components/FloatingContact";
-import FloatingShipping from "@/components/FloatingShipping";
-import SetagoVoucherPopup from "@/components/SetagoVoucherPopup";
 
 /* =========================================================
    404
@@ -48,7 +46,7 @@ function NotFoundComponent() {
         </p>
 
         <p className="mt-3 text-sm text-muted-foreground">
-          Trang bạn tìm không tồn tại.
+          Trang báº¡n tÃ¬m khÃ´ng tá»“n táº¡i.
         </p>
 
         <a
@@ -65,7 +63,7 @@ function NotFoundComponent() {
             hover:opacity-90
           "
         >
-          Về trang chủ
+          Vá» trang chá»§
         </a>
       </div>
     </div>
@@ -104,11 +102,11 @@ function ErrorComponent({
     >
       <div>
         <p className="font-display text-3xl">
-          Có lỗi xảy ra
+          CÃ³ lá»—i xáº£y ra
         </p>
 
         <p className="mt-2 text-sm text-muted-foreground">
-          Vui lòng thử lại.
+          Vui lÃ²ng thá»­ láº¡i.
         </p>
 
         <button
@@ -128,7 +126,7 @@ function ErrorComponent({
             text-primary-foreground
           "
         >
-          Thử lại
+          Thá»­ láº¡i
         </button>
       </div>
     </div>
@@ -153,20 +151,20 @@ export const Route =
           content: "width=device-width, initial-scale=1",
         },
         {
-          title: "OLIVE — Đèn decor tối giản",
+          title: "OLIVE â€” ÄÃ¨n decor tá»‘i giáº£n",
         },
         {
           name: "description",
           content:
-            "Nội thất tối giản, vật liệu bền vững. Sofa, bàn, ghế, giường, tủ kệ. Giao hàng toàn quốc.",
+            "Ná»™i tháº¥t tá»‘i giáº£n, váº­t liá»‡u bá»n vá»¯ng. Sofa, bÃ n, gháº¿, giÆ°á»ng, tá»§ ká»‡. Giao hÃ ng toÃ n quá»‘c.",
         },
         {
           property: "og:title",
-          content: "OLIVE — Đèn decor tối giản",
+          content: "OLIVE â€” ÄÃ¨n decor tá»‘i giáº£n",
         },
         {
           property: "og:description",
-          content: "Nội thất tối giản, vật liệu bền vững.",
+          content: "Ná»™i tháº¥t tá»‘i giáº£n, váº­t liá»‡u bá»n vá»¯ng.",
         },
         {
           property: "og:type",
@@ -225,7 +223,7 @@ function RootShell({
       <head>
         <HeadContent />
 
-        {/* OLIVE LIVING — ORGANIZATION SCHEMA */}
+        {/* OLIVE LIVING â€” ORGANIZATION SCHEMA */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -441,7 +439,7 @@ function RootComponent() {
             </>
           )}
 
-          <Toaster
+           <Toaster
             position="top-center"
           />
         </CartProvider>
@@ -449,3 +447,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

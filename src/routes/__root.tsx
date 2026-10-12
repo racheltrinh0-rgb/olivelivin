@@ -1,4 +1,5 @@
-﻿import {
+﻿
+import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -30,7 +31,6 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import FlashSalePopup from "@/components/FlashSalePopup";
 import { supabase } from "@/integrations/supabase/client";
-
 import FloatingContact from "@/components/FloatingContact";
 
 /* =========================================================
@@ -41,29 +41,21 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
       <div className="text-center">
-        <p className="font-display text-7xl">
-          404
-        </p>
+        <p className="font-display text-7xl">404</p>
 
         <p className="mt-3 text-sm text-muted-foreground">
-          Trang báº¡n tÃ¬m khÃ´ng tá»“n táº¡i.
+          Trang bạn tìm không tồn tại.
         </p>
 
         <a
           href="/"
           className="
-            mt-6
-            inline-flex
-            rounded-full
-            bg-primary
-            px-5
-            py-2.5
-            text-sm
-            text-primary-foreground
+            mt-6 inline-flex rounded-full bg-primary
+            px-5 py-2.5 text-sm text-primary-foreground
             hover:opacity-90
           "
         >
-          Vá» trang chá»§
+          Về trang chủ
         </a>
       </div>
     </div>
@@ -92,21 +84,17 @@ function ErrorComponent({
   return (
     <div
       className="
-        flex
-        min-h-[70vh]
-        items-center
-        justify-center
-        px-4
-        text-center
+        flex min-h-[70vh] items-center justify-center
+        px-4 text-center
       "
     >
       <div>
         <p className="font-display text-3xl">
-          CÃ³ lá»—i xáº£y ra
+          Có lỗi xảy ra
         </p>
 
         <p className="mt-2 text-sm text-muted-foreground">
-          Vui lÃ²ng thá»­ láº¡i.
+          Vui lòng thử lại.
         </p>
 
         <button
@@ -116,17 +104,11 @@ function ErrorComponent({
             reset();
           }}
           className="
-            mt-6
-            inline-flex
-            rounded-full
-            bg-primary
-            px-5
-            py-2.5
-            text-sm
-            text-primary-foreground
+            mt-6 inline-flex rounded-full bg-primary
+            px-5 py-2.5 text-sm text-primary-foreground
           "
         >
-          Thá»­ láº¡i
+          Thử lại
         </button>
       </div>
     </div>
@@ -151,28 +133,81 @@ export const Route =
           content: "width=device-width, initial-scale=1",
         },
         {
-          title: "OLIVE â€” ÄÃ¨n decor tá»‘i giáº£n",
+          title:
+            "OLIVE LIVING | Đèn trang trí, nội thất và decor",
         },
         {
           name: "description",
           content:
-            "Ná»™i tháº¥t tá»‘i giáº£n, váº­t liá»‡u bá»n vá»¯ng. Sofa, bÃ n, gháº¿, giÆ°á»ng, tá»§ ká»‡. Giao hÃ ng toÃ n quá»‘c.",
+            "Khám phá đèn trang trí, nội thất và decor tối giản cho không gian sống hiện đại. Olive Living giao hàng toàn quốc.",
+        },
+
+        /* OPEN GRAPH - FACEBOOK / MESSENGER / ZALO */
+
+        {
+          property: "og:locale",
+          content: "vi_VN",
+        },
+        {
+          property: "og:site_name",
+          content: "OLIVE LIVING",
         },
         {
           property: "og:title",
-          content: "OLIVE â€” ÄÃ¨n decor tá»‘i giáº£n",
+          content:
+            "OLIVE LIVING | Đèn trang trí, nội thất và decor",
         },
         {
           property: "og:description",
-          content: "Ná»™i tháº¥t tá»‘i giáº£n, váº­t liá»‡u bá»n vá»¯ng.",
+          content:
+            "Khám phá đèn trang trí, nội thất và decor tối giản cho không gian sống hiện đại.",
         },
         {
           property: "og:type",
           content: "website",
         },
         {
+          property: "og:url",
+          content: "https://olivelivingvn.com/",
+        },
+        {
+          property: "og:image",
+          content:
+            "https://olivelivingvn.com/images/banner03.png",
+        },
+        {
+          property: "og:image:width",
+          content: "1200",
+        },
+        {
+          property: "og:image:height",
+          content: "630",
+        },
+        {
+          property: "og:image:alt",
+          content: "Olive Living - Đèn trang trí và nội thất",
+        },
+
+        /* TWITTER CARD */
+
+        {
           name: "twitter:card",
           content: "summary_large_image",
+        },
+        {
+          name: "twitter:title",
+          content:
+            "OLIVE LIVING | Đèn trang trí, nội thất và decor",
+        },
+        {
+          name: "twitter:description",
+          content:
+            "Khám phá đèn trang trí, nội thất và decor tối giản.",
+        },
+        {
+          name: "twitter:image",
+          content:
+            "https://olivelivingvn.com/images/banner03.png",
         },
       ],
 
@@ -223,7 +258,7 @@ function RootShell({
       <head>
         <HeadContent />
 
-        {/* OLIVE LIVING â€” ORGANIZATION SCHEMA */}
+        {/* OLIVE LIVING - ORGANIZATION SCHEMA */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -237,7 +272,7 @@ function RootShell({
           }}
         />
 
-        {/* Google Ads */}
+        {/* GOOGLE ADS */}
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=AW-18304524589"
@@ -246,71 +281,62 @@ function RootShell({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'AW-18304524589');
-`,
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'AW-18304524589');
+            `,
           }}
         />
 
-        {/* Meta Pixel */}
+        {/* META PIXEL */}
         <script
           id="meta-pixel"
           dangerouslySetInnerHTML={{
             __html: `
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;
-n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;
-n.push=n;
-n.loaded=!0;
-n.version='2.0';
-n.queue=[];
-t=b.createElement(e);
-t.async=!0;
-t.src=v;
-s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s);
-}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;
+              n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;
+              n.push=n;
+              n.loaded=!0;
+              n.version='2.0';
+              n.queue=[];
+              t=b.createElement(e);
+              t.async=!0;
+              t.src=v;
+              s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s);
+              }(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
 
-fbq('init', '1669719914311117');
-fbq('track', 'PageView');
-`,
+              fbq('init', '1669719914311117');
+              fbq('track', 'PageView');
+            `,
           }}
         />
 
-        {/* Google Tag Manager */}
+        {/* GOOGLE TAG MANAGER */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-(function(w,d,s,l,i){
-w[l]=w[l]||[];
-w[l].push({
-  'gtm.start':
-  new Date().getTime(),
-  event:'gtm.js'
-});
+              (function(w,d,s,l,i){
+                w[l]=w[l]||[];
+                w[l].push({
+                  'gtm.start': new Date().getTime(),
+                  event:'gtm.js'
+                });
 
-var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),
-dl=l!='dataLayer'
-  ?'&l='+l
-  :'';
+                var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),
+                dl=l!='dataLayer' ? '&l='+l : '';
 
-j.async=true;
-
-j.src=
-'https://www.googletagmanager.com/gtm.js?id='
-+i+dl;
-
-f.parentNode.insertBefore(j,f);
-
-})(window,document,'script',
-'dataLayer','GTM-MPSMWLKS');
-`,
+                j.async=true;
+                j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+                f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-MPSMWLKS');
+            `,
           }}
         />
       </head>
@@ -321,9 +347,7 @@ f.parentNode.insertBefore(j,f);
           <img
             height="1"
             width="1"
-            style={{
-              display: "none",
-            }}
+            style={{ display: "none" }}
             src="https://www.facebook.com/tr?id=1669719914311117&ev=PageView&noscript=1"
             alt=""
           />
@@ -353,7 +377,6 @@ f.parentNode.insertBefore(j,f);
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   const router = useRouter();
 
   const [
@@ -361,9 +384,7 @@ function RootComponent() {
     setHideFloating,
   ] = useState(false);
 
-  /* =================================================
-     AUTH STATE
-  ================================================== */
+  /* AUTH STATE */
 
   useEffect(() => {
     const { data: sub } =
@@ -392,9 +413,7 @@ function RootComponent() {
     queryClient,
   ]);
 
-  /* =================================================
-     RENDER
-  ================================================== */
+  /* RENDER */
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -403,16 +422,10 @@ function RootComponent() {
           <>
             {/* <SetagoVoucherPopup /> */}
 
-            <div
-              className="
-                flex
-                min-h-screen
-                flex-col
-              "
-            >
+            <div className="flex min-h-screen flex-col">
               <SiteHeader />
 
-              {/* 10.10 FLASH SALE POPUP */}
+              {/* FLASH SALE POPUP */}
               <FlashSalePopup />
 
               <main className="flex-1">
@@ -423,28 +436,16 @@ function RootComponent() {
             </div>
           </>
 
-          {/* =================================================
-              FLOATING CONTACT
-          ================================================== */}
-
+          {/* FLOATING CONTACT */}
           {!hideFloating && (
-            <>
-              <FloatingContact
-                onClose={() =>
-                  setHideFloating(true)
-                }
-              />
-
-              {/* <FloatingShipping /> */}
-            </>
+            <FloatingContact
+              onClose={() => setHideFloating(true)}
+            />
           )}
 
-           <Toaster
-            position="top-center"
-          />
+          <Toaster position="top-center" />
         </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
 }
-

@@ -1,4 +1,5 @@
-﻿import { useState } from "react";
+﻿
+import { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
@@ -19,29 +20,11 @@ export default function FloatingSupport({
 
   if (!isVisible) return null;
 
-  const glassButtonClass = `
-    group relative flex h-10 w-10 shrink-0 items-center justify-center
-    overflow-hidden rounded-full
-    border border-white/55
-    bg-gradient-to-br from-white/55 via-white/30 to-neutral-200/20
-    backdrop-blur-[14px] backdrop-saturate-[145%]
-    text-neutral-600/85
-    shadow-[0_4px_14px_rgba(0,0,0,0.09),inset_0_1px_1px_rgba(255,255,255,0.65)]
-    opacity-75 transition-all duration-300
-    hover:scale-105 hover:opacity-100
-    hover:from-white/75 hover:via-white/50 hover:to-neutral-100/30
-    hover:text-neutral-800
-    before:pointer-events-none before:absolute before:inset-[2px]
-    before:rounded-full before:border before:border-white/45
-    before:content-['']
-  `;
-
   return (
     <div
       className="
         fixed bottom-[120px] right-3 z-[60]
         flex flex-col items-center gap-2
-        opacity-90
         sm:bottom-[125px]
         lg:bottom-6 lg:right-5
       "
@@ -63,44 +46,39 @@ export default function FloatingSupport({
         <X size={11} strokeWidth={1.7} />
       </button>
 
-      {/* MESSENGER */}
+      {/* MESSENGER — transparent + breathing glow */}
       <a
         href={MESSENGER_URL}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat với Olive Living qua Messenger"
+        aria-label="Chat Messenger"
         title="Messenger"
-        className={glassButtonClass}
+        className="contact-icon-glow"
       >
-        <MessageCircle
-          size={18}
-          strokeWidth={1.5}
-          className="relative z-10 transition-transform duration-300 group-hover:scale-110"
+        <img
+          src="/images/messenger.png"
+          alt="Messenger"
+          className="contact-icon-image"
         />
       </a>
 
-      {/* ZALO */}
+      {/* ZALO — transparent + breathing glow */}
       <a
         href={ZALO_URL}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat với Olive Living qua Zalo"
+        aria-label="Chat Zalo"
         title="Zalo"
-        className={glassButtonClass}
+        className="contact-icon-glow"
       >
-        <span
-          className="
-            relative z-10 flex h-[17px] w-[17px] items-center justify-center
-            rounded-[5px] border border-neutral-500/70 bg-white/15
-            text-[7px] font-bold leading-none text-neutral-600/90
-            transition-transform duration-300 group-hover:scale-110
-          "
-        >
-          Z
-        </span>
+        <img
+          src="/images/zalo .png"
+          alt="Zalo"
+          className="contact-icon-image"
+        />
       </a>
 
-      {/* FLASH SALE - gắn cùng cụm, nằm ngay dưới Zalo */}
+      {/* FLASH SALE — giữ nguyên chức năng */}
       <Link
         to="/flashsale"
         aria-label="Khám phá chương trình Flash Sale"
@@ -128,4 +106,3 @@ export default function FloatingSupport({
     </div>
   );
 }
-

@@ -3853,8 +3853,6 @@ index % 3 === 0
         </section>
       )}
 
-      {/* FLOATING FLASH SALE — stays above the mobile sticky buy bar */}
-      <FloatingFlashSaleBadge />
 
       {/* MOBILE STICKY BUY — compact premium bar */}
       <div

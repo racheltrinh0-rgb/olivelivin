@@ -426,7 +426,7 @@ function RootComponent() {
               <SiteHeader />
 
               {/* FLASH SALE POPUP */}
-              <FlashSalePopup />
+             {/* <FlashSalePopup /> */}
 
               <main className="flex-1">
                 <Outlet />

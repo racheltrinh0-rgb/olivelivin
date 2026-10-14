@@ -435,7 +435,8 @@ function HomePage() {
       <MysteryJackpotDeals />
 
 
-      <FlashSale />
+      {/* Tạm ẩn popup Flash Sale */}
+
 
 
       {/* =====================================================

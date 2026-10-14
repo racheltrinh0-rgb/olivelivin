@@ -1,7 +1,6 @@
 ﻿
 import { useState } from "react";
-import { MessageCircle, X } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { X } from "lucide-react";
 
 const MESSENGER_URL = "https://m.me/oliveliving";
 const ZALO_URL = "https://zalo.me/0799379179";
@@ -46,7 +45,7 @@ export default function FloatingSupport({
         <X size={11} strokeWidth={1.7} />
       </button>
 
-      {/* MESSENGER — transparent + breathing glow */}
+      {/* MESSENGER */}
       <a
         href={MESSENGER_URL}
         target="_blank"
@@ -62,7 +61,7 @@ export default function FloatingSupport({
         />
       </a>
 
-      {/* ZALO — transparent + breathing glow */}
+      {/* ZALO */}
       <a
         href={ZALO_URL}
         target="_blank"
@@ -77,32 +76,6 @@ export default function FloatingSupport({
           className="contact-icon-image"
         />
       </a>
-
-      {/* FLASH SALE — giữ nguyên chức năng */}
-      <Link
-        to="/flashsale"
-        aria-label="Khám phá chương trình Flash Sale"
-        title="Flash Sale"
-        className="
-          group relative mt-2 block w-10 shrink-0
-          transition-transform duration-300
-          hover:scale-110
-          motion-safe:animate-[bounce_1.8s_ease-in-out_infinite]
-        "
-      >
-        <span className="pointer-events-none absolute inset-1 -z-10 rounded-full bg-red-500/60 opacity-70 blur-md motion-safe:animate-pulse" />
-        <span className="pointer-events-none absolute -inset-1 -z-10 rounded-full bg-yellow-300/40 opacity-60 blur-lg motion-safe:animate-[pulse_1.4s_ease-in-out_infinite]" />
-
-        <img
-          src="/images/flash-sale-sticker.png"
-          alt="Flash Sale"
-          className="relative block h-auto w-full object-contain drop-shadow-[0_0_5px_rgba(255,70,30,0.9)] transition-[filter] duration-300 group-hover:drop-shadow-[0_0_10px_rgba(255,190,40,1)]"
-        />
-
-        <span className="pointer-events-none absolute inset-0 overflow-hidden">
-          <span className="absolute -left-1/2 top-0 h-full w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/90 to-transparent opacity-0 motion-safe:animate-[flashShimmer_2.2s_ease-in-out_infinite]" />
-        </span>
-      </Link>
     </div>
   );
 }

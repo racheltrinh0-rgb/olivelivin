@@ -8,6 +8,7 @@ export default function FlashSalePopup() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => setIsOpen(true), 1000);
+    
     return () => window.clearTimeout(timer);
   }, []);
 

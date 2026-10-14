@@ -176,25 +176,20 @@ export function ProductCard({
       className="group block h-full"
     >
       <article
-        className={clsx(
-          `
-            flex
-            h-full
-            flex-col
-            overflow-hidden
-            rounded-[20px]
-            border
-            border-[#E8E1D8]
-            bg-[#FFFDFC]
-            transition-all
-            duration-300
-            hover:-translate-y-1
-            hover:border-[#D9CEC0]
-            hover:shadow-[0_12px_30px_rgba(74,62,48,0.08)]
-          `,
-          highlight &&
-            "border-[#D8C8B7]"
-        )}
+className={clsx(
+  `
+    flex
+    h-full
+    flex-col
+    overflow-hidden
+    rounded-[20px]
+    bg-white
+    transition-all
+    duration-300
+    hover:-translate-y-1
+    hover:shadow-[0_12px_30px_rgba(74,62,48,0.08)]
+  `
+)}
       >
         {/* ======================================================
             PRODUCT IMAGE

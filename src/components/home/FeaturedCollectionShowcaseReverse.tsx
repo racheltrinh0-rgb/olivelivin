@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ShoppingCart } from "lucide-react";
 
 interface Props {
@@ -52,7 +52,7 @@ export default function FeaturedCollectionShowcaseReverse({
     <>
 
 
-      <section className="bg-[#F7F4EF] py-10 sm:py-14 lg:py-20">
+      <section className="bg-white py-10 sm:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
 
         {/* ===================================================== */}
@@ -63,11 +63,8 @@ export default function FeaturedCollectionShowcaseReverse({
           className="
             overflow-hidden
             rounded-[26px]
-            border
-            border-[#E7DED3]
-            bg-white
-            shadow-[0_20px_70px_rgba(60,45,30,0.06)]
 
+            bg-white
             lg:grid
             lg:grid-cols-[0.98fr_1.02fr]
 
@@ -175,10 +172,8 @@ export default function FeaturedCollectionShowcaseReverse({
                     overflow-hidden
 
                     rounded-[12px]
-                    border
-                    border-[#E7E1D8]
+
                     bg-white
-                    shadow-[0_3px_14px_rgba(60,45,30,0.025)]
                   "
                 >
 
@@ -197,7 +192,7 @@ export default function FeaturedCollectionShowcaseReverse({
                         aspect-[1.12/1]
                         w-full
                         overflow-hidden
-                        bg-[#F5F2ED]
+                        bg-white
                         sm:aspect-[1.06/1]
                       "
                     >
@@ -435,37 +430,47 @@ export default function FeaturedCollectionShowcaseReverse({
                 sm:pt-5
               "
             >
-              <Link
-                to="/shop"
-                className="
-                  group
-                  flex
-                  h-9
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-full
-                  bg-[#2E3528]
-                  px-4
-                  text-[9px]
-                  font-semibold
-                  tracking-[-0.01em]
-                  text-white
-                  transition-colors
-                  duration-200
-                  hover:bg-[#3A4433]
-                  active:scale-[0.99]
-                  sm:h-10
-                  sm:w-fit
-                  sm:text-[10px]
-                "
-              >
-                <span>Xem trọn bộ nội thất</span>
-                <span className="text-[12px] transition-transform duration-200 group-hover:translate-x-1">
-                  →
-                </span>
-              </Link>
+              
+<Link
+  to="/shop"
+  className="
+    group
+    flex
+    h-10
+    w-full
+    items-center
+    justify-center
+    gap-2
+    rounded-full
+    bg-[#4F8063]
+    px-4
+    text-[11px]
+    font-semibold
+    tracking-[-0.01em]
+    text-white
+    transition-colors
+    duration-200
+    hover:bg-[#3F6B51]
+    active:scale-[0.99]
+    sm:w-fit
+    sm:min-w-[220px]
+    sm:text-[11px]
+  "
+>
+  <span>Xem trọn bộ nội thất</span>
+  <span
+    className="
+      text-[13px]
+      leading-none
+      transition-transform
+      duration-200
+      group-hover:translate-x-1
+    "
+  >
+    →
+  </span>
+</Link>
+
 
               <div
                 className="

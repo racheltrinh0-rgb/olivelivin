@@ -28,7 +28,7 @@ interface BeforeAfterSliderProps {
 
 const R2_BASE =
 
-  "https://pub-16208320b245401d98649b48aeb33803.r2.dev";
+  "https\://pub-16208320b245401d98649b48aeb33803.r2.dev";
 
 const FLOOR_LAMP_IMAGES: Record<string, string> = {
 
@@ -557,15 +557,25 @@ export default function BeforeAfterSlider({
                           <div
 
                             className="mt-1 flex h-[30px] min-w-0 flex-col justify-start gap-0.5 overflow-hidden text-[8px] leading-[14px] text-gray-500 sm:h-[32px] sm:text-[9px]"
+
                           >
+
                             <div className="flex min-w-0 items-center gap-1 whitespace-nowrap">
+
                               <span className="shrink-0 font-semibold text-[#C8922E]">
+
                                 ★ {socialProof.rating}
+
                               </span>
+
                               <span className="text-gray-300">·</span>
+
                               <span className="truncate">{socialProof.reviews} đánh giá</span>
+
                             </div>
+
                             <div className="truncate text-gray-500">Đã bán {socialProof.sold}</div>
+
                           </div>
 
                         );
@@ -575,22 +585,39 @@ export default function BeforeAfterSlider({
                       {/* PRICE */}
 
                       <div className="mt-1 min-h-[48px]">
+
                         <div className="h-[13px] overflow-hidden text-[8.5px] leading-[13px] text-gray-400 sm:text-[9.5px]">
+
                           {oldPrice ? (
+
                             <span className="line-through">{formatPrice(oldPrice)}</span>
+
                           ) : (
+
                             <span aria-hidden="true">&nbsp;</span>
+
                           )}
+
                         </div>
+
                         <div className="mt-0.5 min-h-[22px]">
+
                           {product.price ? (
+
                             <span className="text-[14px] font-bold leading-[22px] text-emerald-700 sm:text-[15px]">
+
                               {formatPrice(product.price)}
+
                             </span>
+
                           ) : (
+
                             <span className="text-[10px] text-gray-400">Chưa có giá</span>
+
                           )}
+
                         </div>
+
                       </div>
 
                       {/* BUTTONS */}
@@ -849,38 +876,65 @@ export default function BeforeAfterSlider({
 
               {/* CTA */}
 
-              
 <button
-  type="button"
-  onClick={() => {
-    window.location.href = "/shop";
-  }}
-  className="
-    group
-    flex
-    h-10
-    w-full
-    items-center
-    justify-center
-    gap-2
-    rounded-full
-    bg-[#4F8063]
-    px-4
-    text-[11px]
-    font-semibold
-    text-white
-    transition-colors
-    duration-300
-    hover:bg-[#3F6B51]
-    active:scale-[0.99]
-  "
->
-  <span>Chọn chiếc đèn phù hợp</span>
-  <span className="text-[14px] leading-none transition-transform duration-300 group-hover:translate-x-1">
-    →
-  </span>
-</button>
 
+  type="button"
+
+  onClick={() => {
+
+    window.location.href = "/shop";
+
+  }}
+
+  className="
+
+    group
+
+    flex
+
+    h-10
+
+    w-full
+
+    items-center
+
+    justify-center
+
+    gap-2
+
+    rounded-full
+
+    bg-[#4F8063]
+
+    px-4
+
+    text-[11px]
+
+    font-semibold
+
+    text-white
+
+    transition-colors
+
+    duration-300
+
+    hover:bg-[#3F6B51]
+
+    active:scale-[0.99]
+
+  "
+
+>
+
+  <span>Chọn chiếc đèn phù hợp</span>
+
+  <span className="text-[14px] leading-none transition-transform duration-300 group-hover:translate-x-1">
+
+    →
+
+  </span>
+
+</button>
 
               {/* SHOPPING BENEFITS — 3 items always on one row */}
 
@@ -894,13 +948,11 @@ export default function BeforeAfterSlider({
 
                   grid-cols-3
 
+                  items-stretch
+
                   gap-2
 
-                  sm:flex
-
-                  sm:w-full
-
-                  sm:gap-2.5
+                  sm:gap-3
 
                 "
 
@@ -908,7 +960,7 @@ export default function BeforeAfterSlider({
 
               {/* FREESHIP */}
 
-              <div className="flex min-w-0 items-center gap-1.5 rounded-full border-0 bg-[#F7F8F5] px-2 py-1.5 sm:px-2.5">
+              <div className="flex min-w-0 w-full items-center justify-center gap-1 rounded-full border-0 bg-[#F7F8F5] px-1 py-2 sm:gap-2 sm:px-2.5 sm:py-2.5">
 
                 <span
 
@@ -916,9 +968,11 @@ export default function BeforeAfterSlider({
 
                     flex
 
-                    h-6
+                    h-5
 
-                    w-6
+                    w-5
+
+                    shrink-0
 
                     items-center
 
@@ -966,7 +1020,7 @@ export default function BeforeAfterSlider({
 
                 </span>
 
-                <span className="min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
+                <span className="min-w-0 min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
 
                   <strong className="font-semibold text-[#3F493F]">
 
@@ -984,7 +1038,7 @@ export default function BeforeAfterSlider({
 
               {/* RETURN */}
 
-              <div className="flex min-w-0 items-center gap-1.5 rounded-full border-0 bg-[#F7F8F5] px-2 py-1.5 sm:px-2.5">
+              <div className="flex min-w-0 w-full items-center justify-center gap-1 rounded-full border-0 bg-[#F7F8F5] px-1 py-2 sm:gap-2 sm:px-2.5 sm:py-2.5">
 
                 <span
 
@@ -992,9 +1046,11 @@ export default function BeforeAfterSlider({
 
                     flex
 
-                    h-6
+                    h-5
 
-                    w-6
+                    w-5
+
+                    shrink-0
 
                     items-center
 
@@ -1040,7 +1096,7 @@ export default function BeforeAfterSlider({
 
                 </span>
 
-                <span className="min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
+                <span className="min-w-0 min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
 
                   <strong className="font-semibold text-[#3F493F]">
 
@@ -1058,7 +1114,7 @@ export default function BeforeAfterSlider({
 
               {/* VOUCHER */}
 
-              <div className="flex min-w-0 items-center gap-1.5 rounded-full border-0 bg-[#F7F8F5] px-2 py-1.5 sm:px-2.5">
+              <div className="flex min-w-0 w-full items-center justify-center gap-1 rounded-full border-0 bg-[#F7F8F5] px-1 py-2 sm:gap-2 sm:px-2.5 sm:py-2.5">
 
                 <span
 
@@ -1066,9 +1122,11 @@ export default function BeforeAfterSlider({
 
                     flex
 
-                    h-6
+                    h-5
 
-                    w-6
+                    w-5
+
+                    shrink-0
 
                     items-center
 
@@ -1118,7 +1176,7 @@ export default function BeforeAfterSlider({
 
                 </span>
 
-                <span className="min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
+                <span className="min-w-0 min-w-0 text-[7px] leading-[1.25] text-[#6B756A] sm:text-[9px]">
 
                   <strong className="font-semibold text-[#3F493F]">
 

@@ -16,9 +16,9 @@ const getFeaturedDisplayName = (product: any) => {
 
   const text = `${product.name || ""} ${product.slug || ""}`.toLowerCase();
 
-  if (text.includes("cordless")) {
+  if (text.includes("cozy")) {
 
-    return "ĐÈN BÀN CORDLESS";
+    return "GHẾ XOAY COZY";
 
   }
 
@@ -46,13 +46,13 @@ export default function FeaturedCollectionShowcase({
 
 const [pantonProduct, setPantonProduct] = useState<any | null>(null);
 
-const [cordlessProduct, setCordlessProduct] = useState<any | null>(null);
+const [cozyProduct, setCozyProduct] = useState<any | null>(null);
 
 useEffect(() => {
 
   async function loadCollectionProducts() {
 
-    const [panton, cordless] = await Promise.all([
+    const [panton, cozy] = await Promise.all([
 
       supabase
 
@@ -80,7 +80,7 @@ useEffect(() => {
 
         )
 
-        .ilike("name", "%Cordless%")
+        .ilike("name", "%Cozy%")
 
         .limit(1)
 
@@ -94,15 +94,15 @@ useEffect(() => {
 
     }
 
-    if (cordless.error) {
+    if (cozy.error) {
 
-      console.error("CORDLESS PRODUCT ERROR:", cordless.error);
+      console.error("COZY PRODUCT ERROR:", cozy.error);
 
     }
 
     setPantonProduct(panton.data);
 
-    setCordlessProduct(cordless.data);
+    setCozyProduct(cozy.data);
 
   }
 
@@ -112,7 +112,7 @@ useEffect(() => {
 
 const collectionProducts = [
 
-  cordlessProduct,
+  cozyProduct,
 
   pantonProduct,
 
@@ -148,9 +148,9 @@ function getProductSocialProof(product: any) {
 
     <>
 
-      <section className="bg-white py-7 sm:py-12 lg:py-16">
+      <section className="bg-white py-3 sm:py-4 lg:py-6">
 
-      <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1080px] px-3 sm:px-5 lg:px-6">
 
         {/* MAIN COLLECTION */}
 
@@ -160,15 +160,15 @@ function getProductSocialProof(product: any) {
 
             overflow-hidden
 
-            rounded-[26px]
+            rounded-[14px]
 
             bg-white
 
             lg:grid
 
-            lg:grid-cols-[1.02fr_0.98fr]
+            lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch
 
-            xl:rounded-[34px]
+            xl:rounded-[20px]
 
           "
 
@@ -186,13 +186,15 @@ function getProductSocialProof(product: any) {
 
               relative
 
-              min-h-[420px]
+              w-full
 
               overflow-hidden
 
-              sm:min-h-[520px]
+              rounded-[14px]
 
-              lg:min-h-[680px]
+              bg-white
+
+              lg:aspect-auto lg:min-h-[0] lg:h-full lg:min-h-[390px] xl:min-h-[410px]
 
             "
 
@@ -200,27 +202,35 @@ function getProductSocialProof(product: any) {
 
             <img
 
-              src="/images/collection-showcase.jpg"
+              src="/images/arm chair.png"
 
               alt="Olive Living Collection"
 
               className="
 
-                absolute
+                relative
 
-                inset-0
+                block
 
-                h-full
+                h-auto
 
                 w-full
 
-                object-cover
+                object-contain
 
                 object-center
 
                 transition-transform
 
                 duration-700
+
+                lg:absolute
+
+                lg:inset-0
+
+                lg:h-full
+
+                lg:object-cover
 
               "
 
@@ -268,21 +278,21 @@ function getProductSocialProof(product: any) {
 
               justify-center
 
-              px-5
+              px-4
 
-              py-7
+              py-5
 
-              sm:px-8
+              sm:px-5
 
-              sm:py-10
+              sm:py-5
 
-              lg:px-10
+              lg:px-6
 
-              lg:py-12
+              lg:py-6
 
-              xl:px-14
+              xl:px-7
 
-              xl:py-14
+              xl:py-7
 
             "
 
@@ -320,13 +330,13 @@ function getProductSocialProof(product: any) {
 
               className="
 
-                mt-3
+                mt-2
 
                 max-w-[540px]
 
                 font-display
 
-                text-[30px]
+                text-[25px]
 
                 leading-[1.08]
 
@@ -334,11 +344,11 @@ function getProductSocialProof(product: any) {
 
                 text-[#292725]
 
-                sm:text-[42px]
+                sm:text-[30px]
 
-                lg:text-[46px]
+                lg:text-[34px]
 
-                xl:text-[52px]
+                xl:text-[36px]
 
               "
 
@@ -358,19 +368,19 @@ function getProductSocialProof(product: any) {
 
               className="
 
-                mt-3
+                mt-2
 
-                max-w-[560px]
+                max-w-[520px]
 
-                text-[12px]
+                text-[11px]
 
                 leading-[1.7]
 
                 text-neutral-500
 
-                sm:text-sm
+                sm:text-[12px]
 
-                sm:leading-7
+                sm:leading-5
 
               "
 
@@ -390,7 +400,7 @@ function getProductSocialProof(product: any) {
 
   className="
 
-    mt-5
+    mt-3
 
     grid
 
@@ -398,19 +408,19 @@ function getProductSocialProof(product: any) {
 
     items-start
 
-    gap-x-4
+    gap-x-3
 
-    gap-y-5
+    gap-y-4
 
-    sm:mt-7
+    sm:mt-4
 
-    sm:gap-5
+    sm:gap-4
 
-    lg:mt-7
+    lg:mt-4
 
-    lg:gap-4
+    lg:gap-3
 
-    xl:gap-5
+    xl:gap-4
 
   "
 
@@ -462,17 +472,17 @@ function getProductSocialProof(product: any) {
 
           className="
 
-            aspect-[0.94/1]
+            aspect-[0.92/1]
 
             w-full
 
             overflow-hidden
 
-            rounded-[8px]
+            rounded-[5px]
 
             bg-[#F7F5F1]
 
-            sm:aspect-[4/5]
+            sm:aspect-[0.94/1]
 
           "
 
@@ -514,23 +524,21 @@ function getProductSocialProof(product: any) {
 
     flex
 
-    min-h-[174px]
+    min-h-[120px]
 
     flex-col
-
-    gap-1
 
     bg-transparent
 
     px-0
 
-    pt-2.5
+    pt-2
 
     pb-0
 
-    sm:min-h-[188px]
+    sm:min-h-[126px]
 
-    sm:pt-3
+    sm:pt-2
 
   "
 
@@ -554,7 +562,7 @@ function getProductSocialProof(product: any) {
 
       line-clamp-2
 
-      min-h-[30px]
+      min-h-[26px]
 
       overflow-hidden
 
@@ -568,7 +576,7 @@ function getProductSocialProof(product: any) {
 
       text-[#292725]
 
-      sm:min-h-[31px]
+      sm:min-h-[28px]
 
       sm:text-[11.5px]
 
@@ -620,7 +628,7 @@ function getProductSocialProof(product: any) {
 
   {/* PRICE */}
 
-  <div className="mt-1 flex min-h-[34px] flex-col justify-center">
+  <div className="mt-1 flex min-h-[26px] flex-col justify-start">
 
     {product.compare_at_price &&
 
@@ -654,7 +662,7 @@ function getProductSocialProof(product: any) {
 
       className="
 
-        text-[14px]
+        text-[13px]
 
         font-semibold
 
@@ -664,7 +672,7 @@ function getProductSocialProof(product: any) {
 
         text-[#3F674B]
 
-        sm:text-[16px]
+        sm:text-[15px]
 
       "
 
@@ -682,15 +690,13 @@ function getProductSocialProof(product: any) {
 
     className="
 
-      mt-auto
+      mt-2
 
       flex
 
       items-center
 
       gap-1.5
-
-      pt-2
 
     "
 
@@ -712,7 +718,7 @@ function getProductSocialProof(product: any) {
 
         flex
 
-        h-9
+        h-7
 
         min-w-0
 
@@ -740,7 +746,7 @@ function getProductSocialProof(product: any) {
 
         hover:bg-[#C9DFCF]
 
-        sm:h-10
+        sm:h-7
 
         sm:text-[11px]
 
@@ -770,9 +776,9 @@ function getProductSocialProof(product: any) {
 
         flex
 
-        h-9
+        h-7
 
-        w-9
+        w-7
 
         shrink-0
 
@@ -794,9 +800,9 @@ function getProductSocialProof(product: any) {
 
         hover:bg-[#DDEBE0]
 
-        sm:h-10
+        sm:h-7
 
-        sm:w-10
+        sm:w-7
 
       "
 
@@ -826,70 +832,103 @@ function getProductSocialProof(product: any) {
 
               className="
 
-                mt-5
+                mt-3
 
                 border-t
 
                 border-[#EEEAE4]
 
-                pt-4
+                pt-3
 
-                sm:mt-7
+                sm:mt-4
 
-                sm:pt-5
+                sm:pt-3
 
               "
 
             >
 
-              
 <Link
-  to="/shop"
-  className="
-    group
-    flex
-    h-10
-    w-full
-    items-center
-    justify-center
-    gap-2
-    rounded-full
-    bg-[#4F8063]
-    px-4
-    text-[11px]
-    font-semibold
-    tracking-[-0.01em]
-    text-white
-    transition-colors
-    duration-200
-    hover:bg-[#3F6B51]
-    active:scale-[0.99]
-  "
->
-  <span>Xem trọn bộ nội thất</span>
-  <span
-    className="
-      text-[13px]
-      leading-none
-      transition-transform
-      duration-200
-      group-hover:translate-x-1
-    "
-  >
-    →
-  </span>
-</Link>
 
+  to="/shop"
+
+  className="
+
+    group
+
+    flex
+
+    h-10
+
+    w-full
+
+    items-center
+
+    justify-center
+
+    gap-2
+
+    rounded-full
+
+    bg-[#4F8063]
+
+    px-4
+
+    text-[11px]
+
+    font-semibold
+
+    tracking-[-0.01em]
+
+    text-white
+
+    transition-colors
+
+    duration-200
+
+    hover:bg-[#3F6B51]
+
+    active:scale-[0.99]
+
+  "
+
+>
+
+  <span>Xem trọn bộ nội thất</span>
+
+  <span
+
+    className="
+
+      text-[13px]
+
+      leading-none
+
+      transition-transform
+
+      duration-200
+
+      group-hover:translate-x-1
+
+    "
+
+  >
+
+    →
+
+  </span>
+
+</Link>
 
               <div
 
                 className="
 
-                  mt-4
+                  mt-3
 
                   grid
 
-                  min-h-[58px]
+                  min-h-[40px]
 
                   grid-cols-3
 
@@ -903,7 +942,7 @@ function getProductSocialProof(product: any) {
 
                   py-1
 
-                  sm:min-h-[64px]
+                  sm:min-h-[42px]
 
                   sm:px-1
 
@@ -913,7 +952,7 @@ function getProductSocialProof(product: any) {
 
                 <div className="flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-center sm:flex-row sm:gap-2 sm:text-left">
 
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F7F5F1] text-[#66745F] sm:h-8 sm:w-8">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F7F5F1] text-[#66745F] sm:h-7 sm:w-7">
 
                     <Truck size={12} strokeWidth={1.5} />
 
@@ -935,7 +974,7 @@ function getProductSocialProof(product: any) {
 
                 <div className="flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-center sm:flex-row sm:gap-2 sm:text-left">
 
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F7F5F1] text-[#66745F] sm:h-8 sm:w-8">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F7F5F1] text-[#66745F] sm:h-7 sm:w-7">
 
                     <RotateCcw size={12} strokeWidth={1.5} />
 
@@ -957,7 +996,7 @@ function getProductSocialProof(product: any) {
 
                 <div className="flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-center sm:flex-row sm:gap-2 sm:text-left">
 
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F7F5F1] text-[#66745F] sm:h-8 sm:w-8">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F7F5F1] text-[#66745F] sm:h-7 sm:w-7">
 
                     <Gift size={12} strokeWidth={1.5} />
 

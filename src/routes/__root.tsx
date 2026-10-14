@@ -32,6 +32,7 @@ import { SiteFooter } from "@/components/site-footer";
 import FlashSalePopup from "@/components/FlashSalePopup";
 import { supabase } from "@/integrations/supabase/client";
 import FloatingContact from "@/components/FloatingContact";
+import LivePurchaseNotification from "@/components/LivePurchaseNotification";
 
 /* =========================================================
    404
@@ -425,15 +426,17 @@ function RootComponent() {
             <div className="flex min-h-screen flex-col">
               <SiteHeader />
 
-              {/* FLASH SALE POPUP */}
-              
-             <FlashSalePopup />
+{/* FLASH SALE POPUP */}
+<FlashSalePopup />
 
-              <main className="flex-1">
-                <Outlet />
-              </main>
+<main className="flex-1">
+  <Outlet />
+</main>
 
-              <SiteFooter />
+<SiteFooter />
+
+{/* LIVE PURCHASE NOTIFICATION */}
+<LivePurchaseNotification />
             </div>
           </>
 

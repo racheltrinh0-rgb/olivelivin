@@ -703,7 +703,10 @@ export default function MysteryJackpotDeals() {
 
   return (
 
-    <section className="container-x py-5 sm:py-8">
+    <section
+  id="mystery-jackpot-deals"
+  className="container-x py-5 sm:py-8 scroll-mt-4"
+>
 
       {visibleDeals.map((deal) => {
 

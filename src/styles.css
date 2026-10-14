@@ -660,3 +660,93 @@ border-top:1px solid #E5E5E5;
   }
 }
 
+.discount25-sticker {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+  transform-origin: center;
+  animation:
+    discount25-bounce 2.4s ease-in-out infinite,
+    discount25-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes discount25-bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(-3deg) scale(1);
+  }
+
+  25% {
+    transform: translateY(-7px) rotate(2deg) scale(1.05);
+  }
+
+  50% {
+    transform: translateY(0) rotate(-1deg) scale(1.02);
+  }
+
+  75% {
+    transform: translateY(-4px) rotate(2deg) scale(1.04);
+  }
+}
+
+@keyframes discount25-glow {
+  0%, 100% {
+    filter: drop-shadow(0 4px 5px rgba(255, 77, 0, 0.15));
+  }
+
+  50% {
+    filter: drop-shadow(0 8px 14px rgba(255, 45, 45, 0.4));
+  }
+}
+
+/* Floating Discount 25% - playful animation */
+.discount25-floating {
+  position: relative;
+  transform-origin: center;
+  animation:
+    discount25-float 2s ease-in-out infinite,
+    discount25-wiggle 4s ease-in-out infinite;
+  filter: drop-shadow(0 4px 10px rgba(255, 77, 0, 0.25));
+  transition: filter 0.3s ease;
+  will-change: transform;
+}
+
+.discount25-floating::before {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: rgba(255, 106, 0, 0.16);
+  filter: blur(12px);
+  z-index: -1;
+  animation: discount25-pulse 1.8s ease-in-out infinite;
+}
+
+.discount25-floating:hover {
+  animation-play-state: paused;
+  transform: scale(1.18) rotate(-8deg);
+  filter: drop-shadow(0 6px 16px rgba(255, 77, 0, 0.5));
+}
+
+@keyframes discount25-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-7px) scale(1.06); }
+}
+
+@keyframes discount25-wiggle {
+  0%, 85%, 100% { rotate: 0deg; }
+  88% { rotate: -8deg; }
+  92% { rotate: 8deg; }
+  96% { rotate: -4deg; }
+}
+
+@keyframes discount25-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discount25-floating,
+  .discount25-floating::before {
+    animation: none;
+  }
+}

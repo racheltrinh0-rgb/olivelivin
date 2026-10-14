@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 const MESSENGER_URL = "https://m.me/oliveliving";
 const ZALO_URL = "https://zalo.me/0799379179";
+const MYSTERY_JACKPOT_ID = "mystery-jackpot-deals";
 
 export default function FloatingSupport({
   onClose,
@@ -15,6 +16,32 @@ export default function FloatingSupport({
   const handleClose = () => {
     setIsVisible(false);
     onClose?.();
+  };
+
+  const handleFlashSaleClick = (
+    event: React.MouseEvent<HTMLAnchorElement>
+  ) => {
+    event.preventDefault();
+
+    // Nếu đang ở trang khác, chuyển về trang chủ kèm anchor.
+    if (window.location.pathname !== "/") {
+      window.location.href = `/#${MYSTERY_JACKPOT_ID}`;
+      return;
+    }
+
+    // Nếu đang ở trang chủ, cuộn đến Mystery Jackpot Deals.
+    const target = document.getElementById(MYSTERY_JACKPOT_ID);
+
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      return;
+    }
+
+    // Dự phòng khi section chưa được render.
+    window.location.hash = MYSTERY_JACKPOT_ID;
   };
 
   if (!isVisible) return null;
@@ -76,6 +103,26 @@ export default function FloatingSupport({
           className="contact-icon-image"
         />
       </a>
+
+     
+{/* MYSTERY JACKPOT - DISCOUNT 25% */}
+<a
+  href={`/#${MYSTERY_JACKPOT_ID}`}
+  onClick={handleFlashSaleClick}
+  aria-label="Khám phá Mystery Jackpot giảm giá 25%"
+  title="Mystery Jackpot - Giảm giá 25%"
+  className="
+    discount25-floating
+    flex h-14 w-14 items-center justify-center
+    sm:h-16 sm:w-16
+  "
+>
+  <img
+    src="/images/discount25.png"
+    alt="Giảm giá 25%"
+    className="h-full w-full object-contain"
+  />
+</a>
     </div>
   );
 }

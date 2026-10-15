@@ -46,11 +46,16 @@ import {
 
   Clock3,
 
+  Gift,
+  Layers3,
+
   ArrowUp,
 
   ArrowDown,
 
-  ShoppingCart
+  ShoppingCart,
+  CreditCard,
+  MessageCircle
 
 } from "lucide-react";
 
@@ -579,6 +584,76 @@ const [bestVoucher, setBestVoucher] = useState<any>(null);
  */
 const [flashSale, setFlashSale] = useState<any>(null);
 const [flashNow, setFlashNow] = useState(0);
+const [mysteryDealProduct, setMysteryDealProduct] = useState<any>(null);
+const [mysteryDeal, setMysteryDeal] = useState<any>(null);
+
+useEffect(() => {
+  let cancelled = false;
+  async function loadMysteryDeal() {
+    const now = Date.now();
+    const { data: rows, error } = await supabase
+      .from("mystery_deal_products")
+      .select("id,mystery_deal_id,product_id,discount_percent,quota,sold_count")
+      .eq("product_id", product.id);
+
+    if (error) {
+      console.warn("[Mystery Jackpot] Could not load product deal:", error);
+      if (!cancelled) {
+        setMysteryDealProduct(null);
+        setMysteryDeal(null);
+      }
+      return;
+    }
+
+    const dealIds = [...new Set((rows ?? []).map((row: any) => row.mystery_deal_id).filter(Boolean))];
+    if (!dealIds.length) {
+      if (!cancelled) {
+        setMysteryDealProduct(null);
+        setMysteryDeal(null);
+      }
+      return;
+    }
+
+    const { data: deals, error: dealsError } = await supabase
+      .from("mystery_deals")
+      .select("id,title,description,start_at,end_at,active")
+      .in("id", dealIds)
+      .eq("active", true);
+
+    if (dealsError) {
+      console.warn("[Mystery Jackpot] Could not load deals:", dealsError);
+      return;
+    }
+
+    const valid = (rows ?? [])
+      .map((row: any) => {
+        const deal = (deals ?? []).find((item: any) => item.id === row.mystery_deal_id);
+        if (!deal) return null;
+        const start = deal.start_at ? new Date(deal.start_at).getTime() : null;
+        const end = deal.end_at ? new Date(deal.end_at).getTime() : null;
+        const remaining = Math.max(0, Number(row.quota || 0) - Number(row.sold_count || 0));
+        const inWindow = (start === null || now >= start) && (end === null || now < end);
+        if (!inWindow || remaining <= 0 || Number(row.discount_percent) <= 0) return null;
+        return { productDeal: row, deal, start, end, remaining };
+      })
+      .filter(Boolean)
+      .sort((a: any, b: any) => (b.start ?? 0) - (a.start ?? 0));
+
+    if (!cancelled) {
+      setMysteryDealProduct(valid[0]?.productDeal ?? null);
+      setMysteryDeal(valid[0]?.deal ?? null);
+      setFlashNow(now);
+    }
+  }
+
+  void loadMysteryDeal();
+  return () => { cancelled = true; };
+}, [product.id]);
+
+useEffect(() => {
+  const timer = window.setInterval(() => setFlashNow(Date.now()), 1000);
+  return () => window.clearInterval(timer);
+}, []);
 
 const comparePrice =
   Number(product.compare_at_price) || 0;
@@ -631,13 +706,36 @@ const flashDiscount =
       )
     : 0;
 
-const salePrice =
-  flashSaleStatus === "active" &&
-  flashDiscount > 0
-    ? Math.round(
-        sellingPrice *
-          (1 - flashDiscount / 100)
-      )
+const mysteryStartTime = mysteryDeal?.start_at ? new Date(mysteryDeal.start_at).getTime() : null;
+const mysteryEndTime = mysteryDeal?.end_at ? new Date(mysteryDeal.end_at).getTime() : null;
+const mysteryRemaining = mysteryDealProduct
+  ? Math.max(0, Number(mysteryDealProduct.quota || 0) - Number(mysteryDealProduct.sold_count || 0))
+  : 0;
+const mysteryDiscount = mysteryDeal && mysteryDealProduct && mysteryDeal.active &&
+  (mysteryStartTime === null || flashNow >= mysteryStartTime) &&
+  (mysteryEndTime === null || flashNow < mysteryEndTime) &&
+  mysteryRemaining > 0
+    ? Math.max(0, Number(mysteryDealProduct.discount_percent) || 0)
+    : 0;
+const hasMysteryDeal = mysteryDiscount > 0;
+
+// Countdown Mystery Jackpot: cập nhật theo flashNow mỗi giây.
+const mysteryCountdownSeconds = mysteryEndTime !== null
+  ? Math.max(0, Math.floor((mysteryEndTime - flashNow) / 1000))
+  : 0;
+const mysteryCountdown = {
+  days: Math.floor(mysteryCountdownSeconds / 86400),
+  hours: Math.floor((mysteryCountdownSeconds % 86400) / 3600),
+  minutes: Math.floor((mysteryCountdownSeconds % 3600) / 60),
+  seconds: mysteryCountdownSeconds % 60,
+};
+
+/* Mystery Jackpot card uses products.price as its base price.
+   Do not use selectedColor.price here or the detail page can show a different deal price. */
+const salePrice = hasMysteryDeal
+  ? Math.round((Number(product.price) || 0) * (1 - mysteryDiscount / 100))
+  : flashSaleStatus === "active" && flashDiscount > 0
+    ? Math.round(sellingPrice * (1 - flashDiscount / 100))
     : sellingPrice;
 
 /*
@@ -650,22 +748,18 @@ const salePrice =
  * - Bình thường:
  *   dùng compare_at_price.
  */
-const originalDisplayPrice =
-  flashSaleStatus === "active"
-    ? Math.max(
-        comparePrice,
-        sellingPrice
-      )
+const originalDisplayPrice = hasMysteryDeal
+  ? (Number(product.price) || 0)
+  : flashSaleStatus === "active"
+    ? Math.max(comparePrice, sellingPrice)
     : comparePrice;
 
-const displayDiscountPercent =
-  flashSaleStatus === "active"
+const displayDiscountPercent = hasMysteryDeal
+  ? mysteryDiscount
+  : flashSaleStatus === "active"
     ? flashDiscount
     : comparePrice > sellingPrice
-      ? Math.round(
-          (1 - sellingPrice / comparePrice) *
-            100
-        )
+      ? Math.round((1 - sellingPrice / comparePrice) * 100)
       : 0;
 
 const displaySaving = Math.max(
@@ -841,173 +935,82 @@ useEffect(() => {
  * start_at / end_at mới quyết định trạng thái thực tế.
  */
 async function loadFlashSale() {
+  const now = Date.now();
+  setFlashNow(now);
   setFlashSale(null);
 
-  const now = Date.now();
-
-  setFlashNow(now);
-
-  const {
-    data,
-    error,
-  } = await supabase
+  // Query the product-to-sale mapping first. This avoids losing the
+  // Flash Sale when Supabase cannot resolve the nested relation.
+  const { data: productSaleRows, error: productSaleError } = await supabase
     .from("flash_sale_products")
-    .select(`
-      id,
-      flash_sale_id,
-      created_at,
-      flash_sales(
-        id,
-        title,
-        description,
-        discount_percent,
-        banner_color,
-        active,
-        start_at,
-        end_at
-      )
-    `)
-    .eq(
-      "product_id",
-      product.id
-    )
-    .order("created_at", {
-      ascending: false,
-    })
-    .limit(20);
+    .select("flash_sale_id, created_at")
+    .eq("product_id", product.id)
+    .order("created_at", { ascending: false })
+    .limit(50);
 
-  console.log(
-    "FLASH SALE PRODUCT:",
-    data
-  );
-
-  console.log(
-    "FLASH SALE ERROR:",
-    error
-  );
-
-  if (error) {
-    console.error(
-      "FLASH SALE LOAD ERROR:",
-      error
-    );
-
+  if (productSaleError) {
+    console.error("FLASH SALE PRODUCT LOOKUP ERROR:", productSaleError);
     return;
   }
 
-  const sales = (data ?? [])
-    .map((row: any) =>
-      Array.isArray(row.flash_sales)
-        ? row.flash_sales[0]
-        : row.flash_sales
-    )
-    .filter(Boolean);
+  const saleIds = [
+    ...new Set(
+      (productSaleRows ?? [])
+        .map((row: any) => row.flash_sale_id)
+        .filter(Boolean)
+    ),
+  ];
 
-  /*
-   * Chỉ giữ Flash Sale active trong admin
-   * và chưa hết hạn.
-   */
-  const validSales =
-    sales.filter(
-      (sale: any) => {
-        if (!sale.active) {
-          return false;
-        }
+  if (!saleIds.length) {
+    console.info("No Flash Sale linked to product:", product.id);
+    return;
+  }
 
-        const endTime =
-          sale.end_at
-            ? new Date(
-                sale.end_at
-              ).getTime()
-            : null;
+  const { data: saleRows, error: saleError } = await supabase
+    .from("flash_sales")
+    .select("id, title, description, discount_percent, banner_color, active, start_at, end_at")
+    .in("id", saleIds)
+    .eq("active", true);
 
-        if (
-          endTime !== null &&
-          !Number.isNaN(
-            endTime
-          ) &&
-          now >= endTime
-        ) {
-          return false;
-        }
+  if (saleError) {
+    console.error("FLASH SALE DETAILS LOOKUP ERROR:", saleError);
+    return;
+  }
 
-        return true;
-      }
-    );
+  const validSales = (saleRows ?? []).filter((sale: any) => {
+    const discount = Number(sale.discount_percent);
+    if (!sale.active || !Number.isFinite(discount) || discount <= 0 || discount >= 100) {
+      return false;
+    }
+
+    const startTime = sale.start_at ? new Date(sale.start_at).getTime() : null;
+    const endTime = sale.end_at ? new Date(sale.end_at).getTime() : null;
+
+    if (startTime !== null && Number.isNaN(startTime)) return false;
+    if (endTime !== null && Number.isNaN(endTime)) return false;
+    if (endTime !== null && now >= endTime) return false;
+
+    return true;
+  });
 
   if (!validSales.length) {
-    setFlashSale(null);
+    console.info("No valid active/upcoming Flash Sale for product:", product.id);
     return;
   }
 
-  /*
-   * Ưu tiên:
-   * 1. Flash Sale đang chạy.
-   * 2. Nếu chưa có sale đang chạy,
-   *    lấy sale sắp bắt đầu gần nhất.
-   */
-  const selectedSale =
-    validSales.sort(
-      (
-        a: any,
-        b: any
-      ) => {
-        const aStart =
-          a.start_at
-            ? new Date(
-                a.start_at
-              ).getTime()
-            : 0;
+  // Prefer a sale currently running. If none is running, show the nearest upcoming sale.
+  validSales.sort((a: any, b: any) => {
+    const aStart = a.start_at ? new Date(a.start_at).getTime() : 0;
+    const bStart = b.start_at ? new Date(b.start_at).getTime() : 0;
+    const aRunning = a.start_at ? aStart <= now : true;
+    const bRunning = b.start_at ? bStart <= now : true;
 
-        const bStart =
-          b.start_at
-            ? new Date(
-                b.start_at
-              ).getTime()
-            : 0;
+    if (aRunning !== bRunning) return aRunning ? -1 : 1;
+    return aRunning ? bStart - aStart : aStart - bStart;
+  });
 
-        const aIsRunning =
-          a.start_at
-            ? aStart <= now
-            : true;
-
-        const bIsRunning =
-          b.start_at
-            ? bStart <= now
-            : true;
-
-        if (
-          aIsRunning &&
-          !bIsRunning
-        ) {
-          return -1;
-        }
-
-        if (
-          !aIsRunning &&
-          bIsRunning
-        ) {
-          return 1;
-        }
-
-        if (
-          aIsRunning &&
-          bIsRunning
-        ) {
-          return bStart - aStart;
-        }
-
-        return aStart - bStart;
-      }
-    )[0];
-
-  setFlashSale(
-    selectedSale
-  );
-
-  setFlashNow(
-    Date.now()
-  );
+  setFlashSale(validSales[0]);
+  setFlashNow(Date.now());
 }
 
 /*
@@ -1463,7 +1466,7 @@ const cartItem = {
 
 
 
-  <section className="container-x border-t pt-4 pb-16">
+  <section className="container-x border-t pt-4 pb-5 lg:pb-16">
 
     <div className="grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10 xl:gap-12">
 
@@ -1725,7 +1728,7 @@ const cartItem = {
               </span>
 
               {displayDiscountPercent > 0 && (
-                <span className="bg-neutral-100 px-2 py-1 text-[8px] font-semibold text-neutral-700">
+                <span className="inline-flex items-center rounded-sm bg-[#E53935] px-2 py-1 text-[10px] font-bold text-white">
                   -{displayDiscountPercent}%
                 </span>
               )}
@@ -1759,7 +1762,30 @@ const cartItem = {
               </div>
             )}
 
-            {flashSaleStatus === "active" && (
+            {hasMysteryDeal ? (
+              <div className="mt-3 rounded-lg bg-[#FFF4EF] px-3 py-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-[#D94A1E]">
+                      <Gift size={12} strokeWidth={1.8} aria-hidden="true" />
+                      <span>Mystery Jackpot Deals</span>
+                    </div>
+                    <p className="mt-1 text-[9px] text-neutral-600">Tiết kiệm {formatVND(displaySaving)}</p>
+                  </div>
+                  {mysteryEndTime !== null && (
+                    <div className="shrink-0 text-right text-[#D94A1E]">
+                      <div className="flex items-center justify-end gap-1 text-[10px] font-semibold tabular-nums">
+                        <Clock3 size={12} strokeWidth={1.8} aria-hidden="true" />
+                        <span>{mysteryCountdown.days} ngày</span>
+                        <span>·</span>
+                        <span>{String(mysteryCountdown.hours).padStart(2, "0")}:{String(mysteryCountdown.minutes).padStart(2, "0")}:{String(mysteryCountdown.seconds).padStart(2, "0")}</span>
+                      </div>
+                      <div className="mt-0.5 text-[8px] font-medium text-neutral-500">CÒN LẠI</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : flashSaleStatus === "active" && (
               <div className="mt-3 rounded-lg bg-[#FFF4EF] px-3 py-2.5">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -1790,7 +1816,8 @@ const cartItem = {
               </div>
             )}
 
-            {flashSaleStatus !== "active" &&
+            {!hasMysteryDeal &&
+              flashSaleStatus !== "active" &&
               flashSaleStatus !== "upcoming" &&
               displaySaving > 0 && (
                 <p className="mt-2 text-[10px] font-medium text-[#6B7F4A]">
@@ -1874,15 +1901,21 @@ const cartItem = {
           )}
 
 
-          {/* Material — compact highlighted specification */}
-          {materials.length > 0 && (
-            <div className="mt-2.5 flex items-center justify-between gap-3 rounded-md border border-[#E9D8C8] bg-[#FBF6F0] px-3 py-2">
-              <span className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#8A654A]">
-                Chất liệu
-              </span>
-              <span className="text-right text-[11px] font-medium leading-4 text-neutral-800">
-                {selectedColor?.material || materials.join(" • ")}
-              </span>
+          {/* Material — understated, premium US/UK editorial style */}
+          {(selectedColor?.material || materials.length > 0 || product.material) && (
+            <div className="mt-3 flex min-h-[48px] items-center justify-between gap-4 border-y border-neutral-200 bg-white px-1 py-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <Layers3 size={15} strokeWidth={1.6} className="shrink-0 text-neutral-500" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-neutral-500">
+                    Material
+                  </p>
+                  <p className="mt-0.5 text-[12px] font-medium leading-4 text-neutral-900">
+                    {selectedColor?.material || materials.join(" · ") || product.material}
+                  </p>
+                </div>
+              </div>
+              <span className="shrink-0 text-[9px] uppercase tracking-[0.12em] text-neutral-400">Details</span>
             </div>
           )}
 
@@ -2096,9 +2129,9 @@ const cartItem = {
 
 
 
-            <div className="grid grid-cols-[108px_minmax(0,1fr)] gap-2">
+            <div className="grid grid-cols-2 items-center gap-2">
 
-              <div className="flex h-11 items-center justify-between overflow-hidden rounded-lg border border-neutral-300 bg-white">
+              <div className="flex h-10 w-full items-center justify-between overflow-hidden rounded-lg border border-neutral-300 bg-white">
 
                 <motion.button
 
@@ -2158,7 +2191,7 @@ const cartItem = {
 
                 disabled={!inStock}
 
-                className="h-11 rounded-lg bg-[#1F2A1F] px-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-white transition-colors duration-200 hover:bg-[#344334] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-300"
+                className="h-10 w-full rounded-lg border border-neutral-300 bg-neutral-100 px-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-neutral-700 transition-colors duration-200 hover:border-neutral-400 hover:bg-neutral-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400"
 
               >
 
@@ -2198,98 +2231,52 @@ const cartItem = {
 
 
 
-          {/* Shipping / returns / warranty */}
-
-          <div className="mt-auto border-t border-neutral-200">
-
-            <div className="flex items-center gap-3 border-b border-neutral-100 py-2.5">
-
-              <Truck
-
-                size={15}
-
-                strokeWidth={1.5}
-
-                className="shrink-0 text-neutral-600"
-
-              />
-
-              <div className="flex w-full items-center justify-between gap-4">
-
-                <span className="text-[10px] font-medium">
-
-                  Miễn phí giao hàng
-
-                </span>
-
-                <span className="text-[9px] text-neutral-400">
-
-                  Toàn quốc
-
-                </span>
-
+          {/* Compact trust benefits — 2 × 2 grid */}
+          <div className="mt-3 border-t border-neutral-200 pt-2.5">
+            <div className="grid grid-cols-2 gap-1.5">
+              <div className="flex min-w-0 items-start gap-2 rounded-md border border-neutral-200 px-2 py-2">
+                <Truck size={14} strokeWidth={1.6} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-medium leading-4 text-neutral-800">Giao hàng toàn quốc</p>
+                  <p className="text-[9px] leading-3 text-neutral-400">Theo chính sách vận chuyển</p>
+                </div>
               </div>
 
-            </div>
+              <Link
+                to="/chinh-sach-doi-hang"
+                aria-label="Xem chính sách đổi trả 15 ngày"
+                className="flex min-w-0 items-start gap-2 rounded-md border border-neutral-200 px-2 py-2 transition-colors hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0878E8]"
+              >
+                <RotateCcw size={14} strokeWidth={1.6} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-medium leading-4 text-neutral-800">Đổi trả 15 ngày</p>
+                  <p className="text-[9px] leading-3 text-neutral-400">Xem điều kiện áp dụng</p>
+                </div>
+              </Link>
 
-
-
-            <Link
-              to="/chinh-sach-doi-hang"
-              className="group flex items-center gap-3 border-b border-neutral-100 py-2.5 transition-colors hover:text-[#0878E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0878E8] focus-visible:ring-offset-2 rounded-sm"
-              aria-label="Đọc chính sách đổi trả 15 ngày"
-            >
-              <RotateCcw
-                size={15}
-                strokeWidth={1.5}
-                className="shrink-0 text-neutral-600 transition-colors group-hover:text-[#0878E8]"
-              />
-              <span className="flex w-full items-center justify-between gap-4">
-                <span className="text-[10px] font-semibold text-neutral-800 group-hover:text-[#0878E8]">
-                  Đổi trả 15 ngày
-                </span>
-                <span className="text-[9px] text-neutral-400 transition-colors group-hover:text-[#0878E8]">
-                  Xem chính sách ↗
-                </span>
-              </span>
-            </Link>
-
-
-
-            <div className="flex items-center gap-3 py-2.5">
-
-              <ShieldCheck
-
-                size={15}
-
-                strokeWidth={1.5}
-
-                className="shrink-0 text-neutral-600"
-
-              />
-
-              <div className="flex w-full items-center justify-between gap-4">
-
-                <span className="text-[10px] font-medium">
-
-                  Bảo hành
-
-                </span>
-
-                <span className="max-w-[190px] text-right text-[9px] text-neutral-400">
-
-                  {product.warranty ||
-
-                    "Theo chính sách sản phẩm"}
-
-                </span>
-
+              <div className="flex min-w-0 items-start gap-2 rounded-md border border-neutral-200 px-2 py-2">
+                <CreditCard size={14} strokeWidth={1.6} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-medium leading-4 text-neutral-800">Thanh toán an toàn</p>
+                  <p className="text-[9px] leading-3 text-neutral-400">Nhiều phương thức</p>
+                </div>
               </div>
 
+              <a
+                href={MESSENGER_URL}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Liên hệ tư vấn sản phẩm qua Messenger"
+                className="flex min-w-0 items-start gap-2 rounded-md border border-neutral-200 px-2 py-2 transition-colors hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0878E8]"
+              >
+                <MessageCircle size={14} strokeWidth={1.6} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-medium leading-4 text-neutral-800">Tư vấn sản phẩm</p>
+                  <p className="text-[9px] leading-3 text-neutral-400">Hỗ trợ qua Messenger</p>
+                </div>
+              </a>
             </div>
-
           </div>
-
 
 
         </div>
@@ -2302,7 +2289,7 @@ const cartItem = {
 
 
 
-        <section className="container-x py-4">
+        <section className="container-x pt-1 pb-3 sm:pt-3 sm:pb-4">
 
           {/* =========================================================
 
@@ -2312,7 +2299,7 @@ const cartItem = {
 
              ========================================================= */}
 
-          <div className="max-w-5xl overflow-hidden rounded-xl border border-neutral-200 bg-white">
+          <div className="max-w-5xl overflow-hidden rounded-lg border border-[#E8E8E6] bg-white">
 
 
 
@@ -2344,9 +2331,9 @@ const cartItem = {
 
                   gap-4
 
-                  px-5
+                  px-4
 
-                  py-5
+                  py-2.5 sm:py-3.5
 
                   text-left
 
@@ -2360,7 +2347,7 @@ const cartItem = {
 
               >
 
-                <span className="font-display text-xl font-bold tracking-[-0.02em] text-neutral-900 sm:text-2xl">
+                <span className="font-display text-[14px] font-normal tracking-[-0.01em] text-neutral-800 sm:text-[15px]">
 
                   Thông số kỹ thuật
 
@@ -2374,9 +2361,9 @@ const cartItem = {
 
                     flex
 
-                    h-9
+                    h-6
 
-                    w-9
+                    w-6
 
                     shrink-0
 
@@ -2404,7 +2391,7 @@ const cartItem = {
 
                     <Minus
 
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
 
                       strokeWidth={1.5}
 
@@ -2414,7 +2401,7 @@ const cartItem = {
 
                     <Plus
 
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
 
                       strokeWidth={1.5}
 
@@ -2472,17 +2459,17 @@ const cartItem = {
 
                         )
 
-                        .map((item: any) => (
+                        .map((item: any, index: number) => (
 
                           <div
 
                             key={item.id}
 
-                            className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4 text-sm last:border-b-0 sm:px-6"
+                            className={`grid grid-cols-2 gap-4 border-b border-neutral-100 px-4 py-2.5 text-[12px] leading-5 last:border-b-0 sm:px-5 sm:py-3 ${index % 2 === 0 ? "bg-neutral-50" : "bg-white"}`}
 
                           >
 
-                            <div className="font-bold text-neutral-900">
+                            <div className="font-medium text-neutral-800">
 
                               {item.label}
 
@@ -2490,7 +2477,7 @@ const cartItem = {
 
 
 
-                            <div className="font-bold text-neutral-700">
+                            <div className="font-medium text-neutral-600">
 
                               {item.value}
 
@@ -2504,15 +2491,15 @@ const cartItem = {
 
                       <>
 
-                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4 text-sm sm:px-6">
+                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2.5 text-[12px] leading-5 sm:px-5 sm:py-3">
 
-                          <div className="font-bold text-neutral-900">
+                          <div className="font-medium text-neutral-800">
 
                             Kích thước
 
                           </div>
 
-                          <div className="font-bold text-neutral-700">
+                          <div className="font-medium text-neutral-600">
 
                             {product.dimensions || "—"}
 
@@ -2522,15 +2509,15 @@ const cartItem = {
 
 
 
-                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4 text-sm sm:px-6">
+                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 bg-white px-4 py-2.5 text-[12px] leading-5 sm:px-5 sm:py-3">
 
-                          <div className="font-bold text-neutral-900">
+                          <div className="font-medium text-neutral-800">
 
                             Chất liệu
 
                           </div>
 
-                          <div className="font-bold text-neutral-700">
+                          <div className="font-medium text-neutral-600">
 
                             {product.material || "—"}
 
@@ -2540,15 +2527,15 @@ const cartItem = {
 
 
 
-                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4 text-sm sm:px-6">
+                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2.5 text-[12px] leading-5 sm:px-5 sm:py-3">
 
-                          <div className="font-bold text-neutral-900">
+                          <div className="font-medium text-neutral-800">
 
                             Màu sắc
 
                           </div>
 
-                          <div className="font-bold text-neutral-700">
+                          <div className="font-medium text-neutral-600">
 
                             {product.color || "—"}
 
@@ -2558,15 +2545,15 @@ const cartItem = {
 
 
 
-                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4 text-sm sm:px-6">
+                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 bg-white px-4 py-2.5 text-[12px] leading-5 sm:px-5 sm:py-3">
 
-                          <div className="font-bold text-neutral-900">
+                          <div className="font-medium text-neutral-800">
 
                             Nguồn sáng
 
                           </div>
 
-                          <div className="font-bold text-neutral-700">
+                          <div className="font-medium text-neutral-600">
 
                             {product.light_source || "—"}
 
@@ -2576,15 +2563,15 @@ const cartItem = {
 
 
 
-                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4 text-sm sm:px-6">
+                        <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2.5 text-[12px] leading-5 sm:px-5 sm:py-3">
 
-                          <div className="font-bold text-neutral-900">
+                          <div className="font-medium text-neutral-800">
 
                             Nguồn điện
 
                           </div>
 
-                          <div className="font-bold text-neutral-700">
+                          <div className="font-medium text-neutral-600">
 
                             {product.power_source || "—"}
 
@@ -2594,15 +2581,15 @@ const cartItem = {
 
 
 
-                        <div className="grid grid-cols-2 gap-4 px-5 py-4 text-sm sm:px-6">
+                        <div className="grid grid-cols-2 gap-4 bg-white px-4 py-2.5 text-[12px] leading-5 sm:px-5 sm:py-3">
 
-                          <div className="font-bold text-neutral-900">
+                          <div className="font-medium text-neutral-800">
 
                             Bảo hành
 
                           </div>
 
-                          <div className="font-bold text-neutral-700">
+                          <div className="font-medium text-neutral-600">
 
                             {product.warranty || "—"}
 
@@ -2656,9 +2643,9 @@ const cartItem = {
 
                   gap-4
 
-                  px-5
+                  px-4
 
-                  py-5
+                  py-2.5 sm:py-3.5
 
                   text-left
 
@@ -2672,7 +2659,7 @@ const cartItem = {
 
               >
 
-                <span className="font-display text-xl font-bold tracking-[-0.02em] text-neutral-900 sm:text-2xl">
+                <span className="font-display text-[14px] font-normal tracking-[-0.01em] text-neutral-800 sm:text-[15px]">
 
                   Mô tả
 
@@ -2686,9 +2673,9 @@ const cartItem = {
 
                     flex
 
-                    h-9
+                    h-6
 
-                    w-9
+                    w-6
 
                     shrink-0
 
@@ -2716,7 +2703,7 @@ const cartItem = {
 
                     <Minus
 
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
 
                       strokeWidth={1.5}
 
@@ -2726,7 +2713,7 @@ const cartItem = {
 
                     <Plus
 
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
 
                       strokeWidth={1.5}
 
@@ -2768,11 +2755,11 @@ const cartItem = {
 
                 <div className="min-h-0 overflow-hidden">
 
-                  <div className="border-t border-neutral-100 px-5 pb-7 pt-5 sm:px-6">
+                  <div className="border-t border-neutral-100 px-4 pb-4 pt-3 sm:px-5 sm:pb-5 sm:pt-3.5">
 
                     <div
 
-                      className="product-content font-bold leading-7 text-neutral-700"
+                      className="product-content text-[13px] leading-6 text-neutral-600"
 
                       dangerouslySetInnerHTML={{
 
@@ -2820,9 +2807,9 @@ const cartItem = {
 
                 gap-4
 
-                px-5
+                px-4
 
-                py-5
+                py-2.5 sm:py-3.5
 
                 text-left
 
@@ -2836,7 +2823,7 @@ const cartItem = {
 
             >
 
-              <span className="font-display text-xl font-bold tracking-[-0.02em] text-neutral-900 sm:text-2xl">
+              <span className="font-display text-[14px] font-normal tracking-[-0.01em] text-neutral-800 sm:text-[15px]">
 
                 Câu hỏi thường gặp
 
@@ -2850,9 +2837,9 @@ const cartItem = {
 
                   flex
 
-                  h-9
+                  h-6
 
-                  w-9
+                  w-6
 
                   shrink-0
 
@@ -2878,11 +2865,11 @@ const cartItem = {
 
                 {isFaqOpen ? (
 
-                  <Minus className="h-4 w-4" strokeWidth={1.5} />
+                  <Minus className="h-3.5 w-3.5" strokeWidth={1.5} />
 
                 ) : (
 
-                  <Plus className="h-4 w-4" strokeWidth={1.5} />
+                  <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
 
                 )}
 
@@ -2920,9 +2907,9 @@ const cartItem = {
 
               <div className="min-h-0 overflow-hidden">
 
-                <div className="border-t border-neutral-100 px-5 pb-5 pt-4 sm:px-6">
+                <div className="border-t border-neutral-100 px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
 
-                  <div className="space-y-2">
+                  <div className="divide-y divide-neutral-100">
 
                     {faqs.map((faq, index) => (
 
@@ -2930,7 +2917,7 @@ const cartItem = {
 
                         key={index}
 
-                        className="overflow-hidden rounded-xl border border-neutral-200 bg-white"
+                        className="overflow-hidden bg-white"
 
                       >
 
@@ -2948,11 +2935,11 @@ const cartItem = {
 
                           }
 
-                          className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left"
+                          className="flex w-full items-center justify-between gap-4 py-3 text-left"
 
                         >
 
-                          <span className="text-sm font-medium text-neutral-900">
+                          <span className="text-[13px] font-medium text-neutral-800">
 
                             {faq.question}
 
@@ -2976,7 +2963,7 @@ const cartItem = {
 
                         {openFaq === index && (
 
-                          <div className="border-t border-neutral-100 px-4 py-4 text-sm leading-6 text-neutral-600">
+                          <div className="border-t border-neutral-100 bg-neutral-50 px-3 py-3 text-[13px] leading-5 text-neutral-600">
 
                             {faq.answer}
 
@@ -3864,7 +3851,7 @@ index % 3 === 0
           <div className="mx-auto flex max-w-xl items-center gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-baseline gap-2 whitespace-nowrap">
-                <span className="text-[21px] font-bold leading-none tracking-[-0.04em] text-neutral-950">
+                <span className="text-[21px] font-bold leading-none tracking-[-0.04em] text-[#0878E8]">
                   {formatVND(salePrice)}
                 </span>
                 {originalDisplayPrice > salePrice && (

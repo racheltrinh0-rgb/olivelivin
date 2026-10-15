@@ -9,6 +9,7 @@ import { WARDS } from "@/data/wards";
 import React, {
   useEffect,
   useState,
+  useRef,
   type FormEvent,
 } from "react";
 import { useCart } from "@/lib/cart";
@@ -119,11 +120,14 @@ notes: z.string().max(500).optional(),
 });
 
 function CheckoutPage() {
+  const paypalClientId = String(import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "").trim();
+
   const paypalOptions = {
-    "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
+    "client-id": paypalClientId,
     currency: "USD",
     intent: "capture",
     components: "buttons,funding-eligibility",
+    locale: "en_US",
   };
 
   const { items, subtotal, clear, count } = useCart();
@@ -132,6 +136,8 @@ function CheckoutPage() {
   const { policy } = Route.useSearch();
 
   const [submitting, setSubmitting] = useState(false);
+  const [paypalPaymentVerified, setPaypalPaymentVerified] = useState(false);
+  const paypalPaymentVerifiedRef = useRef(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [voucherOpen, setVoucherOpen] = useState(true);
   const [reviewOpen, setReviewOpen] = useState(true);
@@ -527,6 +533,11 @@ const wards = districtValue
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (paymentMethod === "paypal" && !paypalPaymentVerifiedRef.current) {
+      toast.error("Vui lòng hoàn tất thanh toán PayPal trước khi tạo đơn.");
+      return;
+    }
   
     const fd = new FormData(e.currentTarget);
     const parsed = schema.safeParse(Object.fromEntries(fd));
@@ -550,7 +561,7 @@ const payload = {
 
   payment_method: paymentMethod,
 
-  payment_status: paymentMethod === "paypal" || paymentMethod === "card" ? "paid" : "pending",
+  payment_status: paymentMethod === "paypal" && paypalPaymentVerifiedRef.current ? "paid" : "pending",
 
   district: districtValue,
 
@@ -855,7 +866,7 @@ return;
           </div>
         </header>
 
-        <form onSubmit={onSubmit} className="space-y-3.5 sm:space-y-4">
+        <form id="olive-checkout-form" onSubmit={onSubmit} className="space-y-3.5 sm:space-y-4">
           <input type="hidden" name="payment_method" value={paymentMethod} />
 
           {/* =========================================================
@@ -889,7 +900,8 @@ return;
               <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
                 <div className="col-span-2 min-w-0 overflow-visible rounded-xl lg:col-span-1">
 
-                  <PayPalScriptProvider options={paypalOptions}>
+                  {paypalClientId ? (
+                    <PayPalScriptProvider options={paypalOptions}>
   <PayPalButtons
     fundingSource={FUNDING.PAYPAL}
 
@@ -906,7 +918,40 @@ return;
     createOrder={async () => {
       console.log("===== PAYPAL CREATE ORDER START =====");
 
+      const checkoutForm = document.querySelector<HTMLFormElement>("#olive-checkout-form");
+      if (!checkoutForm) {
+        throw new Error("Không tìm thấy biểu mẫu thanh toán.");
+      }
+
+      // Build validation data from both actual form controls and React state.
+      // City/district/ward are custom popover selectors, so their visible labels
+      // are not native inputs; use the state values as the source of truth.
+      const formValues = Object.fromEntries(new FormData(checkoutForm));
+      const checkoutValidation = schema.safeParse({
+        ...formValues,
+        city: cityValue,
+        district: districtValue,
+        ward: wardValue,
+        payment_method: "paypal",
+      });
+
+      if (!checkoutValidation.success) {
+        const firstIssue = checkoutValidation.error.issues[0];
+        const message = firstIssue?.message
+          ?? "Vui lòng kiểm tra thông tin thanh toán.";
+        console.error("PAYPAL CHECKOUT VALIDATION FAILED:",
+          checkoutValidation.error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          }))
+        );
+        toast.error(message);
+        throw new Error(message);
+      }
+
       setPaymentMethod("paypal");
+      setPaypalPaymentVerified(false);
+      paypalPaymentVerifiedRef.current = false;
 
       console.log("PAYPAL AMOUNT USD:", paypalAmountUSD);
 
@@ -1085,16 +1130,14 @@ return;
          * Thanh toán PayPal thành công.
          * Tiếp tục submit form để tạo order trong Supabase.
          */
-        const form =
-          document.querySelector("form");
+        setPaypalPaymentVerified(true);
+        paypalPaymentVerifiedRef.current = true;
 
-        if (form) {
-          form.requestSubmit();
-        } else {
-          throw new Error(
-            "Không tìm thấy checkout form.",
-          );
+        const form = document.querySelector<HTMLFormElement>("#olive-checkout-form");
+        if (!form) {
+          throw new Error("Không tìm thấy checkout form.");
         }
+        form.requestSubmit();
       } catch (error) {
         console.error(
           "===== PAYPAL PAYMENT FAILED =====",
@@ -1134,6 +1177,11 @@ return;
     }}
   />
 </PayPalScriptProvider>
+                  ) : (
+                    <div className="flex min-h-11 items-center justify-center rounded-xl border border-[#E5E5E0] bg-[#FAFAF8] px-3 text-center text-[11px] text-[#777B72]">
+                      PayPal chưa được cấu hình. Vui lòng thử phương thức thanh toán khác.
+                    </div>
+                  )}
 
                 </div>
 

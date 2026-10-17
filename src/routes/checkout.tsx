@@ -879,7 +879,7 @@ return;
               type="button"
               onClick={() => setSummaryOpen((v) => !v)}
               aria-expanded={summaryOpen}
-              className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left transition hover:bg-[#FAFAF8] sm:px-5"
+              className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left transition hover:bg-[#F7F8F4] sm:px-5"
             >
               <div className="min-w-0">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8A8D84]">
@@ -988,17 +988,17 @@ return;
           {/* =========================================================
               03 — CONTACT
           ========================================================== */}
-          <section className="rounded-2xl border border-[#DCDDD7] bg-white p-3 sm:p-6">
+          <section className="rounded-xl border border-[#DCDDD7] bg-white p-3 sm:rounded-2xl sm:p-6">
             <SectionTitle
               icon={<UserRound className="h-4 w-4" strokeWidth={1.7} />}
               eyebrow="01 · CONTACT"
               title="Thông tin liên hệ"
-              description="Thông tin để xác nhận đơn hàng và gửi cập nhật giao hàng."
+              description=""
             />
-            <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+            <div className="mt-2.5 grid gap-2 sm:mt-3 sm:gap-2.5 sm:grid-cols-2">
               <Field name="full_name" label="Họ và tên" required />
               <label className="block">
-                <span className="mb-0.5 block text-[10px] font-medium text-[#666666]">Số điện thoại *</span>
+                <span className="mb-1 block text-[10px] font-medium leading-3 text-[#666666]">Số điện thoại *</span>
                 <input
                   name="phone"
                   required
@@ -1006,7 +1006,7 @@ return;
                   onChange={(e) => setPhoneValue(e.target.value)}
                   inputMode="tel"
                   placeholder="090 123 4567"
-                  className="h-10 w-full rounded-xl border border-[#DCDDD7] bg-white px-3 text-[11px] text-[#222222] outline-none transition focus:border-[#8A8A8A] focus:ring-2 focus:ring-[#667653]/10 placeholder:text-[#AAAAAA]"
+                  className="h-9 w-full rounded-lg border border-[#DCDDD7] bg-white px-3 text-[11px] text-[#222222] outline-none transition focus:border-[#8A8A8A] focus:ring-2 focus:ring-[#667653]/10 placeholder:text-[#AAAAAA]"
                 />
               </label>
               <div className="sm:col-span-2">
@@ -1018,41 +1018,42 @@ return;
           {/* =========================================================
               04 — DELIVERY
           ========================================================== */}
-          <section className="rounded-2xl border border-[#DCDDD7] bg-white p-4 sm:p-6">
+          <section className="rounded-xl border border-[#DCDDD7] bg-white p-3 sm:rounded-2xl sm:p-6">
             <SectionTitle
               icon={<MapPin className="h-4 w-4" strokeWidth={1.7} />}
               eyebrow="02 · DELIVERY"
               title="Địa chỉ nhận hàng"
-              description="Nhập địa chỉ tại Việt Nam để Olive Living tính phí vận chuyển phù hợp."
+              
             />
 
-            <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+            <div className="mt-2.5 grid gap-2 sm:mt-3 sm:gap-2.5 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <Field name="address" label="Địa chỉ / Số nhà / Tên đường" required />
               </div>
 
               <label className="block">
-                <span className="mb-0.5 block text-[10px] font-medium text-[#666666]">Tỉnh / Thành phố *</span>
+                <span className="mb-1 block text-[10px] font-medium leading-3 text-[#666666]">Tỉnh / Thành phố *</span>
                 <Popover open={cityOpen} onOpenChange={setCityOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       type="button"
                       variant="outline"
                       role="combobox"
-                      className="h-10 w-full justify-between rounded-xl border-[#DCDDD7] bg-white px-3 text-[11px] font-normal text-[#444444]"
+                      className="h-9 w-full justify-between rounded-lg border-[#DCDDD7] bg-white px-3 text-[11px] font-normal text-[#444444] sm:h-10 sm:rounded-xl"
                     >
                       {cityValue || "Chọn tỉnh / thành phố"}
                       <ChevronsUpDown className="h-3.5 w-3.5 opacity-40" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" className="w-[var(--radix-popover-trigger-width)] p-0">
+                  <PopoverContent align="start" className="z-50 w-[var(--radix-popover-trigger-width)] rounded-lg border border-[#E1E3DC] p-0 shadow-md">
                     <Command>
-                      <CommandInput placeholder="Tìm tỉnh / thành..." />
-                      <CommandList className="max-h-72">
+                      <CommandInput placeholder="Tìm tỉnh / thành..." className="h-8 text-[11px]" />
+                      <CommandList className="max-h-48 overflow-y-auto sm:max-h-56">
                         <CommandEmpty>Không tìm thấy.</CommandEmpty>
-                        <CommandGroup>
+                        <CommandGroup className="p-1.5">
                           {provinces.map((city) => (
                             <CommandItem
+                              className="min-h-8 rounded-md px-3 py-1 text-[11px]"
                               key={city.Id}
                               value={city.Name}
                               onSelect={() => {
@@ -1062,7 +1063,7 @@ return;
                                 setCityOpen(false);
                               }}
                             >
-                              <Check className={cn("mr-2 h-4 w-4", cityValue === city.Name ? "opacity-100" : "opacity-0")} />
+                              <Check className={cn("mr-1.5 h-3.5 w-3.5", cityValue === city.Name ? "opacity-100" : "opacity-0")} />
                               {city.Name}
                             </CommandItem>
                           ))}
@@ -1075,14 +1076,14 @@ return;
               </label>
 
               <label className="block">
-                <span className="mb-0.5 block text-[10px] font-medium text-[#666666]">Quận / Huyện *</span>
+                <span className="mb-1 block text-[10px] font-medium leading-3 text-[#666666]">Quận / Huyện *</span>
                 <Popover open={districtOpen} onOpenChange={setDistrictOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       type="button"
                       variant="outline"
                       role="combobox"
-                      className="h-10 w-full justify-between rounded-xl border-[#DCDDD7] bg-white px-3 text-[11px] font-normal text-[#444444]"
+                      className="h-9 w-full justify-between rounded-lg border-[#DCDDD7] bg-white px-3 text-[11px] font-normal text-[#444444] sm:h-10 sm:rounded-xl"
                       onClick={() => {
                         if (!cityValue) {
                           toast.error("Vui lòng chọn Tỉnh / Thành phố trước.");
@@ -1095,14 +1096,15 @@ return;
                       <ChevronsUpDown className="h-3.5 w-3.5 opacity-40" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" className="w-[var(--radix-popover-trigger-width)] p-0">
+                  <PopoverContent align="start" className="z-50 w-[var(--radix-popover-trigger-width)] rounded-lg border border-[#E1E3DC] p-0 shadow-md">
                     <Command>
-                      <CommandInput placeholder="Tìm quận / huyện..." />
-                      <CommandList className="max-h-72">
+                      <CommandInput placeholder="Tìm quận / huyện..." className="h-8 text-[11px]" />
+                      <CommandList className="max-h-48 overflow-y-auto sm:max-h-56">
                         <CommandEmpty>Không tìm thấy.</CommandEmpty>
-                        <CommandGroup>
+                        <CommandGroup className="p-1.5">
                           {districts.map((district) => (
                             <CommandItem
+                              className="min-h-8 rounded-md px-3 py-1 text-[11px]"
                               key={district.Name}
                               value={district.Name}
                               onSelect={() => {
@@ -1111,7 +1113,7 @@ return;
                                 setDistrictOpen(false);
                               }}
                             >
-                              <Check className={cn("mr-2 h-4 w-4", districtValue === district.Name ? "opacity-100" : "opacity-0")} />
+                              <Check className={cn("mr-1.5 h-3.5 w-3.5", districtValue === district.Name ? "opacity-100" : "opacity-0")} />
                               {district.Name}
                             </CommandItem>
                           ))}
@@ -1124,27 +1126,28 @@ return;
               </label>
 
               <label className="block">
-                <span className="mb-0.5 block text-[10px] font-medium text-[#666666]">Phường / Xã</span>
+                <span className="mb-1 block text-[10px] font-medium leading-3 text-[#666666]">Phường / Xã</span>
                 <Popover open={wardOpen} onOpenChange={setWardOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       type="button"
                       variant="outline"
                       disabled={!districtValue}
-                      className="h-10 w-full justify-between rounded-xl border-[#DCDDD7] bg-white px-3 text-[11px] font-normal text-[#444444]"
+                      className="h-9 w-full justify-between rounded-lg border-[#DCDDD7] bg-white px-3 text-[11px] font-normal text-[#444444] sm:h-10 sm:rounded-xl"
                     >
                       {wardValue || "Chọn phường / xã"}
                       <ChevronsUpDown className="h-3.5 w-3.5 opacity-40" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" className="w-[var(--radix-popover-trigger-width)] p-0">
+                  <PopoverContent align="start" className="z-50 w-[var(--radix-popover-trigger-width)] rounded-lg border border-[#E1E3DC] p-0 shadow-md">
                     <Command>
-                      <CommandInput placeholder="Tìm phường / xã..." />
-                      <CommandList className="max-h-72">
+                      <CommandInput placeholder="Tìm phường / xã..." className="h-8 text-[11px]" />
+                      <CommandList className="max-h-48 overflow-y-auto sm:max-h-56">
                         <CommandEmpty>Không tìm thấy.</CommandEmpty>
-                        <CommandGroup>
+                        <CommandGroup className="p-1.5">
                           {wards.map((ward) => (
                             <CommandItem
+                              className="min-h-8 rounded-md px-3 py-1 text-[11px]"
                               key={ward.Id}
                               value={ward.Name}
                               onSelect={() => {
@@ -1152,7 +1155,7 @@ return;
                                 setWardOpen(false);
                               }}
                             >
-                              <Check className={cn("mr-2 h-4 w-4", wardValue === ward.Name ? "opacity-100" : "opacity-0")} />
+                              <Check className={cn("mr-1.5 h-3.5 w-3.5", wardValue === ward.Name ? "opacity-100" : "opacity-0")} />
                               {ward.Name}
                             </CommandItem>
                           ))}
@@ -1173,7 +1176,7 @@ return;
           {/* =========================================================
               05 — SHIPPING
           ========================================================== */}
-          <section className="rounded-2xl border border-[#DCDDD7] bg-white p-4 sm:p-6">
+          <section className="rounded-xl border border-[#DCDDD7] bg-white p-3 sm:rounded-2xl sm:p-6">
             <SectionTitle
               icon={<Truck className="h-4 w-4" strokeWidth={1.7} />}
               eyebrow="03 · SHIPPING"
@@ -1181,7 +1184,7 @@ return;
               description="Chọn cách giao hàng."
             />
 
-            <div className="mt-4 overflow-hidden rounded-xl border border-[#DCDDD7]">
+            <div className="mt-2.5 overflow-hidden rounded-lg border border-[#DCDDD7] sm:mt-4 sm:rounded-xl">
               <ShippingMethodOption
                 selected={shippingMethod === "standard"}
                 onClick={() => setShippingMethod("standard")}
@@ -1218,7 +1221,7 @@ return;
               />
             </div>
 
-            <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-[#F5F6F2]/55 px-2.5 py-2 sm:mt-3 sm:gap-2 sm:rounded-xl sm:px-3.5 sm:py-3">
+            <div className="mt-1.5 flex items-start gap-1 rounded-md bg-[#F5F6F2]/55 px-2 py-1.5 sm:mt-3 sm:gap-2 sm:rounded-xl sm:px-3.5 sm:py-3">
               <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0 text-[#667653]/70 sm:h-3.5 sm:w-3.5" strokeWidth={1.8} />
               <p className="text-[8.5px] leading-[13px] text-[#70746B]/75 sm:text-[9.5px] sm:leading-4">
                 Phí hỏa tốc tính theo khu vực và sản phẩm.
@@ -1230,37 +1233,44 @@ return;
               EXPRESS CHECKOUT
               2 lựa chọn nhanh trước Order Summary.
           ========================================================== */}
-          <section className="overflow-hidden rounded-2xl border border-[#DCDDD7] bg-white shadow-[0_2px_12px_rgba(20,20,20,0.025)]">
-            <div className="p-2.5 sm:p-5">
-              <div className="mb-2.5 flex items-start justify-between gap-2 sm:mb-3 sm:gap-3">
-                <div className="flex min-w-0 items-start gap-2 sm:gap-3">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EEF1E9] text-[#667653] sm:h-9 sm:w-9">
-                    <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.7} />
+          <section className="overflow-hidden rounded-xl border border-[#DCDDD7] bg-white shadow-none sm:rounded-2xl sm:shadow-[0_2px_12px_rgba(20,20,20,0.025)]">
+            <div className="p-2 sm:p-5">
+              <div className="mb-2 flex items-start justify-between gap-1.5 sm:mb-3 sm:gap-3">
+                <div className="flex min-w-0 items-start gap-1.5 sm:gap-3">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EEF1E9] text-[#667653] sm:h-9 sm:w-9">
+                    <Building2 className="h-3 w-3 sm:h-4 sm:w-4" strokeWidth={1.7} />
                   </div>
                   <div className="min-w-0">
                     <p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-[#8B8E84] sm:text-[9px] sm:tracking-[0.18em]">04 · PAYMENT</p>
-                    <h2 className="mt-0.5 text-[13px] font-semibold leading-4 text-[#292C25] sm:mt-1 sm:text-[16px] sm:leading-5">Phương thức thanh toán</h2>
-                    <p className="mt-0.5 text-[10px] leading-[14px] text-[#777B72] sm:mt-1 sm:text-[11px] sm:leading-4">Chọn phương thức thanh toán phù hợp với bạn.</p>
+                    <h2 className="mt-0.5 text-[12px] font-semibold leading-4 text-[#292C25] sm:mt-1 sm:text-[16px] sm:leading-5">Phương thức thanh toán</h2>
+                    <p className="mt-0.5 text-[10px] leading-[14px] text-[#777B72] sm:mt-1 sm:text-[11px] sm:leading-4"></p>
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
+                <div className="flex shrink-0 items-center gap-1 pt-0.5">
                   <button
                     type="button"
                     onClick={() => setPolicyOpen("payment")}
                     aria-label="Hướng dẫn thanh toán"
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[#E1E2DC] bg-white text-[10px] font-medium text-[#555853] transition hover:border-[#BFC2B8] hover:bg-[#F8F8F5] sm:h-8 sm:w-auto sm:gap-1.5 sm:px-2.5"
+                    title="Hướng dẫn thanh toán"
+                    className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-[#D8E1D2] bg-[#F1F5EE] text-[#5F7954] transition-colors hover:border-[#6F8B62] hover:bg-[#E7EEE2] sm:h-7 sm:w-auto sm:gap-1.5 sm:px-2.5"
                   >
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#BFC1BA] text-[9px] font-semibold">?</span>
-                    <span className="hidden sm:inline">Hướng dẫn thanh toán</span>
+                    <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[#6F8B62] text-[9px] font-semibold leading-none">?</span>
+                    <span className="hidden sm:inline text-[10px] font-medium">Hướng dẫn thanh toán</span>
                   </button>
-                  <ShieldCheck className="h-3.5 w-3.5 text-[#A0A39B] sm:h-4 sm:w-4" strokeWidth={1.7} />
+                  <span
+                    title="Thanh toán an toàn"
+                    aria-label="Thanh toán an toàn"
+                    className="flex h-6 w-6 items-center justify-center rounded-md border border-[#D8E1D2] bg-[#F1F5EE] text-[#6F8B62] sm:h-7 sm:w-7"
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.8} />
+                  </span>
                 </div>
               </div>
 
-              <div className="grid w-full grid-cols-1 items-start gap-2.5 sm:grid-cols-2 sm:gap-3">
+              <div className="grid w-full grid-cols-1 items-start gap-1.5 sm:grid-cols-2 sm:gap-3">
                 <div
                   className={cn(
-                    "col-span-2 min-w-0 overflow-visible rounded-2xl border transition-colors",
+                    "col-span-2 min-w-0 overflow-visible rounded-xl border transition-colors sm:rounded-2xl",
                     onlinePaymentOpen
                       ? "border-[#6F8B62] bg-[#F5F8F2] ring-1 ring-[#6F8B62]/10"
                       : "border-[#E5E5E0] bg-white hover:border-[#B8C9AE]"
@@ -1271,11 +1281,11 @@ return;
                     onClick={() => setOnlinePaymentOpen((open) => !open)}
                     aria-expanded={onlinePaymentOpen}
                     aria-controls="online-payment-options"
-                    className="flex min-h-[58px] w-full items-center gap-2 px-2.5 py-2 text-left sm:min-h-[56px] sm:gap-2.5 sm:px-3.5 sm:py-2"
+                    className="flex min-h-[48px] w-full items-center gap-1.5 px-2 py-1.5 text-left sm:min-h-[56px] sm:gap-2.5 sm:px-3.5 sm:py-2"
                   >
                     <span
                       className={cn(
-                        "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2",
+                        "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 sm:h-6 sm:w-6",
                         onlinePaymentOpen
                           ? "border-[#6F8B62] bg-[#6F8B62] text-white"
                           : "border-[#8B8E98] text-transparent"
@@ -1283,17 +1293,16 @@ return;
                     >
                       <span className="h-2 w-2 rounded-full bg-current" />
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[11.5px] font-semibold leading-[15px] text-[#292C25] sm:text-[13px] sm:leading-4">
-                        Thanh toán qua PayPal hoặc thẻ
+                    <span className="flex min-w-0 flex-1 items-center gap-2">
+                      <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold leading-[15px] text-[#292C25] sm:text-[13px] sm:leading-4">
+                        Debit hoặc Credit Card
                       </span>
-                      
-                      <span className="mt-1.5 flex min-w-0 items-center gap-1.5 sm:hidden" aria-label="Các loại thẻ được hỗ trợ">
-                        <img src="/images/visa.png" alt="Visa" className="h-3.5 w-7 rounded-sm object-contain" loading="lazy" />
-                        <img src="/images/mastercard.png" alt="Mastercard" className="h-3.5 w-7 object-contain" loading="lazy" />
-                        <img src="/images/amex.png" alt="American Express" className="h-3.5 w-7 object-contain" loading="lazy" />
-                        <img src="/images/discover.png" alt="Discover" className="h-3.5 w-7 object-contain" loading="lazy" />
-                        <img src="/images/Diners%20Club.png" alt="Diners Club" className="h-3.5 w-7 object-contain" loading="lazy" />
+                      <span className="flex shrink-0 items-center gap-0.5 sm:hidden" aria-label="Các loại thẻ được hỗ trợ">
+                        <img src="/images/visa.png" alt="Visa" className="h-3.5 w-6 rounded-sm object-contain" loading="lazy" />
+                        <img src="/images/mastercard.png" alt="Mastercard" className="h-3.5 w-6 object-contain" loading="lazy" />
+                        <img src="/images/amex.png" alt="American Express" className="h-3.5 w-6 object-contain" loading="lazy" />
+                        <img src="/images/discover.png" alt="Discover" className="h-3.5 w-6 object-contain" loading="lazy" />
+                        <img src="/images/Diners%20Club.png" alt="Diners Club" className="h-3.5 w-6 object-contain" loading="lazy" />
                       </span>
                     </span>
                     <span className="hidden shrink-0 items-center gap-1.5 sm:flex" aria-label="Các loại thẻ được hỗ trợ">
@@ -1311,7 +1320,7 @@ return;
                   </button>
 
                   {onlinePaymentOpen && (
-                    <div id="online-payment-options" className="border-t border-[#E7E9E2] p-2.5 sm:p-3.5">
+                    <div id="online-payment-options" className="border-t border-[#E7E9E2] p-2 sm:p-3.5">
                       {paypalClientId ? (
                     <PayPalScriptProvider options={paypalOptions}>
   <div className="grid w-full grid-cols-1 items-start gap-3 sm:grid-cols-2 sm:gap-4">
@@ -1884,18 +1893,18 @@ return;
                     setPaymentMethod("cod");
                   }}
                   className={cn(
-                    "col-span-2 flex min-h-[56px] w-full min-w-0 items-center justify-start gap-2.5 rounded-xl border px-3 py-2 text-left transition-colors sm:col-span-2 sm:px-3.5",
+                    "col-span-2 flex min-h-[46px] w-full min-w-0 items-center justify-start gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors sm:col-span-2 sm:min-h-[56px] sm:rounded-xl sm:px-3.5 sm:py-2",
                     paymentMethod === "cod"
                       ? "border-[#6F8B62] bg-[#F5F8F2] text-[#171923] ring-1 ring-[#6F8B62]/10"
                       : "border-[#E5E5E0] bg-white text-[#171923] hover:border-[#B8C9AE] hover:bg-[#FAFCF8]"
                   )}
                 >
-                  <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2", paymentMethod === "cod" ? "border-[#6F8B62] bg-[#6F8B62] text-white" : "border-[#8B8E98] text-transparent")}>
+                  <span className={cn("flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 sm:h-6 sm:w-6", paymentMethod === "cod" ? "border-[#6F8B62] bg-[#6F8B62] text-white" : "border-[#8B8E98] text-transparent")}>
                     <span className="h-2 w-2 rounded-full bg-current" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[12px] font-semibold leading-4 text-[#292C25] sm:text-[13px]">Thanh toán khi nhận hàng (COD)</span>
-                    <span className="mt-0.5 block text-[10px] leading-4 text-[#777B72] sm:text-[10.5px]">Thanh toán bằng tiền mặt khi nhận hàng</span>
+                    <span className="block text-[11px] font-semibold leading-4 text-[#292C25] sm:text-[13px]">Thanh toán khi nhận hàng (COD)</span>
+                    <span className="mt-0.5 block text-[9px] leading-3.5 text-[#777B72] sm:text-[10.5px] sm:leading-4">Thanh toán bằng tiền mặt khi nhận hàng</span>
                   </span>
                   <Truck className="h-4 w-4 shrink-0 text-[#303340]" strokeWidth={1.7} />
                   <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[#656873]" strokeWidth={1.8} />
@@ -1907,25 +1916,25 @@ return;
                     setPaymentMethod("transfer");
                   }}
                   className={cn(
-                    "col-span-2 flex min-h-[56px] w-full min-w-0 items-center justify-start gap-2.5 rounded-xl border px-3 py-2 text-left transition-colors sm:col-span-2 sm:px-3.5",
+                    "col-span-2 flex min-h-[46px] w-full min-w-0 items-center justify-start gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors sm:col-span-2 sm:min-h-[56px] sm:gap-2.5 sm:rounded-xl sm:px-3.5 sm:py-2",
                     paymentMethod === "transfer"
                       ? "border-[#6F8B62] bg-[#F5F8F2] text-[#171923] ring-1 ring-[#6F8B62]/10"
                       : "border-[#E5E5E0] bg-white text-[#171923] hover:border-[#B8C9AE] hover:bg-[#FAFCF8]"
                   )}
                 >
-                  <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2", paymentMethod === "transfer" ? "border-[#6F8B62] bg-[#6F8B62] text-white" : "border-[#8B8E98] text-transparent")}>
+                  <span className={cn("flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 sm:h-6 sm:w-6", paymentMethod === "transfer" ? "border-[#6F8B62] bg-[#6F8B62] text-white" : "border-[#8B8E98] text-transparent")}>
                     <span className="h-2 w-2 rounded-full bg-current" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[12px] font-semibold leading-4 text-[#292C25] sm:text-[13px]">Chuyển khoản ngân hàng</span>
-                    <span className="mt-0.5 block text-[10px] leading-4 text-[#777B72] sm:text-[10.5px]">Thanh toán qua tài khoản ngân hàng</span>
+                    <span className="block text-[11px] font-semibold leading-4 text-[#292C25] sm:text-[13px]">Chuyển khoản ngân hàng</span>
+                    <span className="mt-0.5 block text-[9px] leading-3.5 text-[#777B72] sm:text-[10.5px] sm:leading-4">Thanh toán qua tài khoản ngân hàng</span>
                   </span>
                   <Building2 className="h-4 w-4 shrink-0 text-[#303340]" strokeWidth={1.7} />
                   <ChevronDown className="h-4 w-4 shrink-0 text-[#656873]" strokeWidth={1.8} />
                 </button>
               </div>
 
-              <p className="mt-2.5 text-center text-[8.5px] leading-4 text-[#999C95]">
+              <p className="mt-1.5 text-center text-[8px] leading-3.5 text-[#999C95] sm:mt-2.5 sm:text-[8.5px] sm:leading-4">
                 Thanh toán an toàn · Chọn phương thức phù hợp với bạn.
               </p>
             </div>
@@ -2018,7 +2027,7 @@ return;
               Nằm ngay dưới Shipping. Order Summary phía trên giữ nguyên.
               Có thể thu gọn / Show all.
           ========================================================== */}
-          <section id="checkout-confirm" className="overflow-hidden rounded-2xl border border-[#DCDDD7] bg-white/35 backdrop-blur-sm">
+          <section id="checkout-confirm" className="overflow-hidden rounded-xl border border-[#E8E9E4] bg-white">
             <button
               type="button"
               onClick={() => setReviewOpen((v) => !v)}
@@ -2032,20 +2041,10 @@ return;
                 <p className="mt-0.5 text-[11px] font-semibold leading-4 text-[#292C25]">
                   Kiểm tra & xác nhận đơn hàng
                 </p>
-                {!reviewOpen && (
-                  <p className="mt-1 text-[9px] text-[#999C95]">
-                    {count} sản phẩm · {voucherSummary.totalDiscount > 0
-                      ? `Đang áp dụng ưu đãi · Tiết kiệm ${formatVND(voucherSummary.totalDiscount)}`
-                      : "Kiểm tra sản phẩm và thanh toán"}
-                  </p>
-                )}
               </div>
 
               <div className="flex shrink-0 items-center gap-2.5">
                 <div className="text-right">
-                  <p className="text-[8.5px] text-[#999C95]">
-                    {count} sản phẩm
-                  </p>
                   <p className="mt-0.5 text-[17px] font-bold tracking-[-0.03em] text-[#111111] sm:text-[24px]">
                     {formatVND(total)}
                   </p>
@@ -2064,7 +2063,7 @@ return;
                 <div className="space-y-2">
                   {items.map((i) => (
                     <div key={i.id} className="flex items-center gap-2.5">
-                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-[#E5E5E0] bg-[#F5F4EF]">
+                      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-md border border-[#ECECE7] bg-[#F7F7F3]">
                         {i.image ? (
                           <img
                             src={i.image}
@@ -2076,18 +2075,23 @@ return;
                             —
                           </div>
                         )}
-                        <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#111111] px-1 text-[7px] font-semibold text-white">
-                          {i.quantity}
-                        </span>
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="line-clamp-1 text-[11px] font-semibold leading-4 text-[#30342C]">
-                          {i.name}
+                        <p className="max-w-[190px] overflow-hidden whitespace-nowrap text-[11px] font-semibold leading-4 text-[#30342C] sm:max-w-[340px]">
+                          {i.name.split(/\s+[–—-]\s+/)[0]}
                         </p>
-                        <p className="mt-0.5 text-[8.5px] text-[#999C95]">
-                          {i.colorName ? `${i.colorName} · ` : ""}{i.quantity} × {formatVND(i.price)}
-                        </p>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[9px]">
+                          {i.colorName && (
+                            <span className="inline-flex max-w-[110px] items-center rounded-md bg-[#EEF2EA] px-1.5 py-0.5 font-medium text-[#53664F]">
+                              <span className="truncate">{i.colorName}</span>
+                            </span>
+                          )}
+                          <span className="inline-flex items-center rounded-md border border-[#DDE4D8] bg-white px-1.5 py-0.5 font-semibold text-[#465643]">
+                            SL: {i.quantity}
+                          </span>
+                          <span className="text-[#777B72]">{formatVND(i.price)}/sp</span>
+                        </div>
                       </div>
 
                       <p className="shrink-0 text-[10px] font-semibold text-[#222222]">
@@ -2097,10 +2101,20 @@ return;
                   ))}
                 </div>
 
+                {/* SHIPPING FEE — show the delivery cost clearly without duplicating voucher discounts */}
+                <div className="mt-1.5 flex items-center justify-between border-t border-[#F0F0EC] pt-1.5 text-[10px]">
+                  <span className="text-[#777B72]">
+                    Phí vận chuyển ({shippingMethod === "express" ? "Hỏa tốc" : "Tiêu chuẩn"})
+                  </span>
+                  <span className="font-semibold text-[#30342C]">
+                    {shippingFee > 0 ? formatVND(shippingFee) : "Miễn phí"}
+                  </span>
+                </div>
+
                 {/* VOUCHER — keep existing voucher engine, but remove extra wrapper/header */}
                 <div
                   id="checkout-review-voucher"
-                  className="mt-2 border-t border-[#ECECE7] pt-2"
+                  className="mt-2 border-t border-[#F0F0EC] pt-2"
                 >
                   <CheckoutVoucher
                     subtotal={subtotal}
@@ -2117,7 +2131,7 @@ return;
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="mt-2.5 flex h-10 w-full items-center justify-center rounded-xl bg-[#111111] px-4 text-[9px] font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#222222] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-2.5 flex h-10 w-full items-center justify-center rounded-xl bg-[#6F8B62] px-4 text-[9px] font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#5F7954] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {submitting ? "Đang xử lý..." : "Xác nhận & đặt hàng"}
                     {!submitting && (
@@ -2812,17 +2826,17 @@ function SectionTitle({
   icon: React.ReactNode;
   eyebrow: string;
   title: string;
-  description: string;
+  description?: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EEF1E9] text-[#667653]">
+    <div className="flex items-center gap-2.5 sm:items-start sm:gap-3">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EEF1E9] text-[#667653] sm:h-9 sm:w-9">
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8B8E84]">{eyebrow}</p>
-        <h2 className="mt-1 text-[16px] font-semibold text-[#292C25]">{title}</h2>
-        <p className="mt-1 text-[11px] leading-4 text-[#777B72]">{description}</p>
+        <p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-[#8B8E84] sm:text-[9px] sm:tracking-[0.18em]">{eyebrow}</p>
+        <h2 className="mt-0.5 text-[14px] font-semibold leading-5 text-[#292C25] sm:mt-1 sm:text-[16px]">{title}</h2>
+        {description && <p className="mt-0.5 text-[10px] leading-4 text-[#777B72] sm:mt-1 sm:text-[11px]">{description}</p>}
       </div>
     </div>
   );
@@ -2854,7 +2868,7 @@ function ShippingMethodOption({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "flex w-full items-center gap-3 px-3.5 py-3.5 text-left transition sm:px-4",
+        "flex w-full items-center gap-2 px-2.5 py-2.5 text-left transition sm:gap-3 sm:px-4 sm:py-3.5",
         bordered && "border-t border-[#ECECE7]",
         disabled
           ? "cursor-not-allowed bg-[#FAFAF8] opacity-60"
@@ -2864,7 +2878,7 @@ function ShippingMethodOption({
       )}
     >
       <span className={cn(
-        "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
+        "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border sm:h-5 sm:w-5",
         selected ? "border-[#667653]" : "border-[#C9CBC4]"
       )}>
         {selected && <span className="h-2.5 w-2.5 rounded-full bg-[#667653]" />}
@@ -2874,19 +2888,19 @@ function ShippingMethodOption({
 
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold text-[#30342C] sm:text-[12px]">{title}</span>
+          <span className="text-[10px] font-semibold leading-4 text-[#30342C] sm:text-[12px]">{title}</span>
           {badge && (
             <span className="rounded-full bg-[#EEF2EA] px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-[0.08em] text-[#667653]">
               {badge}
             </span>
           )}
         </span>
-        <span className="mt-0.5 block text-[9px] leading-4 text-[#888C82] sm:text-[10px]">
+        <span className="mt-0.5 block text-[8px] leading-3 text-[#888C82] sm:text-[10px] sm:leading-4">
           {description}
         </span>
       </span>
 
-      <span className="shrink-0 text-[11px] font-semibold text-[#222222] sm:text-[12px]">
+      <span className="shrink-0 text-[10px] font-semibold text-[#222222] sm:text-[12px]">
         {price}
       </span>
     </button>
@@ -2956,7 +2970,7 @@ function Field({
 
   return (
     <label className="block">
-      <span className="mb-0.5 block text-[10px] font-medium text-[#666666]">
+      <span className="mb-1 block text-[10px] font-medium leading-3 text-[#666666]">
         {label}{required && " *"}
       </span>
 
@@ -2966,7 +2980,7 @@ function Field({
           defaultValue={defaultValue}
           rows={2}
           placeholder={placeholders[name] ?? "Nhập thông tin..."}
-          className="h-9 w-full resize-none rounded-lg border border-[#DCDDD7] bg-white px-3 py-2 text-[11px] text-[#222222] outline-none transition focus:border-[#8A8A8A] focus:ring-2 focus:ring-[#667653]/10 placeholder:text-[#AAAAAA]"
+          className="h-9 w-full resize-none rounded-lg border border-[#DCDDD7] bg-white px-3 py-1.5 text-[11px] text-[#222222] outline-none transition focus:border-[#8A8A8A] focus:ring-2 focus:ring-[#667653]/10 placeholder:text-[#AAAAAA]"
         />
       ) : (
         <input

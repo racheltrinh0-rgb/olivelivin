@@ -820,20 +820,20 @@ export default function CheckoutVoucher({
   };
 
   return (
-    <div className="w-full min-w-0 space-y-3 text-[#222222]">
+    <div className="w-full min-w-0 space-y-1.5 text-[#222222]">
       {/* ================= HEADER ================= */}
       <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F2F3F0] text-[#555555]">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="hidden">
             <Tag className="h-3.5 w-3.5" strokeWidth={1.8} />
           </div>
 
           <div className="min-w-0">
-            <h3 className="text-[12px] font-semibold leading-4 text-[#222222]">
+            <h3 className="text-[11px] font-semibold leading-4 text-[#222222]">
               Voucher ưu đãi
             </h3>
-            <p className="mt-0.5 text-[9px] leading-3.5 text-[#666666]">
-              Có thể áp dụng tối đa 3 voucher khác nhóm
+            <p className="mt-0.5 text-[8px] leading-3 text-[#777777]">
+              Tối đa 3 voucher
             </p>
           </div>
         </div>
@@ -843,7 +843,7 @@ export default function CheckoutVoucher({
           variant="outline"
           size="sm"
           onClick={() => setOpen((value) => !value)}
-          className="h-8 shrink-0 gap-1.5 rounded-lg border-[#DCDDD7] bg-white px-2.5 text-[10px] font-medium text-[#333333] shadow-none hover:bg-[#F5F5F3] hover:text-[#111111]"
+          className="h-7 shrink-0 gap-1 rounded-md border-[#DCDDD7] bg-white px-2 text-[9px] font-medium text-[#333333] shadow-none hover:bg-[#F5F5F3] hover:text-[#111111]"
         >
           {open ? "Đóng" : "Chọn"}
           <ChevronDown
@@ -857,7 +857,7 @@ export default function CheckoutVoucher({
 
       {/* ================= VOUCHER LIST ================= */}
       {open && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <section>
             <h4 className="mb-2 text-[11px] font-semibold text-[#333333]">
               Voucher giảm giá
@@ -983,19 +983,16 @@ export default function CheckoutVoucher({
       )}
 
       {/* ================= PROMO CODE ================= */}
-      <section className="rounded-xl border border-[#E1E1DE] bg-white p-3">
-        <div className="flex items-center gap-2">
-          <TicketPercent
-            className="h-4 w-4 shrink-0 text-[#555555]"
-            strokeWidth={1.7}
-          />
-
-          <p className="text-[10.5px] font-medium text-[#333333]">
-            Có mã giảm giá?
+      <section className="rounded-md bg-[#F4F6F1] p-1.5">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <p className="text-[10px] font-medium leading-4 text-[#30342C]">
+            Mã giảm giá
+          </p>
+          <p className="text-[8px] leading-3 text-[#858B7E]">
+            Nhập mã để áp dụng
           </p>
         </div>
-
-        <div className="mt-2 flex gap-2">
+        <div className="flex items-center gap-1 rounded border border-[#DDE3D8] bg-white p-0.5">
           <input
             value={voucherCode}
             onChange={(e) => {
@@ -1007,11 +1004,10 @@ export default function CheckoutVoucher({
                 void applyVoucherCode();
               }
             }}
-            placeholder="Nhập mã giảm giá..."
+            placeholder="Nhập mã giảm giá"
             autoComplete="off"
-            className="h-9 min-w-0 flex-1 rounded-lg border border-[#DCDDD7] bg-white px-3 text-[10px] text-[#222222] uppercase outline-none placeholder:text-[#999999] focus:border-[#999999]"
+            className="h-7 min-w-0 flex-1 border-0 bg-transparent px-2 text-[10px] font-medium uppercase text-[#30342C] outline-none placeholder:normal-case placeholder:text-[#858B7E] focus:ring-0"
           />
-
           <Button
             type="button"
             disabled={checkingCode}
@@ -1020,7 +1016,7 @@ export default function CheckoutVoucher({
               e.stopPropagation();
               void applyVoucherCode();
             }}
-            className="relative z-50 !h-9 shrink-0 pointer-events-auto rounded-lg !bg-[#111111] px-4 text-[10.5px] font-semibold !text-white shadow-none hover:!bg-[#222222] disabled:cursor-not-allowed disabled:!bg-[#D8D8D5] disabled:!text-[#777777]"
+            className="relative z-50 !h-7 shrink-0 pointer-events-auto rounded !bg-[#6F8B62] px-2.5 text-[9px] font-medium !text-white shadow-none hover:!bg-[#5F7954] disabled:cursor-not-allowed disabled:!bg-[#D8D8D5] disabled:!text-[#777777]"
           >
             {checkingCode ? "Đang kiểm tra..." : "Áp dụng"}
           </Button>
@@ -1028,7 +1024,7 @@ export default function CheckoutVoucher({
       </section>
 
       {/* ================= APPLIED DISCOUNTS ================= */}
-      <section className="rounded-xl border border-[#E1E1DE] bg-white p-3">
+      <section className="rounded-md border-0 bg-transparent px-0 py-1">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
             <CircleDollarSign
@@ -1040,9 +1036,7 @@ export default function CheckoutVoucher({
               <p className="text-[11px] font-semibold text-[#333333]">
                 Ưu đãi đang áp dụng
               </p>
-              <p className="text-[9px] text-[#777777]">
-                Voucher được áp dụng cho đơn hàng
-              </p>
+
             </div>
           </div>
 
@@ -1051,24 +1045,31 @@ export default function CheckoutVoucher({
             variant="outline"
             size="sm"
             onClick={() => setOpen(true)}
-            className="h-7 shrink-0 rounded-md border-[#DCDDD7] bg-white px-2.5 text-[9px] font-medium text-[#444444] shadow-none hover:bg-[#F5F5F3]"
+            className="h-6 shrink-0 rounded-md border-[#E5E5E0] bg-transparent px-2 text-[9px] font-medium text-[#444444] shadow-none hover:bg-[#F5F5F3]"
           >
             Thay đổi
           </Button>
         </div>
 
-        <div className="mt-2.5 space-y-1.5">
+        <div className="mt-1.5 space-y-0">
           {summary.discountVoucher && (
-            <div className="flex items-center justify-between gap-3 rounded-lg bg-[#F2F5F1] px-3 py-2">
+            <div className="flex items-center justify-between gap-2.5 border-t border-[#ECEDE8] px-1 py-1.5">
               <div className="flex min-w-0 items-center gap-2">
                 <Check
                   className="h-3 w-3 shrink-0 text-[#4F604E]"
                   strokeWidth={2.2}
                 />
                 <div className="min-w-0">
-                  <p className="truncate text-[10px] font-semibold text-[#333333]">
-                    {summary.discountVoucher.title}
-                  </p>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <p className="truncate text-[10px] font-semibold text-[#333333]">
+                      {summary.discountVoucher.title}
+                    </p>
+                    {summary.discountVoucher.id === bestDiscount?.id && (
+                      <span className="shrink-0 rounded bg-[#EEF2EB] px-1 py-0.5 text-[8px] font-medium leading-none text-[#53664F]">
+                        Tốt nhất
+                      </span>
+                    )}
+                  </div>
                   <p className="truncate text-[8.5px] text-[#777777]">
                     {summary.discountVoucher.code}
                   </p>
@@ -1082,7 +1083,7 @@ export default function CheckoutVoucher({
           )}
 
           {summary.shippingVoucher && (
-            <div className="flex items-center justify-between gap-3 rounded-lg bg-[#F2F5F1] px-3 py-2">
+            <div className="flex items-center justify-between gap-3 border-t border-[#ECEDE8] px-1 py-2">
               <div className="flex min-w-0 items-center gap-2">
                 <Truck
                   className="h-3 w-3 shrink-0 text-[#4F604E]"
@@ -1138,7 +1139,7 @@ export default function CheckoutVoucher({
       </section>
 
       {/* ================= TOTAL ================= */}
-      <section className="rounded-xl bg-[#F3F4F1] px-3.5 py-3">
+      <section className="rounded-lg bg-[#F3F4F1] px-3 py-2.5">
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="text-[8px] font-semibold uppercase tracking-[0.13em] text-[#777777]">

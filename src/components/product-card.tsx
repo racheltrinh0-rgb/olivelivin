@@ -410,15 +410,16 @@ export function ProductCard({
 
             overflow-hidden
 
-            rounded-[14px] border-0 bg-[#FFFDFC] transition-colors duration-200
+            rounded-xl border-0 bg-white font-sans transition-colors duration-200
 
           `,
 
           highlight &&
 
-            "border-[#D8C8B7]"
+            ""
 
         )}
+        style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
 
       >
 
@@ -436,7 +437,7 @@ export function ProductCard({
 
             relative
 
-            aspect-[4/3]
+            aspect-square
 
             overflow-hidden
 
@@ -447,10 +448,10 @@ export function ProductCard({
         >
 
           {(showFlashSale || product.express_available === true) && (
-            <div className="absolute left-2 right-2 top-2 z-30 flex items-start justify-between gap-1.5 sm:left-3 sm:right-3 sm:top-3 sm:gap-2">
+            <div className="absolute left-1.5 right-1.5 top-1.5 z-30 flex items-start justify-between gap-1 sm:left-3 sm:right-3 sm:top-3 sm:gap-2">
               {showFlashSale ? (
                 <span
-                  className="inline-flex h-[22px] min-w-0 shrink items-center justify-center rounded-full bg-gradient-to-r from-[#F46B32] to-[#F08A42] px-2 text-[8px] font-semibold leading-none tracking-[0.01em] text-white shadow-[0_3px_10px_rgba(220,94,39,0.20)] sm:h-6 sm:px-2.5 sm:text-[9px]"
+                  className="inline-flex h-5 min-w-0 shrink items-center justify-center rounded-full bg-[#E96B35] px-1.5 text-[7px] font-semibold leading-none text-white shadow-sm sm:h-6 sm:px-2.5 sm:text-[9px]"
                   title={product.flash_sale_title || `Flash Sale giảm ${flashSaleDiscount}%`}
                 >
                   <span className="truncate">FLASH SALE -{flashSaleDiscount}%</span>
@@ -459,7 +460,7 @@ export function ProductCard({
 
               {product.express_available === true && (
                 <span
-                  className="inline-flex h-[22px] shrink-0 items-center justify-center gap-1 rounded-full border border-[#E8D7C8] bg-[#FFF9F4]/95 px-2 text-[8px] font-semibold leading-none tracking-[0.01em] text-[#C85A1A] shadow-[0_2px_8px_rgba(120,70,35,0.08)] backdrop-blur-[2px] sm:h-6 sm:gap-1.5 sm:px-2.5"
+                  className="inline-flex h-5 shrink-0 items-center justify-center gap-0.5 rounded-full border border-[#E8D7C8] bg-white/95 px-1.5 text-[7px] font-semibold leading-none text-[#A85B32] shadow-sm sm:h-6 sm:gap-1.5 sm:px-2.5 sm:text-[9px]"
                   title="Có hỗ trợ giao hỏa tốc"
                 >
                   <Truck className="h-3 w-3 shrink-0" aria-hidden="true" />
@@ -537,9 +538,9 @@ export function ProductCard({
 
             px-2
 
-            pb-3
+            pb-2.5
 
-            pt-2
+            pt-1.5
 
             sm:px-3
 
@@ -564,34 +565,22 @@ export function ProductCard({
 
 
           <h3
-
-            className="
-
-              line-clamp-2
-
-              min-h-[32px]
-
-              text-[12px]
-
-              font-medium
-
-              leading-[1.35]
-
-              sm:min-h-[36px]
-
-              sm:text-[13px]
-
-              tracking-[-0.005em]
-
-              text-[#393530]
-
-            "
-
-          >
-
-            {product.name}
-
-          </h3>
+  className="
+    line-clamp-2
+    min-h-[30px]
+    font-sans
+    text-[11.5px]
+    font-medium
+    leading-[1.3]
+    sm:min-h-[36px]
+    sm:text-[13px]
+    tracking-[-0.005em]
+    text-[#393530]
+  "
+  style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+>
+  {product.name}
+</h3>
 
 
 
@@ -603,7 +592,7 @@ export function ProductCard({
 
 
 
-          <div className="mt-2.5 flex min-h-[18px] items-center justify-between">
+          <div className="mt-1.5 flex min-h-[16px] items-center justify-between">
 
             <div className="flex items-center gap-1.5">
 
@@ -611,9 +600,9 @@ export function ProductCard({
 
                 className="
 
-                  text-[10px]
+                  text-[9px]
 
-                  tracking-[1px]
+                  tracking-[0.8px]
 
                   text-[#B49A63]
 
@@ -629,7 +618,7 @@ export function ProductCard({
 
 
 
-              <span className="text-[10px] text-[#6F6861]">
+              <span className="text-[9px] text-[#6F6861]">
 
                 {socialProof.rating.toFixed(1)}
 
@@ -637,7 +626,7 @@ export function ProductCard({
 
 
 
-              <span className="text-[10px] text-[#AAA29A]">
+              <span className="text-[9px] text-[#AAA29A]">
 
                 ({socialProof.reviews})
 
@@ -729,45 +718,42 @@ export function ProductCard({
 
 
 
-          <div className="mt-2 h-[25px]">
-            {showFlashSale ? (
-              <div className="flex h-full min-w-0 items-center justify-center rounded-md border border-[#F2D7C3] bg-[#FFF5EC] px-2">
-                {product.flash_sale_end_at && remainingMs > 0 ? (
-                  <span className="flex min-w-0 items-center justify-center gap-1 text-[8px] font-medium tabular-nums text-[#8E4B2B] sm:text-[9px]">
-                    <Clock3 className="h-3 w-3 shrink-0" strokeWidth={1.7} />
-                    <span className="truncate">{countdownLabel}</span>
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 text-[8px] font-medium text-[#B96A3B]">
-                    <Clock3 className="h-3 w-3 shrink-0" strokeWidth={1.7} />
-                    -{flashSaleDiscount}%
-                  </span>
-                )}
-              </div>
-            ) : (
-              <div aria-hidden="true" className="h-full" />
-            )}
-          </div>
+          {showFlashSale && (
+            <div className="mt-2 flex h-5 min-w-0 items-center justify-center rounded-md bg-[#FFF4EB] px-1.5">
+              {product.flash_sale_end_at && remainingMs > 0 ? (
+                <span className="flex min-w-0 items-center justify-center gap-1 text-[7px] font-medium tabular-nums text-[#8E4B2B] sm:text-[9px]">
+                  <Clock3 className="h-2.5 w-2.5 shrink-0" strokeWidth={1.7} />
+                  <span className="truncate">{countdownLabel}</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-[7px] font-medium text-[#B96A3B] sm:text-[9px]">
+                  <Clock3 className="h-2.5 w-2.5 shrink-0" strokeWidth={1.7} />
+                  -{flashSaleDiscount}%
+                </span>
+              )}
+            </div>
+          )}
 
-          <div className="mt-2 flex min-h-[25px] min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-            <span className="text-[17px] font-semibold leading-tight tracking-[-0.025em] text-[#34352F] sm:text-[18px]">
+          <div className={clsx(
+            "flex min-w-0 items-baseline gap-x-1.5",
+            showFlashSale ? "mt-1 min-h-[22px]" : "mt-1.5 min-h-[22px] sm:mt-2.5"
+          )}>
+            <span className="shrink-0 text-[15px] font-semibold leading-tight tracking-[-0.035em] text-[#34352F] sm:text-[18px]">
               {formatVND(salePrice)}
             </span>
             {originalPrice != null && Number.isFinite(originalPrice) && originalPrice > salePrice && (
-              <span className="text-[9px] leading-tight text-[#A9A19A] line-through">
+              <span className="truncate text-[8px] leading-tight text-[#A9A19A] line-through sm:text-[9px]">
                 {formatVND(originalPrice)}
               </span>
             )}
           </div>
-          <div className="mt-1 h-[17px]">
-            {showFlashSale && savingAmount > 0 ? (
-              <span className="inline-flex h-[17px] max-w-full items-center rounded-sm bg-[#FFF0E5] px-1.5 text-[8px] font-medium leading-none text-[#B96A3B]">
+          {showFlashSale && savingAmount > 0 && (
+            <div className="mt-0.5 h-4 min-w-0">
+              <span className="inline-flex h-4 max-w-full items-center rounded-sm bg-[#FFF0E5] px-1.5 text-[7px] font-medium leading-none text-[#B96A3B] sm:text-[8px]">
                 <span className="truncate">Tiết kiệm {formatVND(savingAmount)}</span>
               </span>
-            ) : (
-              <span aria-hidden="true" className="invisible inline-flex h-[17px]">.</span>
-            )}
-          </div>
+            </div>
+          )}
 
 
 
@@ -779,82 +765,17 @@ export function ProductCard({
 
 
 
-          <div
-
-            className="
-
-              mt-2
-
-              flex
-
-              min-h-[15px]
-
-              min-w-0
-
-              items-center
-
-              gap-1.5
-
-              text-[10px]
-
-              text-[#81786F]
-
-            "
-
-          >
-
-            <span className="shrink-0">
-
-              Freeship
-
-            </span>
-
-
-
-            <span className="text-[#C8C0B8]">
-
-              ·
-
-            </span>
-
-
-
-            <span className="shrink-0">
-
-              Đổi trả 15 ngày
-
-            </span>
-
-
-
-            <span className="text-[#C8C0B8]">
-
-              ·
-
-            </span>
-
-
-
+          <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[8px] text-[#81786F] sm:mt-2 sm:gap-1.5 sm:text-[10px]">
+            <span className="shrink-0">Freeship</span>
+            <span className="text-[#C8C0B8]">·</span>
+            <span className="shrink-0">Đổi trả 15 ngày</span>
+            <span className="hidden text-[#C8C0B8] sm:inline">·</span>
             <span
-
-              className="truncate"
-
-              title={`${socialProof.sold.toLocaleString(
-
-                "vi-VN"
-
-              )} lượt mua`}
-
+              className="hidden truncate sm:inline"
+              title={`${socialProof.sold.toLocaleString("vi-VN")} lượt mua`}
             >
-
-              {socialProof.sold.toLocaleString(
-
-                "vi-VN"
-
-              )} đã bán
-
+              {socialProof.sold.toLocaleString("vi-VN")} đã bán
             </span>
-
           </div>
 
 
@@ -867,7 +788,7 @@ export function ProductCard({
 
 
 
-          <div className="mt-auto flex items-center gap-2 pt-3">
+          <div className="mt-2 flex items-center gap-1.5 pt-0 sm:mt-auto sm:gap-2 sm:pt-3">
 
             <motion.button
 
@@ -881,19 +802,19 @@ export function ProductCard({
 
               className="
 
-                h-10
+                h-9
 
                 min-w-0
 
                 flex-1
 
-                rounded-xl
+                rounded-lg
 
                 bg-[#5E6754]
 
-                px-3
+                px-2
 
-                text-[11px]
+                text-[10px]
 
                 font-medium
 
@@ -953,9 +874,9 @@ export function ProductCard({
 
                 flex
 
-                h-10
+                h-9
 
-                w-10
+                w-9
 
                 shrink-0
 
@@ -963,7 +884,7 @@ export function ProductCard({
 
                 justify-center
 
-                rounded-xl
+                rounded-lg
 
                 border
 

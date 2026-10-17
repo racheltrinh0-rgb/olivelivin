@@ -280,9 +280,9 @@ export default function FeaturedCollectionShowcaseReverse({
 
                         overflow-hidden
 
-                        rounded-[7px]
+                        rounded-2xl
 
-                        bg-transparent
+                        bg-white
 
                         sm:aspect-[0.94/1]
 
@@ -298,9 +298,13 @@ export default function FeaturedCollectionShowcaseReverse({
 
                         className="
 
+                          block
+
                           h-full
 
                           w-full
+
+                          rounded-2xl
 
                           object-contain
 
@@ -366,7 +370,7 @@ export default function FeaturedCollectionShowcaseReverse({
 
                         block
 
-                        h-[32px] min-h-[32px] line-clamp-2
+                        h-[30px] min-h-[30px] line-clamp-2
 
                         overflow-hidden
 
@@ -458,7 +462,7 @@ export default function FeaturedCollectionShowcaseReverse({
 
                     {/* PRICE */}
 
-                    <div className="mt-2 flex min-h-[42px] flex-col justify-start">
+                    <div className="mt-1.5 flex min-h-[36px] flex-col justify-start">
 
                       {product.price ? (
 
@@ -512,7 +516,7 @@ export default function FeaturedCollectionShowcaseReverse({
 
                     <div
 
-                      className="mt-auto grid grid-cols-[minmax(0,1fr)_30px] items-center gap-1 pt-2.5
+                      className="mt-auto grid grid-cols-[minmax(0,1fr)_30px] items-center gap-1 pt-1.5
 
                         sm:grid-cols-[1fr_32px]
 

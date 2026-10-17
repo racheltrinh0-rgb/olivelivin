@@ -750,3 +750,6 @@ border-top:1px solid #E5E5E5;
     animation: none;
   }
 }
+.font-sans {
+  font-family: Arial, Helvetica, sans-serif;
+}

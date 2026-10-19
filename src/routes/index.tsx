@@ -4,10 +4,13 @@ import {
   queryOptions,
 } from "@tanstack/react-query";
 
+import FooterPolicyLinks from "@/components/FooterPolicyLinks";
+
 import { supabase } from "@/integrations/supabase/client";
 
 import Hero from "@/components/home/Hero";
 import NewArrival from "@/components/home/NewArrival";
+import DesignedForRealLife from "@/components/home/DesignedForRealLife";
 import Collections from "@/components/home/Collections";
 import Lookbook from "@/components/home/Lookbook";
 import FlashSale from "@/components/home/FlashSale";
@@ -460,6 +463,14 @@ function HomePage() {
         }
       />
 
+      {/* DESIGN FOR YOUR LIFE — 4 product videos */}
+      <DesignedForRealLife />
+
+      {/* CUSTOMER REVIEWS — restored directly below Designed for real life */}
+      <CustomerFeedbackGallery />
+
+      <FooterPolicyLinks />
+
 
       {/* =====================================================
           FEATURED COLLECTION SHOWCASE
@@ -473,6 +484,9 @@ function HomePage() {
       />*/}
 
 
+      {/* Hidden from VIDEO 01 downward as requested. Set false to true to show again. */}
+      {false && (
+        <>
       {/* =====================================================
           VIDEO 01
       ===================================================== */}
@@ -572,17 +586,24 @@ function HomePage() {
       />
 
 
+      {/* Stop hiding content here: show SIGNATURE FLOOR LIGHTING and everything below. */}
+        </>
+      )}
+
       {/* =====================================================
-          FLOOR LAMP
+          FLOOR LAMP / SIGNATURE FLOOR LIGHTING
       ===================================================== */}
 
-      <BeforeAfterSlider
-        beforeImage="/images/floor-lamp-before.jpg"
-        afterImage="/images/floor-lamp-after.jpg"
-        products={
-          data.floorLampProducts
-        }
-      />
+      {/* Hidden SIGNATURE FLOOR LIGHTING section. Change false to true to show again. */}
+      {false && (
+        <BeforeAfterSlider
+          beforeImage="/images/floor-lamp-before.jpg"
+          afterImage="/images/floor-lamp-after.jpg"
+          products={
+            data.floorLampProducts
+          }
+        />
+      )}
 
 
       {/* =====================================================
@@ -656,69 +677,71 @@ function HomePage() {
           VIDEO 02
       ===================================================== */}
 
-      <section
-        className="
-          bg-[#F7F4EF]
-          py-4
-          sm:py-6
-          lg:py-8
-        "
-      >
-
-        <div
+      {/* Video 02 hidden as requested. Change false to true to show again. */}
+      {false && (
+        <section
           className="
-            mx-auto
-            w-full
-            max-w-[1380px]
-            px-4
-            sm:px-6
-            lg:px-8
+            bg-[#F7F4EF]
+            py-4
+            sm:py-6
+            lg:py-8
           "
         >
-
+  
           <div
             className="
-              relative
+              mx-auto
               w-full
-              overflow-hidden
-              rounded-[26px]
-              border
-              border-[#E7DED3]
-              bg-black
-              shadow-[0_20px_70px_rgba(60,45,30,0.08)]
-              aspect-[16/7]
+              max-w-[1380px]
+              px-4
+              sm:px-6
+              lg:px-8
             "
           >
-
-            <video
-              src="/videos/0825 (9).mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
+  
+            <div
               className="
-                absolute
-                inset-0
-                h-full
+                relative
                 w-full
-                object-cover
+                overflow-hidden
+                rounded-[26px]
+                border
+                border-[#E7DED3]
+                bg-black
+                shadow-[0_20px_70px_rgba(60,45,30,0.08)]
+                aspect-[16/7]
               "
-            />
-
+            >
+  
+              <video
+                src="/videos/0825 (9).mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="
+                  absolute
+                  inset-0
+                  h-full
+                  w-full
+                  object-cover
+                "
+              />
+  
+            </div>
+  
           </div>
-
-        </div>
-
-      </section>
+  
+        </section>
+      )}
 
 
       {/* =====================================================
           CUSTOMER FEEDBACK
       ===================================================== */}
 
-      <CustomerFeedbackGallery />
-
+      {/* Customer feedback gallery hidden as requested. */}
 
       {/* =====================================================
           NEWSLETTER

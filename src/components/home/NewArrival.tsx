@@ -1,327 +1,228 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { ProductCardProduct } from "@/components/product-card";
-import { useRef } from "react";
 
-interface Props {
+import { useRef } from "react";
+import { Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
+
+type ProductCardProduct = {
+  id: string | number;
+  slug: string;
+  name: string;
+  price: number | null;
+  compare_at_price?: number | null;
+  stock?: number | null;
+  image_url: string | null;
+  color_preview?: string | null;
+  express_available?: boolean | null;
+};
+
+type NewArrivalProps = {
   products: ProductCardProduct[];
-}
+};
+
+const formatVND = (price: number) =>
+  `${new Intl.NumberFormat("vi-VN").format(price)}₫`;
 
 export default function NewArrival({
   products,
-}: Props) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+}: NewArrivalProps) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
 
-  if (!products?.length) return null;
+  const scrollNext = () => {
+    const container = scrollerRef.current;
+    if (!container) return;
 
-  const scroll = (direction: "left" | "right") => {
-    if (!scrollRef.current) return;
+    const card = container.querySelector<HTMLElement>(
+      "[data-new-arrival-card]",
+    );
 
-    const amount =
-      scrollRef.current.clientWidth * 0.8;
+    const gap = 20;
+    const distance = card
+      ? card.getBoundingClientRect().width + gap
+      : 260;
 
-    scrollRef.current.scrollBy({
-      left:
-        direction === "right"
-          ? amount
-          : -amount,
+    container.scrollBy({
+      left: distance,
       behavior: "smooth",
     });
   };
 
+  if (!products?.length) return null;
+
   return (
-    <section className="relative overflow-hidden bg-[#F8F6F2] py-16 sm:py-20 lg:py-24">
-
-      {/* =====================================================
-          CONTAINER
-      ===================================================== */}
-
+    <section className="relative w-full bg-white py-8 sm:py-10 lg:py-12">
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        {/* HEADING */}
+        <div className="mb-5 sm:mb-7">
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#A49A90] sm:text-xs">
+            Olive Living Selection
+          </p>
 
-        {/* ===================================================
-            HEADER
-        =================================================== */}
-
-        <div className="mb-8 flex items-end justify-between gap-4 sm:mb-10">
-
-          <div>
-
-            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-500 sm:text-xs">
-              NEW ARRIVAL
-            </p>
-
-            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-[#1F1F1F] sm:text-4xl lg:text-5xl">
-              Sản phẩm mới
-            </h2>
-
-          </div>
-
-
-          {/* DESKTOP ARROWS */}
-
-          <div className="hidden items-center gap-2 sm:flex">
-
-            <button
-              type="button"
-              onClick={() => scroll("left")}
-              aria-label="Sản phẩm trước"
-              className="
-                flex
-                h-10
-                w-10
-                items-center
-                justify-center
-                rounded-full
-                border
-                border-[#D9D5CF]
-                bg-white
-                text-[#222]
-                transition-all
-                hover:border-black
-                hover:bg-black
-                hover:text-white
-                lg:h-11
-                lg:w-11
-              "
-            >
-              <ChevronLeft size={18} />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => scroll("right")}
-              aria-label="Sản phẩm tiếp theo"
-              className="
-                flex
-                h-10
-                w-10
-                items-center
-                justify-center
-                rounded-full
-                border
-                border-[#D9D5CF]
-                bg-white
-                text-[#222]
-                transition-all
-                hover:border-black
-                hover:bg-black
-                hover:text-white
-                lg:h-11
-                lg:w-11
-              "
-            >
-              <ChevronRight size={18} />
-            </button>
-
-          </div>
-
+          <h2 className="text-[22px] font-medium tracking-[-0.03em] text-[#292621] sm:text-2xl lg:text-3xl">
+            New Arrivals
+          </h2>
         </div>
 
+        {/* PRODUCT SCROLLER + GLASS ARROW */}
+        <div className="relative">
+          <div
+            ref={scrollerRef}
+            className="
+              flex snap-x snap-mandatory
+              gap-5 overflow-x-auto
+              px-2 pb-5 pt-3
+              sm:gap-6 sm:px-3
+              [scrollbar-width:none]
+              [-ms-overflow-style:none]
+              [&::-webkit-scrollbar]:hidden
+            "
+          >
+            {products.map((product) => {
+              const price = Number(product.price ?? 0);
+              const comparePrice = Number(
+                product.compare_at_price ?? 0,
+              );
 
-        {/* ===================================================
-            PRODUCT SCROLLER
-        =================================================== */}
+              const hasDiscount =
+                comparePrice > price && price > 0;
 
-        <div
-          ref={scrollRef}
-          className="
-            flex
-            snap-x
-            snap-mandatory
-            gap-3
-            overflow-x-auto
-            pb-4
-            [-ms-overflow-style:none]
-            [scrollbar-width:none]
-            [&::-webkit-scrollbar]:hidden
-
-            sm:gap-4
-          "
-        >
-
-          {products.map((product) => (
-
-            <div
-              key={product.id}
-              className="
-                w-[72vw]
-                max-w-[290px]
-                shrink-0
-                snap-start
-
-                sm:w-[calc((100%-12px)/2)]
-                sm:max-w-none
-
-                lg:w-[calc((100%-48px)/4)]
-              "
-            >
-
-              <Link
-                to="/products/$slug"
-                params={{
-                  slug: product.slug,
-                }}
-                className="group block h-full"
-              >
-
-                {/* =================================================
-                    CARD
-                ================================================= */}
-
+              return (
                 <article
+                  key={product.id}
+                  data-new-arrival-card
                   className="
-                    flex
-                    h-full
-                    flex-col
-                    overflow-hidden
-                    rounded-[20px]
+                    group relative isolate
+                    w-[68%] min-w-[220px] max-w-[280px]
+                    shrink-0 snap-start
+                    overflow-hidden rounded-[22px]
+                    border border-[#EAE7E2]
                     bg-white
-
-                    shadow-[0_8px_30px_rgba(35,30,25,0.07)]
-
-                    transition-all
-                    duration-500
-
-                    group-hover:-translate-y-1
-                    group-hover:shadow-[0_18px_45px_rgba(35,30,25,0.13)]
-
-                    sm:rounded-[22px]
-                    lg:rounded-[24px]
+                    shadow-[0_3px_14px_rgba(35,30,25,0.10)]
+                    transition-all duration-300
+                    hover:-translate-y-1
+                    hover:shadow-[0_8px_24px_rgba(35,30,25,0.15)]
+                    sm:w-[42%]
+                    md:w-[30%]
+                    lg:w-[23%]
                   "
                 >
+                  <Link
+                    to="/products/$slug"
+                    params={{ slug: product.slug }}
+                    className="block h-full"
+                  >
+                    {/* PRODUCT IMAGE */}
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-t-[21px] bg-[#F5F3EF]">
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          loading="lazy"
+                          className="
+                            h-full w-full object-cover
+                            transition-transform duration-500
+                            group-hover:scale-[1.03]
+                          "
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xs text-[#A49A90]">
+                          Chưa có hình ảnh
+                        </div>
+                      )}
 
-                  {/* =================================================
-                      IMAGE
-                  ================================================= */}
+                      {/* DISCOUNT BADGE */}
+                      {hasDiscount && (
+                        <span className="absolute left-3 top-3 rounded-full bg-[#FF4D00] px-2.5 py-1 text-[10px] font-semibold text-white">
+                          SALE
+                        </span>
+                      )}
 
-                  <div className="relative aspect-[4/5] overflow-hidden bg-[#F1EEE9]">
-
-                    <img
-                      src={
-                        product.image_url ??
-                        "/placeholder.svg"
-                      }
-                      alt={product.name}
-                      loading="lazy"
-                      className="
-                        h-full
-                        w-full
-                        object-cover
-
-                        transition-transform
-                        duration-700
-                        ease-out
-
-                        group-hover:scale-[1.04]
-                      "
-                    />
-
-                    {/* NEW BADGE */}
-
-                    <div className="absolute left-3 top-3 sm:left-4 sm:top-4">
-
+                      {/* GLASS PRODUCT BUTTON */}
                       <span
                         className="
+                          absolute bottom-3 left-3 right-3
+                          flex items-center justify-center
                           rounded-full
-                          bg-white/95
-                          px-3
-                          py-1.5
-                          text-[9px]
-                          font-semibold
-                          uppercase
-                          tracking-[0.18em]
-                          text-[#222]
-                          shadow-sm
-                          backdrop-blur
-                        "
-                      >
-                        NEW
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* =================================================
-                      CONTENT
-                  ================================================= */}
-
-                  <div className="flex flex-1 flex-col p-4 sm:p-5">
-
-                    <h3
-                      className="
-                        line-clamp-2
-                        min-h-[44px]
-                        text-sm
-                        font-medium
-                        leading-6
-                        tracking-[-0.01em]
-                        text-[#222]
-
-                        sm:min-h-[48px]
-                        sm:text-[15px]
-                      "
-                    >
-                      {product.name}
-                    </h3>
-
-
-                    {/* =================================================
-                        CTA
-                    ================================================= */}
-
-                    <div className="mt-auto pt-5">
-
-                      <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-2
-                          text-xs
-                          font-semibold
-                          text-[#222]
-
-                          transition-all
-                          duration-300
-
-                          group-hover:gap-3
-
-                          sm:text-sm
+                          border border-white/70
+                          bg-white/75
+                          px-3 py-2.5
+                          text-xs font-medium
+                          text-[#292621]
+                          shadow-[0_2px_10px_rgba(0,0,0,0.06)]
+                          backdrop-blur-md
+                          transition-colors duration-200
+                          group-hover:bg-white/90
+                          sm:bottom-4 sm:left-4 sm:right-4
                         "
                       >
                         Xem sản phẩm
-
-                        <ChevronRight
-                          size={15}
-                          className="
-                            transition-transform
-                            duration-300
-                            group-hover:translate-x-1
-                          "
-                        />
-
                       </span>
-
                     </div>
 
-                  </div>
+                    {/* PRODUCT DETAILS */}
+                    <div className="flex min-h-[108px] flex-col p-3.5 sm:min-h-[120px] sm:p-4">
+                      <h3 className="line-clamp-2 text-[12px] font-medium leading-[1.6] text-[#39342F] sm:text-sm">
+                        {product.name}
+                      </h3>
 
+                      <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-3">
+                        {price > 0 ? (
+                          <span className="text-[13px] font-semibold text-[#39342F] sm:text-sm">
+                            {formatVND(price)}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-[#8A8178]">
+                            Liên hệ
+                          </span>
+                        )}
+
+                        {hasDiscount && (
+                          <span className="text-[10px] text-[#A49A90] line-through sm:text-xs">
+                            {formatVND(comparePrice)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
                 </article>
+              );
+            })}
+          </div>
 
-              </Link>
+          {/* GLASSMORPHISM NEXT BUTTON */}
+          {products.length > 1 && (
+            
+            
+<button
+  type="button"
+  onClick={scrollNext}
+  aria-label="Lướt đến sản phẩm tiếp theo"
+  className="
+    absolute right-1 top-[42%] z-20
+    flex h-8 w-8
+    -translate-y-1/2
+    items-center justify-center
+    rounded-full
+    border border-white/70
+    bg-white/45
+    text-[#39342F]
+    shadow-[0_2px_8px_rgba(0,0,0,0.10)]
+    backdrop-blur-xl
+    transition-all duration-200
+    hover:bg-white/75
+    active:scale-95
+    sm:right-2 sm:h-9 sm:w-9
+  "
+>
+  <ChevronRight
+    size={17}
+    strokeWidth={1.7}
+  />
+</button>
 
-            </div>
 
-          ))}
-
+          )}
         </div>
-
       </div>
-
     </section>
   );
 }

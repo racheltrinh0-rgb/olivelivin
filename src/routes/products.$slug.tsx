@@ -11,6 +11,7 @@ import { formatVND } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 
 import FloatingFlashSaleBadge from "@/components/FloatingFlashSaleBadge";
+import ProductReviews from "@/components/ProductReviews";
 
 import { Trees } from "lucide-react";
 
@@ -531,15 +532,15 @@ useEffect(() => {
 
 
 
-const [selectedImage, setSelectedImage] = useState(
+const [selectedImage, setSelectedImage] = useState(() => {
+  const firstVideo = (product.product_images ?? []).find(
+    (item: any) =>
+      item?.image_type === "video" ||
+      /\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(item?.image_url || ""),
+  );
 
-  product.image_url ||
-
-  product.product_images?.[0]?.image_url ||
-
-  ""
-
-);
+  return firstVideo?.image_url || product.image_url || product.product_images?.[0]?.image_url || "";
+});
 
 const [showAllImages, setShowAllImages] = useState(false);
 
@@ -1061,14 +1062,14 @@ useEffect(() => {
 
 
 
+  const firstVideo = (product.product_images ?? []).find(
+    (item: any) =>
+      item?.image_type === "video" ||
+      /\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(item?.image_url || ""),
+  );
+
   setSelectedImage(
-
-    product.image_url ||
-
-    product.product_images?.[0]?.image_url ||
-
-    ""
-
+    firstVideo?.image_url || product.image_url || product.product_images?.[0]?.image_url || ""
   );
 
 }, [product.id]);
@@ -1570,7 +1571,9 @@ const cartItem = {
 
           {/* Outer wrapper: shadow must be outside the overflow-hidden image frame */}
 
-          <div className="order-1 aspect-square w-full min-h-0 rounded-2xl bg-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] lg:order-2 lg:h-[600px] xl:h-[620px]">
+          <div
+            className={`order-1 w-full min-h-0 aspect-[4/5] overflow-hidden rounded-2xl bg-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] lg:order-2`}
+          >
 
             <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-[#F5F4F1]">
 
@@ -1579,11 +1582,13 @@ const cartItem = {
                   <video
                     key={selectedImage}
                     src={selectedImage}
-                    controls
-                    autoPlay={false}
+                    autoPlay
+                    muted
+                    loop
                     playsInline
-                    preload="metadata"
-                    className="h-full w-full object-contain"
+                    preload="auto"
+                    controls={false}
+                    className="h-full w-full object-cover"
                     aria-label={`${product.name} video`}
                   >
                     Trình duyệt của bạn không hỗ trợ phát video.
@@ -1692,19 +1697,15 @@ const cartItem = {
 
 
 
-          {/* Rating */}
-
-          <div className="mt-2.5 flex items-center gap-2 text-[10px] text-neutral-500">
-
-            <span className="tracking-[0.08em] text-neutral-900">
-
-              ★★★★★
-
-            </span>
-
+          {/* Rating — jump to the full review section */}
+          <a
+            href="#product-reviews"
+            className="mt-2.5 inline-flex w-fit items-center gap-2 text-[10px] text-neutral-500 transition-colors hover:text-neutral-900"
+            aria-label="Xem phần đánh giá sản phẩm"
+          >
+            <span className="tracking-[0.08em] text-neutral-900" aria-hidden="true">★★★★★</span>
             <span>Đánh giá sản phẩm</span>
-
-          </div>
+          </a>
 
 
 
@@ -2992,145 +2993,102 @@ const cartItem = {
 
 
         {/* ===========================================
-
-        LIFESTYLE GALLERY
-
-\=========================================== */}
-
-
+        LIFESTYLE GALLERY / PRODUCT VIDEOS
+        Videos first; lifestyle images underneath.
+        =========================================== */}
 
 {lifestyleGallery.length > 0 && (
+  <section className="mx-auto mt-12 w-full max-w-[1240px]">
+    <div className="mb-7 border-b border-neutral-200 pb-5 md:mb-8">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+        WATCH
+      </p>
+      <h2 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+        Product videos
+      </h2>
+      <p className="mt-2 text-sm text-neutral-500">
+        See the details in motion.
+      </p>
+    </div>
 
+    {/* VIDEO CARDS FIRST — centered, with a balanced 4:5 ratio */}
+    <div className="flex w-full justify-center">
+      {lifestyleGallery
+        .filter((img: any) => isVideoMedia(img))
+        .map((img: any, index: number) => (
+          <article
+            key={img.id ?? img.image_url}
+            className="w-full min-w-0 max-w-[420px] overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04]"
+          >
+            <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-100">
+              <video
+                key={img.id ?? img.image_url}
+                src={img.image_url}
+                poster={img.thumbnail_url || undefined}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                controls={false}
+                disablePictureInPicture
+                aria-label={`${product.name} product video ${index + 1}`}
+                className="absolute inset-0 block h-full w-full object-cover"
+              >
+                Trình duyệt của bạn không hỗ trợ phát video.
+              </video>
+            </div>
+            <div className="bg-[#F5F5F7] px-4 py-4 lg:px-4 lg:py-4">
+              <h3 className="text-sm font-semibold text-[#292929]">
+                {product.name} — Video {index + 1}
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-[#777777]">
+                Discover the product from every angle.
+              </p>
+            </div>
+          </article>
+        ))}
+    </div>
 
-
-<section className="mt-8">
-
-
-
-<div className="mb-10 text-center">
-
-
-
-<p className="text-xs uppercase tracking-[0.35em] text-neutral-500">
-
-
-
-OLIVE LIVING
-
-
-
-</p>
-
-
-
-<h2 className="mt-3 text-3xl font-light lg:text-5xl">
-
-
-
-Không gian thực tế
-
-
-
-</h2>
-
-
-
-<p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-neutral-500">
-
-
-
-Khám phá cách sản phẩm hòa vào không gian sống
-
-theo phong cách Scandinavian hiện đại.
-
-
-
-</p>
-
-
-
-</div>
-
-
-
-<div className="grid gap-4 md:grid-cols-2">
-
-
-
-{lifestyleGallery.map((img: any, index: number) => (
-
-
-
-<div
-
-key={img.id}
-
-className={`overflow-hidden rounded-[28px] bg-white shadow-[0_16px_36px_-10px_rgba(0,0,0,0.20)]
-
-${
-
-index % 3 === 0
-
-? "md:col-span-2"
-
-: ""
-
-}`}
-
->
-
-
-
-{isVideoMedia(img) ? (
-  <div className="relative overflow-hidden bg-black">
-    <video
-      key={img.id ?? img.image_url}
-      src={img.image_url}
-      poster={img.thumbnail_url || undefined}
-      controls
-      playsInline
-      preload="metadata"
-      aria-label={`${product.name} video`}
-      className="block max-h-[720px] w-full object-contain"
-    >
-      Trình duyệt của bạn không hỗ trợ phát video.
-    </video>
-    {img.thumbnail_url && (
-      <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
-        Video
-      </span>
+    {/* LIFESTYLE IMAGES BELOW — preserve their natural aspect ratio */}
+    {lifestyleGallery.some((img: any) => !isVideoMedia(img)) && (
+      <div className="mt-10">
+        <div className="mb-6 border-b border-neutral-200 pb-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+            LIFESTYLE
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            See it in real life
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-2 lg:gap-6">
+        {lifestyleGallery
+          .filter((img: any) => !isVideoMedia(img))
+          .map((img: any) => (
+            <div
+              key={img.id ?? img.image_url}
+              className="w-full min-w-0 overflow-hidden rounded-xl bg-neutral-50"
+            >
+              <img
+                src={img.image_url}
+                alt={product.name}
+                loading="lazy"
+                className="block h-auto w-full object-contain transition-transform duration-300 hover:scale-[1.02]"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     )}
-  </div>
-) : (
-  <img
-    src={img.image_url}
-    alt={product.name}
-    loading="lazy"
-    className="block w-full object-cover transition-all duration-700 hover:scale-[1.03]"
-  />
+  </section>
 )}
 
 
 
-</div>
-
-
-
-))}
-
-
-
-</div>
-
-
-
+{/* ========================= PRODUCT REVIEWS ========================= */}
+<section id="product-reviews" className="container-x mx-auto mt-10 w-full max-w-[1240px] scroll-mt-24 px-0 sm:mt-14">
+  <ProductReviews productId={product.id} productName={product.name} />
 </section>
-
-
-
-)}
-
-
 
 {/* ========================= HỖ TRỢ 24/7 ========================= */}
 

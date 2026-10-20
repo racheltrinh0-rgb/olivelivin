@@ -51,6 +51,7 @@ import {
   Search,
 
   Settings,
+  Star,
 
   ShoppingBag,
 
@@ -234,6 +235,11 @@ const navigationGroups = [
 
         icon: Boxes,
 
+      },
+      {
+        label: "Đánh giá sản phẩm",
+        href: "/admin/reviews",
+        icon: Star,
       },
 
     ],

@@ -1,34 +1,52 @@
-import { Ticket, Truck, Gift, Flame, Copy, Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import {
+  ArrowRight,
+  Check,
+  Copy,
+  Gift,
+  Flame,
+  TicketPercent,
+  Truck,
+  Sparkles,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const ICONS = {
   gift: Gift,
   truck: Truck,
-  ticket: Ticket,
+  ticket: TicketPercent,
 };
+
+const formatDate = (value: string) =>
+  new Date(value).toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
 export default function Vouchers() {
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [savedCodes, setSavedCodes] = useState<string[]>([]);
   const [showAll, setShowAll] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadVouchers();
+    void loadVouchers();
 
-    const saved = JSON.parse(
-      localStorage.getItem("olive_vouchers") || "[]"
-    );
-
-    setSavedCodes(saved.map((v: any) => v.code));
+    try {
+      const saved = JSON.parse(localStorage.getItem("olive_vouchers") || "[]");
+      setSavedCodes(saved.map((voucher: any) => voucher.code));
+    } catch {
+      setSavedCodes([]);
+    }
   }, []);
 
   async function loadVouchers() {
-    const now = new Date();
-
+    setLoading(true);
+    const now = Date.now();
     const { data, error } = await supabase
       .from("vouchers")
       .select("*")
@@ -38,363 +56,220 @@ export default function Vouchers() {
 
     if (error) {
       toast.error(error.message);
+      setLoading(false);
       return;
     }
 
-    // CHỈ HIỆN VOUCHER CÒN HIỆU LỰC:
-    // - Đang diễn ra: start_at <= now < end_at
-    // - Sắp diễn ra: start_at > now
-    // - TUYỆT ĐỐI KHÔNG hiện voucher đã hết hạn: end_at <= now
-    //
-    // Điều kiện thực tế chỉ cần kiểm tra end_at > now,
-    // vì voucher có end_at trong tương lai sẽ là đang diễn ra
-    // hoặc sắp diễn ra.
     const available = (data ?? []).filter((voucher) => {
       if (!voucher.start_at || !voucher.end_at) return false;
-
-      const start = new Date(voucher.start_at);
-      const end = new Date(voucher.end_at);
-
-      // Bỏ dữ liệu ngày không hợp lệ.
-      if (
-        Number.isNaN(start.getTime()) ||
-        Number.isNaN(end.getTime())
-      ) {
-        return false;
-      }
-
-      // Voucher đã hết hạn => KHÔNG HIỆN.
-      if (end.getTime() <= now.getTime()) {
-        return false;
-      }
-
-      // Chỉ cho phép:
-      // 1. Đang diễn ra
-      // 2. Sắp diễn ra
-      return start.getTime() <= end.getTime();
+      const start = new Date(voucher.start_at).getTime();
+      const end = new Date(voucher.end_at).getTime();
+      return !Number.isNaN(start) && !Number.isNaN(end) && end > now && start <= end;
     });
 
-    const sorted = [...available].sort((a, b) => {
-      // Black Friday luôn đứng đầu.
+    available.sort((a, b) => {
       const aBF = isBlackFriday(a) ? 1 : 0;
       const bBF = isBlackFriday(b) ? 1 : 0;
-
-      if (aBF !== bBF) {
-        return bBF - aBF;
-      }
-
-      // Voucher đang diễn ra đứng trước voucher sắp diễn ra.
-      const aStarted = new Date(a.start_at) <= now;
-      const bStarted = new Date(b.start_at) <= now;
-
-      if (aStarted !== bStarted) {
-        return aStarted ? -1 : 1;
-      }
-
-      // Sau đó theo thời gian bắt đầu gần nhất.
-      return (
-        new Date(a.start_at).getTime() -
-        new Date(b.start_at).getTime()
-      );
+      if (aBF !== bBF) return bBF - aBF;
+      const aStarted = new Date(a.start_at).getTime() <= now;
+      const bStarted = new Date(b.start_at).getTime() <= now;
+      if (aStarted !== bStarted) return aStarted ? -1 : 1;
+      return new Date(a.start_at).getTime() - new Date(b.start_at).getTime();
     });
 
-    setVouchers(sorted);
+    setVouchers(available);
+    setLoading(false);
   }
 
   function isBlackFriday(voucher: any) {
-    const text = `
-      ${voucher.code || ""}
-      ${voucher.title || ""}
-      ${voucher.description || ""}
-      ${voucher.badge || ""}
-      ${voucher.event_type || ""}
-    `.toLowerCase();
-
-    return (
-      voucher.event_type === "black_friday" ||
-      text.includes("black friday") ||
-      text.includes("black_friday") ||
-      text.includes("black-friday") ||
-      text.includes("blackfriday") ||
-      text.includes("bf2026")
-    );
+    const text = `${voucher.code || ""} ${voucher.title || ""} ${voucher.description || ""} ${voucher.badge || ""} ${voucher.event_type || ""}`.toLowerCase();
+    return voucher.event_type === "black_friday" || ["black friday", "black_friday", "black-friday", "blackfriday", "bf2026"].some((term) => text.includes(term));
   }
 
   function isUpcoming(voucher: any) {
     if (!voucher.start_at || !voucher.end_at) return false;
-
-    const now = new Date().getTime();
+    const now = Date.now();
     const start = new Date(voucher.start_at).getTime();
     const end = new Date(voucher.end_at).getTime();
+    return !Number.isNaN(start) && !Number.isNaN(end) && start > now && end > now;
+  }
 
-    return (
-      !Number.isNaN(start) &&
-      !Number.isNaN(end) &&
-      start > now &&
-      end > now
-    );
+  function formatDiscount(voucher: any) {
+    if (voucher.type === "percent") return `${voucher.value}%`;
+    if (voucher.type === "fixed") return `${Number(voucher.value).toLocaleString("vi-VN")}đ`;
+    return "FREE";
   }
 
   function saveVoucher(voucher: any) {
-    const saved = JSON.parse(
-      localStorage.getItem("olive_vouchers") || "[]"
-    );
+    let saved: any[] = [];
+    try {
+      saved = JSON.parse(localStorage.getItem("olive_vouchers") || "[]");
+    } catch {
+      saved = [];
+    }
 
-    if (saved.find((v: any) => v.code === voucher.code)) {
+    if (saved.some((item) => item.code === voucher.code)) {
       toast.info("Voucher đã được lưu");
       return;
     }
 
     saved.push({ code: voucher.code });
-
-    localStorage.setItem(
-      "olive_vouchers",
-      JSON.stringify(saved)
-    );
-
-    setSavedCodes(saved.map((v: any) => v.code));
+    localStorage.setItem("olive_vouchers", JSON.stringify(saved));
+    setSavedCodes(saved.map((item) => item.code));
     toast.success("Đã lưu voucher");
   }
 
-  function copyCode(code: string) {
-    navigator.clipboard.writeText(code);
-    toast.success(`Đã sao chép mã ${code}`);
+  async function copyCode(code: string) {
+    try {
+      await navigator.clipboard.writeText(code);
+      toast.success(`Đã sao chép mã ${code}`);
+    } catch {
+      toast.error("Không thể sao chép mã. Vui lòng thử lại.");
+    }
   }
 
-  function formatDiscount(item: any) {
-    if (item.type === "percent") {
-      return `${item.value}%`;
-    }
-
-    if (item.type === "fixed") {
-      return `${Number(item.value).toLocaleString("vi-VN")}đ`;
-    }
-
-    return "FREE";
-  }
-
-  // Hiện tối đa 2 voucher ban đầu.
-  // Black Friday được ưu tiên đầu tiên, sau đó là 1 voucher thường.
-  // Khi bấm "Xem thêm" mới hiện toàn bộ voucher hợp lệ.
-  const visibleVouchers = showAll
-    ? vouchers
-    : vouchers.slice(0, 2);
-
-  const hiddenVoucherCount = Math.max(
-    0,
-    vouchers.length - 2
-  );
+  const visibleVouchers = showAll ? vouchers : vouchers.slice(0, 2);
+  const hiddenVoucherCount = Math.max(0, vouchers.length - 2);
 
   return (
-    <section className="bg-[#F8F6F1] pt-4 pb-10 sm:pt-5 sm:pb-12 lg:pt-6 lg:pb-16">
-      <div className="container-x">
-        <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
-          <p className="text-[9px] font-medium uppercase tracking-[0.26em] text-[#A99B8A]">
-            OLIVE LIVING · PRIVATE OFFERS
-          </p>
+    <section className="relative overflow-hidden bg-[#F4F1EB] py-5 sm:py-9 lg:py-[60px]">
+      <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#E7DED0]/55 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 -left-20 h-64 w-64 rounded-full bg-white/70 blur-3xl" />
 
-          <h2 className="mt-2 font-display text-[27px] font-normal leading-[1.18] tracking-[-0.025em] text-[#39352F] sm:text-[32px]">
-            A little something for your space.
+      <div className="container-x relative z-10">
+        {/* New editorial header */}
+        <div className="mx-auto mb-4 max-w-3xl text-center sm:mb-7">
+          <div className="mx-auto mb-2 inline-flex items-center gap-1.5 rounded-full border border-[#DCD3C6] bg-white/60 px-2.5 py-1 text-[7px] font-semibold uppercase tracking-[0.16em] text-[#837666] sm:mb-3 sm:px-3 sm:py-1.5 sm:text-[9px]">
+            <Sparkles size={11} strokeWidth={1.6} />
+            Olive Living · Member perks
+          </div>
+          <h2 className="font-display text-[22px] font-normal leading-[1.12] tracking-[-0.035em] text-[#302D27] sm:text-[32px] lg:text-[40px]">
+            Good things, just for you.
           </h2>
-
-          <p className="mx-auto mt-2.5 max-w-lg text-[12px] leading-5 text-[#858078] sm:text-[13px]">
-            Những ưu đãi nhỏ dành cho những không gian bạn yêu thích.
+          <p className="mx-auto mt-1.5 max-w-md text-[10px] leading-[1.45] text-[#81796F] sm:mt-3 sm:text-[13px]">
+            Ưu đãi dành riêng cho những không gian bạn yêu thích.
           </p>
-
           <Link
             to="/voucher-register"
-            className="mx-auto mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#DED7CC] bg-[#FBFAF7] px-4 py-2 text-[9px] font-medium uppercase tracking-[0.1em] text-[#686158] transition-all hover:border-[#CEC4B7] hover:bg-white active:scale-[0.98]"
+            className="group mx-auto mt-3 inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-[#33382D] px-3.5 text-[8px] font-medium text-white transition hover:bg-[#4A5141] active:scale-[0.98] sm:mt-5 sm:h-10 sm:gap-2 sm:px-5 sm:text-[10px]"
           >
-            <Gift size={12} strokeWidth={1.5} />
-            Nhận ưu đãi
+            <Gift size={11} strokeWidth={1.6} />
+            Khám phá ưu đãi thành viên
+            <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5 sm:h-3 sm:w-3" />
           </Link>
         </div>
 
-        {visibleVouchers.length > 0 && (
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2">
-            {visibleVouchers
-              .filter((item) => {
-                if (!item.start_at || !item.end_at) return false;
+        {/* Coupon shelf */}
+        {loading ? (
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2">
+            {[0, 1].map((item) => (
+              <div key={item} className="h-[138px] animate-pulse rounded-2xl border border-[#E5DED3] bg-white/65" />
+            ))}
+          </div>
+        ) : visibleVouchers.length > 0 ? (
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
+            {visibleVouchers.map((voucher, index) => {
+              const blackFriday = isBlackFriday(voucher);
+              const upcoming = isUpcoming(voucher);
+              const saved = savedCodes.includes(voucher.code);
+              const Icon = ICONS[voucher.icon as keyof typeof ICONS] ?? Gift;
+              const remaining = Math.max(0, Number(voucher.quantity || 0) - Number(voucher.used || 0));
 
-                const now = Date.now();
-                const start = new Date(item.start_at).getTime();
-                const end = new Date(item.end_at).getTime();
+              return (
+                <motion.article
+                  key={voucher.code}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.28, delay: index * 0.04 }}
+                  className="group relative overflow-hidden rounded-[14px] border border-[#E4DCCE] bg-[#FFFEFB] shadow-[0_3px_12px_rgba(62,52,40,0.025)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(62,52,40,0.06)] sm:rounded-[20px]"
+                >
+                  <div className="flex min-h-[104px] sm:min-h-[138px]">
+                    {/* Discount panel */}
+                    <div className="relative flex w-[78px] shrink-0 flex-col items-center justify-center overflow-hidden border-r border-dashed border-[#D9CDBD] bg-[#EEE7DB] px-1.5 py-2 sm:w-[118px] sm:px-2.5 sm:py-4">
+                      <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#F4F1EB] sm:-left-2.5 sm:h-5 sm:w-5" />
+                      <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#F4F1EB] sm:-right-2.5 sm:h-5 sm:w-5" />
+                      <div className="mb-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/70 text-[#9C8067] sm:mb-2 sm:h-9 sm:w-9">
+                        {blackFriday ? <Flame size={12} strokeWidth={1.5} /> : <Icon size={12} strokeWidth={1.5} />}
+                      </div>
+                      <span className="max-w-full truncate text-[6px] font-semibold uppercase tracking-[0.04em] text-[#968675] sm:text-[8px] sm:tracking-[0.08em]">
+                        {blackFriday ? "Black Friday" : "Your reward"}
+                      </span>
+                      <p className="mt-0.5 text-[20px] font-normal leading-none tracking-[-0.06em] text-[#8B725A] sm:mt-1 sm:text-[29px]">
+                        {formatDiscount(voucher)}
+                      </p>
+                      <span className="mt-0.5 text-[7px] text-[#9B8D7D] sm:mt-1 sm:text-[8px]">ưu đãi</span>
+                    </div>
 
-                return (
-                  !Number.isNaN(start) &&
-                  !Number.isNaN(end) &&
-                  end > now &&
-                  start <= end
-                );
-              })
-              .map((item) => {
-                const blackFriday = isBlackFriday(item);
-                const upcoming = isUpcoming(item);
-                const saved = savedCodes.includes(item.code);
-
-                const Icon =
-                  ICONS[item.icon as keyof typeof ICONS] ?? Gift;
-
-                return (
-                  <motion.div
-                    key={item.code}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="group relative overflow-hidden rounded-[22px] border border-[#E7E1D8] bg-[#FCFBF8] shadow-[0_2px_14px_rgba(73,61,48,0.035)] transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_8px_24px_rgba(73,61,48,0.065)]"
-                  >
-                    {blackFriday && (
-                      <div className="pointer-events-none absolute inset-0 bg-[#F7F0E7]/40" />
-                    )}
-
-                    <div className="absolute left-6 right-6 top-0 h-[2px] rounded-full bg-[#D8B9A0] opacity-60" />
-
-                    <div className="relative flex min-h-[142px]">
-                      <div className="flex w-[108px] shrink-0 flex-col items-center justify-center bg-[#F8F5EF] px-3 py-5 sm:w-[124px]">
-                        <div className="mb-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-[#F1E9DE] text-[#B28C71]">
+                    {/* Details panel */}
+                    <div className="flex min-w-0 flex-1 flex-col justify-between p-2 sm:p-4">
+                      <div className="min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="min-w-0 truncate font-display text-[12px] leading-tight text-[#37332D] sm:text-[16px]">
+                            {voucher.title || (blackFriday ? "Black Friday Special" : "A little treat for you")}
+                          </h3>
                           {blackFriday ? (
-                            <Flame size={15} strokeWidth={1.35} />
-                          ) : (
-                            <Icon size={15} strokeWidth={1.35} />
-                          )}
+                            <span className="shrink-0 rounded-full bg-[#F2E5D6] px-2 py-1 text-[7px] font-semibold uppercase tracking-[0.08em] text-[#9B704C]">Special</span>
+                          ) : voucher.badge ? (
+                            <span className="shrink-0 rounded-full px-2 py-1 text-[7px] font-medium text-white" style={{ backgroundColor: voucher.badge_color || "#858B78" }}>{voucher.badge}</span>
+                          ) : null}
                         </div>
-
-                        {blackFriday && (
-                          <span className="mb-1 text-[7px] font-medium uppercase tracking-[0.16em] text-[#A8754D]">
-                            Black Friday
-                          </span>
-                        )}
-
-                        <p className="max-w-full truncate text-[8px] font-medium tracking-[0.07em] text-[#A49B90]">
-                          {item.code}
+                        <p className="mt-0.5 line-clamp-1 text-[9px] leading-[1.35] text-[#81796F] sm:mt-1 sm:line-clamp-2 sm:text-[11px] sm:leading-[1.45]">
+                          {voucher.description || "Ưu đãi đặc biệt dành cho đơn hàng của bạn."}
                         </p>
-
-                        <p className="mt-0.5 text-[21px] font-normal leading-none tracking-[-0.035em] text-[#AD896F] sm:text-[23px]">
-                          {formatDiscount(item)}
+                        <p className="mt-1 text-[8px] text-[#8A8175] sm:mt-1.5 sm:text-[10px]">
+                          Đơn tối thiểu <span className="font-semibold text-[#4B463E]">{Number(voucher.min_order || 0).toLocaleString("vi-VN")}đ</span>
                         </p>
-
-                        <span className="mt-1 text-[8px] text-[#AAA197]">
-                          ưu đãi
-                        </span>
                       </div>
 
-                      <div className="flex min-w-0 flex-1 flex-col justify-between px-4 py-4 sm:px-5">
+                      <div className="mt-1.5 flex items-end justify-between gap-1.5 sm:mt-2 sm:gap-2">
                         <div className="min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <h3 className="min-w-0 truncate text-[12px] font-medium tracking-[-0.005em] text-[#48433C] sm:text-[13px]">
-                              {item.title ||
-                                (blackFriday
-                                  ? "Black Friday Special"
-                                  : "A little treat for you")}
-                            </h3>
-
-                            {item.badge && !blackFriday ? (
-                              <span
-                                className="shrink-0 rounded-full px-2 py-1 text-[7px] font-medium text-white opacity-85"
-                                style={{
-                                  backgroundColor:
-                                    item.badge_color || "#8A8278",
-                                }}
-                              >
-                                {item.badge}
-                              </span>
-                            ) : blackFriday ? (
-                              <span className="shrink-0 rounded-full bg-[#F0E4D5] px-2 py-1 text-[7px] font-medium text-[#A8754D]">
-                                Special
-                              </span>
-                            ) : null}
-                          </div>
-
-                          <p className="mt-1 line-clamp-2 max-w-[330px] text-[10px] leading-[1.55] text-[#888178] sm:text-[11px]">
-                            {item.description}
-                          </p>
-
-                          <p className="mt-2 text-[10px] text-[#8B847B]">
-                            Đơn từ{" "}
-                            <span className="font-medium text-[#514B44]">
-                              {Number(item.min_order || 0).toLocaleString(
-                                "vi-VN"
-                              )}
-                              đ
-                            </span>
+                          <button
+                            type="button"
+                            onClick={() => void copyCode(voucher.code)}
+                            className="inline-flex max-w-full items-center gap-1 rounded-md border border-[#E5DED3] bg-[#F9F6F0] px-1.5 py-0.5 text-[8px] font-semibold tracking-[0.01em] text-[#716454] transition hover:border-[#C9B9A4] hover:bg-white sm:gap-1.5 sm:px-2 sm:py-1 sm:text-[9px] sm:tracking-[0.03em]"
+                            aria-label={`Sao chép mã ${voucher.code}`}
+                          >
+                            <span className="truncate">{voucher.code}</span>
+                            <Copy size={9} className="shrink-0" />
+                          </button>
+                          <p className="mt-0.5 text-[7px] text-[#A49A8D] sm:mt-1 sm:text-[8px]">
+                            {upcoming ? `Bắt đầu ${formatDate(voucher.start_at)}` : `HSD ${formatDate(voucher.end_at)}`}
+                            {` · Còn ${remaining}`}
                           </p>
                         </div>
-
-                        <div className="mt-3 flex items-end justify-between gap-3">
-                          <div>
-                            <p className="text-[9px] font-medium text-[#A88973]">
-                              {upcoming
-                                ? "Sắp diễn ra"
-                                : `Còn ${Math.max(
-                                    0,
-                                    Number(item.quantity || 0) -
-                                      Number(item.used || 0)
-                                  )}`}
-                            </p>
-
-                            <p className="mt-0.5 text-[8px] text-[#AAA39A]">
-                              {upcoming
-                                ? `Bắt đầu: ${new Date(
-                                    item.start_at
-                                  ).toLocaleDateString("vi-VN")}`
-                                : `HSD: ${new Date(
-                                    item.end_at
-                                  ).toLocaleDateString("vi-VN")}`}
-                            </p>
-                          </div>
-
-                          <div className="flex shrink-0 items-center gap-1.5">
-                            <button
-                              onClick={() => copyCode(item.code)}
-                              className="flex h-7 items-center gap-1 rounded-full border border-[#DED8CE] bg-transparent px-2.5 text-[8px] font-medium text-[#716A61] transition-colors hover:bg-white"
-                            >
-                              <Copy size={10} strokeWidth={1.5} />
-                              <span className="hidden sm:inline">
-                                Sao chép
-                              </span>
-                            </button>
-
-                            <button
-                              onClick={() => saveVoucher(item)}
-                              disabled={saved}
-                              className={`h-7 rounded-full px-3 text-[8px] font-medium transition-colors ${
-                                saved
-                                  ? "bg-[#87907C] text-white"
-                                  : "bg-[#737B69] text-white hover:bg-[#626A59]"
-                              }`}
-                            >
-                              {saved ? (
-                                <>
-                                  <Check
-                                    size={10}
-                                    className="mr-0.5 inline"
-                                    strokeWidth={1.8}
-                                  />
-                                  Đã lưu
-                                </>
-                              ) : (
-                                "Lưu ưu đãi"
-                              )}
-                            </button>
-                          </div>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => saveVoucher(voucher)}
+                          disabled={saved}
+                          className={`inline-flex h-7 shrink-0 items-center justify-center gap-1 rounded-full px-2.5 text-[8px] font-medium transition sm:h-9 sm:px-3.5 sm:text-[10px] ${saved ? "bg-[#E5E9E0] text-[#626C58]" : "bg-[#737B69] text-white hover:bg-[#5F6856]"}`}
+                        >
+                          {saved && <Check size={11} strokeWidth={2} />}
+                          {saved ? "Đã lưu" : "Lưu mã"}
+                        </button>
                       </div>
                     </div>
-                  </motion.div>
-                );
-              })}
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-[#DCD3C6] bg-white/50 px-5 py-8 text-center">
+            <TicketPercent className="mx-auto text-[#A99A88]" size={24} strokeWidth={1.3} />
+            <p className="mt-3 text-sm text-[#514B43]">Hiện chưa có ưu đãi nào.</p>
+            <p className="mt-1 text-xs text-[#8B8379]">Quay lại sau để khám phá các ưu đãi mới nhé.</p>
           </div>
         )}
 
-        {hiddenVoucherCount > 0 && (
-          <div className="mt-6 flex justify-center">
+        {hiddenVoucherCount > 0 && !loading && (
+          <div className="mt-3 flex justify-center sm:mt-7">
             <button
-              onClick={() => setShowAll(!showAll)}
-              className="rounded-full border border-[#DDD6CB] bg-transparent px-4 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-[#746D64] transition-all hover:border-[#C6BCAF] hover:bg-white"
+              type="button"
+              onClick={() => setShowAll((value) => !value)}
+              className="group inline-flex h-8 items-center gap-1.5 rounded-full border border-[#D8D0C4] bg-white/50 px-3.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#71695E] transition hover:border-[#BDB09F] hover:bg-white sm:h-9 sm:gap-2 sm:px-4 sm:text-[9px] sm:tracking-[0.12em]"
             >
-              {showAll
-                ? "Thu gọn"
-                : `Xem thêm ${hiddenVoucherCount} ưu đãi`}
+              {showAll ? "Thu gọn ưu đãi" : `Xem thêm ${hiddenVoucherCount} ưu đãi`}
+              <ArrowRight size={12} className={`transition-transform ${showAll ? "rotate-180" : "group-hover:translate-x-0.5"}`} />
             </button>
           </div>
         )}

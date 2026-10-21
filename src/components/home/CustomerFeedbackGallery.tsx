@@ -1,5 +1,4 @@
-﻿
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 
 const feedbackImages = [
   "/images/customer-feedback-01.jpg",
@@ -11,32 +10,44 @@ const feedbackImages = [
 ];
 
 export default function CustomerFeedbackGallery() {
+  // Duplicate the images so the horizontal loop feels continuous.
   const images = [...feedbackImages, ...feedbackImages];
 
   return (
-    <section className="overflow-hidden bg-white pt-2 pb-10 sm:pt-3 sm:pb-14 lg:pt-4 lg:pb-16">
-      <div className="mx-auto mb-4 max-w-xl px-4 text-center sm:mb-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#6F8B5E] sm:text-xs">
-          FROM OUR CUSTOMERS
-        </p>
+    <section className="overflow-hidden bg-white pt-5 pb-10 sm:pt-7 sm:pb-14 lg:pt-8 lg:pb-16">
+      {/* EDITORIAL HEADER */}
+      <div className="mx-auto mb-6 max-w-[680px] px-5 text-center sm:mb-8">
+        <div className="mb-3 flex items-center justify-center gap-3">
+          <span className="h-px w-7 bg-[#D9C8B6]" />
+          <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-[#9A806A] sm:text-[11px]">
+            Notes from our customers
+          </p>
+          <span className="h-px w-7 bg-[#D9C8B6]" />
+        </div>
 
-        <h2 className="mt-2 font-display text-4xl leading-[1.08] tracking-[-0.025em] text-[#292725] sm:mt-3 sm:text-5xl lg:text-6xl">
-          Khách Hàng
+        <h2 className="font-display text-[32px] font-normal leading-[1.12] tracking-[-0.035em] text-[#292621] sm:text-[42px] lg:text-[50px]">
+          Không gian thật
+          <span className="text-[#B98561]">.</span>
           <br />
-          Đã nói gì
+          Cảm nhận chân thành
+          <span className="text-[#B98561]">.</span>
         </h2>
+
+        <p className="mx-auto mt-3 max-w-[420px] text-[12px] leading-5 text-[#81786F] sm:mt-4 sm:text-[13px]">
+          Những góc nhà thân quen, được kể lại qua trải nghiệm của khách hàng Olive Living.
+        </p>
       </div>
 
+      {/* CONTINUOUS FEEDBACK GALLERY */}
       <div className="relative w-full overflow-hidden">
-        <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-12 bg-gradient-to-r from-white to-transparent sm:w-20 lg:w-32" />
-
-        <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-12 bg-gradient-to-l from-white to-transparent sm:w-20 lg:w-32" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-8 bg-gradient-to-r from-white via-white/80 to-transparent sm:w-16 lg:w-28" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-8 bg-gradient-to-l from-white via-white/80 to-transparent sm:w-16 lg:w-28" />
 
         <motion.div
           className="flex w-max gap-3 sm:gap-4 lg:gap-5"
           animate={{ x: ["0%", "-50%"] }}
           transition={{
-            duration: 40,
+            duration: 42,
             repeat: Infinity,
             repeatType: "loop",
             ease: "linear",
@@ -45,13 +56,23 @@ export default function CustomerFeedbackGallery() {
           {images.map((image, index) => (
             <div
               key={`${image}-${index}`}
-              className="group relative h-[250px] w-[185px] shrink-0 overflow-hidden rounded-[14px] border border-[#E7DED3] bg-white shadow-[0_6px_24px_rgba(60,45,30,0.08)] sm:h-[300px] sm:w-[220px] lg:h-[340px] lg:w-[250px] xl:h-[360px] xl:w-[265px]"
+              className="
+                group relative h-[250px] w-[185px] shrink-0
+                overflow-hidden rounded-[12px] bg-[#F5F2ED]
+                sm:h-[300px] sm:w-[220px]
+                lg:h-[340px] lg:w-[250px]
+                xl:h-[360px] xl:w-[265px]
+              "
             >
               <img
                 src={image}
-                alt="Feedback khách hàng Olive Living"
-                loading={index < 6 ? "eager" : "lazy"}
-                className="block h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
+                alt={`Trải nghiệm khách hàng Olive Living ${((index % feedbackImages.length) + 1)}`}
+                loading={index < feedbackImages.length ? "eager" : "lazy"}
+                className="
+                  block h-full w-full object-cover object-center
+                  transition-transform duration-700 ease-out
+                  group-hover:scale-[1.025]
+                "
               />
             </div>
           ))}

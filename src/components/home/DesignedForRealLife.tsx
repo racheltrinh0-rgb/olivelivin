@@ -1,4 +1,3 @@
-
 import { useRef } from "react";
 import { ChevronRight } from "lucide-react";
 
@@ -51,25 +50,17 @@ export default function DesignedForRealLife() {
     const cards = Array.from(
       carousel.querySelectorAll<HTMLElement>("[data-video-card]"),
     );
-
     if (!cards.length) return;
 
-    const currentIndex = cards.reduce(
-      (closestIndex, card, index) => {
-        const currentDistance = Math.abs(
-          card.offsetLeft - carousel.scrollLeft,
-        );
-        const closestDistance = Math.abs(
-          cards[closestIndex].offsetLeft - carousel.scrollLeft,
-        );
-
-        return currentDistance < closestDistance ? index : closestIndex;
-      },
-      0,
-    );
+    const currentIndex = cards.reduce((closestIndex, card, index) => {
+      const currentDistance = Math.abs(card.offsetLeft - carousel.scrollLeft);
+      const closestDistance = Math.abs(
+        cards[closestIndex].offsetLeft - carousel.scrollLeft,
+      );
+      return currentDistance < closestDistance ? index : closestIndex;
+    }, 0);
 
     const nextIndex = (currentIndex + 1) % cards.length;
-
     carousel.scrollTo({
       left: cards[nextIndex].offsetLeft - cards[0].offsetLeft,
       behavior: "smooth",
@@ -77,21 +68,24 @@ export default function DesignedForRealLife() {
   };
 
   return (
-    <section className="bg-white pt-2 pb-6 sm:pt-3 sm:pb-6 lg:pt-6 lg:pb-6">
+    <section className="w-full bg-white py-8 sm:py-10 lg:py-12">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-        {/* HEADING */}
-        <div className="mb-4 flex items-end justify-between gap-4 sm:mb-6">
+        {/* EDITORIAL HEADER */}
+        <div className="mb-5 flex items-end justify-between gap-4 sm:mb-7">
           <div>
-            <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.24em] text-[#77766F] sm:text-[10px]">
-              OLIVE LIVING / LIGHTING
-            </p>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="h-px w-5 bg-[#B98561]" />
+              <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#A18F7E] sm:text-[10px]">
+                The Olive Edit · Lighting
+              </p>
+            </div>
 
-            <h2 className="text-[25px] font-medium leading-tight tracking-[-0.04em] text-[#292925] sm:text-[32px] lg:text-[38px]">
-              Designed for real life
+            <h2 className="font-serif text-[27px] font-normal leading-[1.12] tracking-[-0.035em] text-[#292621] sm:text-[32px] lg:text-[38px]">
+              Designed for real life<span className="text-[#B98561]">.</span>
             </h2>
 
-            <p className="mt-2 max-w-[440px] text-[11px] leading-relaxed text-[#77766F] sm:text-[13px]">
-              Thoughtful lighting for the spaces you call home.
+            <p className="mt-2 max-w-[440px] text-[12px] leading-relaxed text-[#81786F] sm:text-[13px]">
+              Thoughtful lighting, made to bring your space to life.
             </p>
           </div>
         </div>
@@ -101,14 +95,13 @@ export default function DesignedForRealLife() {
           <div
             ref={carouselRef}
             className="
-              -mx-4 flex snap-x snap-mandatory
-              gap-3 overflow-x-auto overscroll-x-contain
-              px-4 pb-3 pt-2
+              -mx-4 flex snap-x snap-mandatory gap-3
+              overflow-x-auto overscroll-x-contain
+              px-4 pb-3 pt-1
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
-              sm:mx-0 sm:px-0
-              lg:grid lg:grid-cols-4 lg:gap-4
-              lg:overflow-visible
+              sm:mx-0 sm:gap-4 sm:px-0
+              lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-visible
             "
           >
             {videos.map((item, index) => (
@@ -116,13 +109,10 @@ export default function DesignedForRealLife() {
                 key={item.video}
                 data-video-card
                 className="
-                  group relative isolate
-                  aspect-[3/4] w-[78%] shrink-0 snap-start
-                  overflow-hidden rounded-[14px]
-                  bg-[#E8E5DF]
-                  shadow-[0_3px_12px_rgba(35,30,25,0.08)]
-                  sm:w-[45%]
-                  lg:w-auto
+                  group relative isolate aspect-[3/4]
+                  w-[78%] shrink-0 snap-start overflow-hidden
+                  rounded-[12px] bg-[#E8E5DF]
+                  sm:w-[45%] lg:w-auto
                 "
               >
                 <video
@@ -133,85 +123,63 @@ export default function DesignedForRealLife() {
                   playsInline
                   preload="metadata"
                   aria-label={item.title}
-                  className="
-                    absolute inset-0 h-full w-full object-cover
-                    transition-transform duration-700
-                    group-hover:scale-[1.03]
-                  "
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
                   onError={(event) => {
                     event.currentTarget.style.visibility = "hidden";
                   }}
                 />
 
-                {/* BOTTOM GRADIENT */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
-                {/* CONTENT */}
                 <div className="absolute inset-x-0 bottom-0 p-3.5 text-white sm:p-5">
-                  <p className="mb-1 text-[9px] font-medium uppercase tracking-[0.18em] text-white/85">
-                    0{index + 1} / 04
+                  <p className="mb-1.5 text-[9px] font-medium uppercase tracking-[0.18em] text-white/75">
+                    0{index + 1} <span className="mx-1 text-white/45">/</span> 04
                   </p>
-
-                  <h3 className="text-[16px] font-semibold leading-tight tracking-[-0.02em] sm:text-[20px]">
+                  <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] sm:text-[19px]">
                     {item.title}
                   </h3>
-
-                  <p className="mt-1.5 text-[10px] leading-relaxed text-white/90 sm:text-[11px]">
+                  <p className="mt-1.5 text-[10px] leading-relaxed text-white/85 sm:text-[11px]">
                     {item.description}
                   </p>
 
                   <a
                     href={item.href}
                     className="
-                      mt-3 inline-flex min-h-[36px] w-full
-                      items-center justify-between
-                      rounded-full border border-white/55
-                      bg-white/25 px-3.5 py-2
-                      text-[10px] font-semibold text-white
-                      shadow-sm backdrop-blur-md
-                      transition-colors hover:bg-white/40
-                      active:scale-[0.99] sm:text-[11px]
+                      mt-3 inline-flex min-h-[35px] w-full items-center
+                      justify-between gap-3 rounded-full
+                      border border-white/45 bg-white/20 px-3.5 py-2
+                      text-[10px] font-medium text-white
+                      backdrop-blur-lg transition-colors duration-200
+                      hover:bg-white/30 active:scale-[0.99] sm:text-[11px]
                     "
                   >
                     <span>{item.exploreLabel}</span>
-                    <span aria-hidden="true">↗</span>
+                    <span aria-hidden="true" className="text-sm font-normal">↗</span>
                   </a>
                 </div>
               </article>
             ))}
           </div>
 
-          {/* SMALL FROSTED GLASS NEXT BUTTON */}
-          <button
-            type="button"
-            onClick={scrollToNextCard}
-            aria-label="Xem video tiếp theo"
-            className="
-              absolute right-1 top-[42%] z-20
-              flex h-8 w-8 -translate-y-1/2
-              items-center justify-center
-              rounded-full border border-white/70
-              bg-white/45 text-[#292925]
-              shadow-[0_2px_8px_rgba(0,0,0,0.10)]
-              backdrop-blur-xl
-              transition-all duration-200
-              hover:bg-white/75 active:scale-95
-              sm:right-2 sm:h-9 sm:w-9
-              lg:hidden
-            "
-          >
-            <ChevronRight size={17} strokeWidth={1.7} />
-          </button>
-        </div>
-
-        {/* MOBILE SCROLL HINT */}
-        <div className="mt-2 flex items-center justify-between gap-3 pb-1 lg:hidden">
-          <p className="flex items-center gap-2 text-[11px] text-[#77766F]">
-            <span aria-hidden="true" className="text-[#292925]">
-              ← →
-            </span>
-            Vuốt ngang để khám phá 4 video
-          </p>
+          {/* SINGLE SUBTLE GLASS ARROW */}
+          {videos.length > 1 && (
+            <button
+              type="button"
+              onClick={scrollToNextCard}
+              aria-label="Xem video tiếp theo"
+              className="
+                absolute right-2 top-[42%] z-20
+                flex h-7 w-7 -translate-y-1/2 items-center justify-center
+                rounded-full border border-white/55 bg-white/30
+                text-[#39342F]/80 shadow-[0_1px_5px_rgba(0,0,0,0.06)]
+                backdrop-blur-md transition-all duration-200
+                hover:bg-white/50 active:scale-95
+                sm:right-2 sm:h-8 sm:w-8 lg:hidden
+              "
+            >
+              <ChevronRight size={16} strokeWidth={1.6} />
+            </button>
+          )}
         </div>
       </div>
     </section>

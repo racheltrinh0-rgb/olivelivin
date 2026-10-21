@@ -7,14 +7,22 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 
 
 import { supabase } from "@/integrations/supabase/client";
+
+
+
 import { useNavigate } from "@tanstack/react-router";
+
+
+
 import { useCart } from "@/lib/cart";
+
+
+
 import { toast } from "sonner";
+
+
+
 import { ShoppingCart, Zap } from "lucide-react";
-
-
-
-
 
 
 
@@ -50,10 +58,6 @@ type MysteryDeal = {
 
 
 
-
-
-
-
 type DealProductRow = {
 
 
@@ -83,10 +87,6 @@ type DealProductRow = {
 
 
 };
-
-
-
-
 
 
 
@@ -122,10 +122,6 @@ type Product = {
 
 
 
-
-
-
-
 type DealProduct = DealProductRow & {
 
 
@@ -138,10 +134,6 @@ type DealProduct = DealProductRow & {
 
 
 
-
-
-
-
 type DealWithProducts = MysteryDeal & {
 
 
@@ -151,10 +143,6 @@ type DealWithProducts = MysteryDeal & {
 
 
 };
-
-
-
-
 
 
 
@@ -182,19 +170,11 @@ const formatPrice = (price: number) =>
 
 
 
-
-
-
-
 function getTimeLeft(target: string, now: number) {
 
 
 
   const distance = Math.max(0, new Date(target).getTime() - now);
-
-
-
-
 
 
 
@@ -226,432 +206,106 @@ function getTimeLeft(target: string, now: number) {
 
 
 
-
-
-
-
-
-
-
-
-function Countdown({
-
-
-
-  target,
-
-
-
-  now,
-
-
-
-}: {
-
-
-
-  target: string;
-
-
-
-  now: number;
-
-
-
-}) {
-
-
+function Countdown({ target, now }: { target: string; now: number }) {
 
   const time = getTimeLeft(target, now);
 
-
-
-
-
-
-
   const units = [
-
-
 
     { label: "Giờ", value: time.hours },
 
-
-
     { label: "Phút", value: time.minutes },
 
-
-
     { label: "Giây", value: time.seconds },
-
-
 
   ];
 
 
 
-
-
-
-
   return (
 
+    <div className="rounded-xl bg-[#FFF7F1] p-3 sm:p-4">
 
+      <div className="mb-3 flex items-center justify-between gap-2">
 
-    <div className="relative overflow-hidden rounded-2xl border border-[#F1D5BE] bg-gradient-to-br from-[#FFF9F2] via-[#FFF1E5] to-[#FBE3D0] p-3 shadow-[0_8px_24px_rgba(255,77,0,0.09)] sm:p-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#B9430D] sm:text-xs">Thời gian ưu đãi</p>
 
+        <span className="inline-flex items-center gap-1.5 rounded-md bg-[#FF4D00] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wide text-white sm:text-[10px]">
 
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> Limited time
 
-      {/* Họa tiết nền */}
+        </span>
 
+      </div>
 
+      <div className="flex items-stretch gap-2 sm:gap-3">
 
-      <div className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full border border-[#FF4D00]/10" />
+        <div className="flex min-w-[62px] flex-col justify-center rounded-lg bg-[#FF4D00] px-3 py-2 text-white sm:min-w-[76px] sm:px-4">
 
+          <p className="text-[9px] font-medium uppercase tracking-[0.1em] text-white/80">Ngày</p>
 
-
-      <div className="pointer-events-none absolute -right-3 -top-5 h-16 w-16 rounded-full border border-[#FF4D00]/15" />
-
-
-
-
-
-
-
-      <div className="relative flex items-center gap-2 sm:gap-3">
-
-
-
-        {/* Ngày */}
-
-
-
-        <div className="flex min-w-0 flex-1 items-center gap-2 border-r border-[#E8C9B1] pr-2 sm:gap-3 sm:pr-3">
-
-
-
-          <div className="min-w-0">
-
-
-
-            <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#D9571B] sm:text-[10px]">
-
-
-
-              Còn lại
-
-
-
-            </div>
-
-
-
-
-
-
-
-            <div className="mt-0.5 text-4xl font-black leading-none tracking-tight text-[#FF4D00] tabular-nums sm:text-5xl">
-
-
-
-              {String(time.days).padStart(2, "0")}
-
-
-
-            </div>
-
-
-
-
-
-
-
-            <div className="mt-1 text-[10px] font-semibold text-[#8D6B56] sm:text-xs">
-
-
-
-              NGÀY
-
-
-
-            </div>
-
-
-
-          </div>
-
-
-
-
-
-
-
-          <div className="hidden h-10 w-1 rounded-full bg-gradient-to-b from-[#FF6A00] to-[#FFB17F] sm:block" />
-
-
+          <p className="mt-1 text-3xl font-bold leading-none tracking-tight tabular-nums sm:text-4xl">{String(time.days).padStart(2, "0")}</p>
 
         </div>
 
-
-
-
-
-
-
-        {/* Giờ, phút, giây */}
-
-
-
-        <div className="grid flex-[1.4] grid-cols-3 gap-1.5 sm:gap-2">
-
-
+        <div className="grid min-w-0 flex-1 grid-cols-3 gap-1.5 sm:gap-2">
 
           {units.map((item) => (
 
+            <div key={item.label} className="flex min-w-0 flex-col items-center justify-center rounded-lg bg-white/90 px-1 py-2 sm:py-3">
 
+              <p className="text-xl font-bold leading-none text-[#30251E] tabular-nums sm:text-2xl">{String(item.value).padStart(2, "0")}</p>
 
-            <div key={item.label} className="min-w-0 text-center">
-
-
-
-              <div className="rounded-lg border border-[#F0D7C3] bg-white/80 px-1 py-2 shadow-[0_2px_6px_rgba(122,65,32,0.05)] sm:rounded-xl sm:py-3">
-
-
-
-                <div className="text-xl font-extrabold leading-none text-[#493126] tabular-nums sm:text-2xl">
-
-
-
-                  {String(item.value).padStart(2, "0")}
-
-
-
-                </div>
-
-
-
-              </div>
-
-
-
-
-
-
-
-              <div className="mt-1 text-[8px] font-semibold text-[#967763] sm:text-[10px]">
-
-
-
-                {item.label}
-
-
-
-              </div>
-
-
+              <p className="mt-1 text-[9px] font-medium text-[#89847C] sm:text-[10px]">{item.label}</p>
 
             </div>
 
-
-
           ))}
-
-
 
         </div>
 
-
-
       </div>
-
-
-
-
-
-
-
-      {/* Thanh tiến trình trang trí */}
-
-
-
-      <div className="absolute bottom-0 left-0 h-[3px] w-full bg-[#F3DCCB]">
-
-
-
-        <div className="h-full w-1/3 rounded-r-full bg-gradient-to-r from-[#FF4D00] to-[#FF9A68]" />
-
-
-
-      </div>
-
-
 
     </div>
 
-
-
   );
 
-
-
 }
-
-
-
-
-
-
-
-
 
 
 
 function MysteryPlaceholder() {
 
-
-
   return (
 
+    <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[#F3F0EA]">
 
+      <div className="absolute h-[62%] w-[62%] rounded-full border border-[#D8D1C7]" />
 
-    <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br from-[#FFF8F0] via-[#F5E5D5] to-[#EBC6A8]">
+      <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white text-5xl font-light text-[#FF4D00] shadow-sm sm:h-24 sm:w-24 sm:text-6xl">
 
-
-
-      <div
-
-
-
-        className="pointer-events-none absolute inset-0 opacity-[0.16]"
-
-
-
-        style={{
-
-
-
-          backgroundImage:
-
-
-
-            "radial-gradient(circle at 1px 1px, #A96B45 1px, transparent 0)",
-
-
-
-          backgroundSize: "18px 18px",
-
-
-
-        }}
-
-
-
-      />
-
-
-
-
-
-
-
-      <div className="absolute h-[88%] w-[88%] rounded-full border border-[#B8754D]/20" />
-
-
-
-      <div className="absolute h-[72%] w-[72%] rounded-full border border-[#B8754D]/25" />
-
-
-
-      <div className="absolute left-5 top-5 h-4 w-4 rotate-45 border border-[#FF4D00]/40" />
-
-
-
-      <div className="absolute right-5 top-5 h-3 w-3 rotate-45 bg-[#FF4D00]/25" />
-
-
-
-      <div className="absolute bottom-10 left-6 h-2 w-2 rounded-full bg-[#FF4D00]/40" />
-
-
-
-      <div className="absolute bottom-12 right-7 h-4 w-4 rotate-45 border border-[#FF4D00]/30" />
-
-
-
-
-
-
-
-      <div className="absolute h-[65%] w-[65%] rounded-full bg-[#FF4D00]/10 blur-2xl" />
-
-
-
-
-
-
-
-      <div className="mystery-question-orb relative flex h-[56%] w-[56%] items-center justify-center rounded-full border border-white/80 bg-white/45 shadow-[0_12px_40px_rgba(122,65,32,0.14)] backdrop-blur-sm">
-
-
-
-        <div className="flex h-[78%] w-[78%] items-center justify-center rounded-full bg-gradient-to-br from-[#FF6A00] to-[#D93E00] shadow-[0_8px_28px_rgba(255,77,0,0.35)]">
-
-
-
-          <span className="mystery-question-mark select-none text-6xl font-semibold leading-none text-white sm:text-7xl">
-
-
-
-            ?
-
-
-
-          </span>
-
-
-
-        </div>
-
-
+        ?
 
       </div>
 
-
-
-
-
-
-
-      <span className="absolute bottom-3 text-[9px] font-semibold tracking-[0.2em] text-[#8D4A2B] sm:text-[10px]">
-
-
-
-        MYSTERY ITEM
-
-
-
-      </span>
-
-
+      <span className="absolute bottom-3 text-[9px] font-medium uppercase tracking-[0.18em] text-[#89847C]">Mystery item</span>
 
     </div>
 
-
-
   );
-
-
 
 }
 
 
 
-
-
-
-
 export default function MysteryJackpotDeals() {
+
+
+
   const navigate = useNavigate();
+
+
+
   const { add } = useCart();
 
 
@@ -670,15 +324,27 @@ export default function MysteryJackpotDeals() {
 
   const [now, setNow] = useState(Date.now());
 
+
+
   const [interestTarget, setInterestTarget] = useState<{ dealId: string; itemId: string } | null>(null);
+
+
 
   const [interestName, setInterestName] = useState("");
 
+
+
   const [interestPhone, setInterestPhone] = useState("");
+
+
 
   const [interestSubmitting, setInterestSubmitting] = useState(false);
 
+
+
   const [interestError, setInterestError] = useState("");
+
+
 
   const [interestSuccess, setInterestSuccess] = useState(false);
 
@@ -700,48 +366,109 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
   const sliderRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
 
 
-
-
-
-
   const handleAddToCart = (item: DealProduct, salePrice: number, isUpcoming: boolean, saleHasEnded: boolean) => {
+
+
+
     const remaining = Math.max(0, Number(item.quota) - Number(item.sold_count));
+
+
+
     if (isUpcoming) return toast.error("Chương trình chưa bắt đầu.");
+
+
+
     if (saleHasEnded) return toast.error("Ưu đãi đã kết thúc.");
+
+
+
     if (remaining <= 0) return toast.error("Sản phẩm đã hết suất ưu đãi.");
+
+
+
     if (!item.product.slug) return toast.error("Không tìm thấy đường dẫn sản phẩm.");
+
+
 
     add({
+
+
+
       id: item.product.id,
+
+
+
       slug: item.product.slug,
+
+
+
       name: item.product.name,
+
+
+
       price: salePrice,
+
+
+
       image: item.product.image_url,
+
+
+
     }, 1);
+
+
+
     toast.success("Đã thêm vào giỏ hàng");
+
+
+
   };
+
+
 
   const handleBuyNow = (item: DealProduct, isUpcoming: boolean, saleHasEnded: boolean) => {
+
+
+
     const remaining = Math.max(0, Number(item.quota) - Number(item.sold_count));
+
+
+
     if (isUpcoming) return toast.error("Chương trình chưa bắt đầu.");
+
+
+
     if (saleHasEnded) return toast.error("Ưu đãi đã kết thúc.");
+
+
+
     if (remaining <= 0) return toast.error("Sản phẩm đã hết suất ưu đãi.");
+
+
+
     if (!item.product.slug) return toast.error("Không tìm thấy đường dẫn sản phẩm.");
 
+
+
     navigate({ to: "/products/$slug", params: { slug: item.product.slug } });
+
+
+
   };
+
+
 
   const submitInterest = async (event: FormEvent<HTMLFormElement>) => {
 
+
+
     event.preventDefault();
+
+
 
     if (!interestTarget) return;
 
@@ -749,11 +476,19 @@ export default function MysteryJackpotDeals() {
 
     const normalizedPhone = interestPhone.trim().replace(/[\s().-]/g, "");
 
-    if (!/^(\+?84|0)\d{8,10}$/.test(normalizedPhone)) {
+
+
+    if (!/^(?:\+?84|0)\d{8,10}$/.test(normalizedPhone)) {
+
+
 
       setInterestError("Vui lòng nhập số điện thoại Việt Nam hợp lệ.");
 
+
+
       return;
+
+
 
     }
 
@@ -761,41 +496,79 @@ export default function MysteryJackpotDeals() {
 
     setInterestSubmitting(true);
 
+
+
     setInterestError("");
+
+
 
     try {
 
+
+
       const { error: insertError } = await supabase
+
+
 
         .from("mystery_deal_interests")
 
+
+
         .insert({
+
+
 
           customer_name: interestName.trim(),
 
+
+
           phone: normalizedPhone,
+
+
 
           mystery_deal_id: interestTarget.dealId,
 
+
+
           mystery_deal_product_id: interestTarget.itemId,
+
+
 
         });
 
+
+
       if (insertError) throw insertError;
+
+
 
       setInterestSuccess(true);
 
+
+
     } catch (err) {
+
+
 
       console.error("Failed to save Mystery Jackpot interest:", err);
 
+
+
       setInterestError("Chưa gửi được thông tin. Vui lòng thử lại sau.");
+
+
 
     } finally {
 
+
+
       setInterestSubmitting(false);
 
+
+
     }
+
+
 
   };
 
@@ -810,10 +583,6 @@ export default function MysteryJackpotDeals() {
 
 
       setError("");
-
-
-
-
 
 
 
@@ -837,15 +606,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
       if (dealError) throw dealError;
-
-
-
-
 
 
 
@@ -865,15 +626,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
       const dealIds = dealRows.map((deal) => deal.id);
-
-
-
-
 
 
 
@@ -901,15 +654,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
       if (itemError) throw itemError;
-
-
-
-
 
 
 
@@ -925,15 +670,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
       let productRows: Product[] = [];
-
-
-
-
 
 
 
@@ -957,15 +694,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
         if (productError) throw productError;
-
-
-
-
 
 
 
@@ -974,10 +703,6 @@ export default function MysteryJackpotDeals() {
 
 
       }
-
-
-
-
 
 
 
@@ -990,10 +715,6 @@ export default function MysteryJackpotDeals() {
 
 
       );
-
-
-
-
 
 
 
@@ -1013,10 +734,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
           const product = productMap.get(item.product_id);
 
 
@@ -1033,10 +750,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
       setDeals(result);
 
 
@@ -1046,10 +759,6 @@ export default function MysteryJackpotDeals() {
 
 
       console.error("[Mystery Jackpot] LOAD ERROR:", err);
-
-
-
-
 
 
 
@@ -1073,10 +782,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
       setDeals([]);
 
 
@@ -1097,19 +802,11 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
   useEffect(() => {
 
 
 
     void loadDeals();
-
-
-
-
 
 
 
@@ -1125,10 +822,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
     const clockInterval = window.setInterval(() => {
 
 
@@ -1138,10 +831,6 @@ export default function MysteryJackpotDeals() {
 
 
     }, 1000);
-
-
-
-
 
 
 
@@ -1165,10 +854,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
   const visibleDeals = deals.filter((deal) => {
 
 
@@ -1178,10 +863,6 @@ export default function MysteryJackpotDeals() {
 
 
     const end = new Date(deal.end_at).getTime();
-
-
-
-
 
 
 
@@ -1213,10 +894,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
   function updateSliderMetrics(dealId: string) {
 
 
@@ -1226,10 +903,6 @@ export default function MysteryJackpotDeals() {
 
 
     if (!element) return;
-
-
-
-
 
 
 
@@ -1246,10 +919,6 @@ export default function MysteryJackpotDeals() {
 
 
     }));
-
-
-
-
 
 
 
@@ -1285,10 +954,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
   function moveSlider(dealId: string, direction: -1 | 1) {
 
 
@@ -1298,10 +963,6 @@ export default function MysteryJackpotDeals() {
 
 
     if (!element) return;
-
-
-
-
 
 
 
@@ -1318,10 +979,6 @@ export default function MysteryJackpotDeals() {
 
 
       : element.clientWidth * 0.8;
-
-
-
-
 
 
 
@@ -1342,10 +999,6 @@ export default function MysteryJackpotDeals() {
 
 
   }
-
-
-
-
 
 
 
@@ -1385,10 +1038,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
   if (error) {
 
 
@@ -1425,15 +1074,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
   if (visibleDeals.length === 0) return null;
-
-
-
-
 
 
 
@@ -1443,9 +1084,15 @@ export default function MysteryJackpotDeals() {
 
     <section
 
+
+
   id="mystery-jackpot-deals"
 
-  className="container-x py-5 sm:py-8 scroll-mt-4"
+
+
+  className="container-x scroll-mt-4 py-5 sm:py-7"
+
+
 
 >
 
@@ -1464,10 +1111,6 @@ export default function MysteryJackpotDeals() {
 
 
         const isUpcoming = now < start;
-
-
-
-
 
 
 
@@ -1495,10 +1138,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
         return (
 
 
@@ -1511,7 +1150,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-            className="relative mb-6 overflow-hidden rounded-2xl border border-[#E7D6C4] bg-[#FBF7F1] shadow-[0_8px_30px_rgba(70,45,25,0.06)] sm:mb-8 sm:rounded-3xl"
+            className="relative mb-5 sm:mb-7"
 
 
 
@@ -1519,171 +1158,33 @@ export default function MysteryJackpotDeals() {
 
 
 
-            {/* Họa tiết trang trí toàn bộ layer */}
-
-
-
-            <div
-
-
-
-              aria-hidden="true"
-
-
-
-              className="pointer-events-none absolute inset-0 opacity-[0.18]"
-
-
-
-              style={{
-
-
-
-                backgroundImage:
-
-
-
-                  "radial-gradient(circle at 1px 1px, #B8754D 1px, transparent 0)",
-
-
-
-                backgroundSize: "22px 22px",
-
-
-
-                maskImage:
-
-
-
-                  "linear-gradient(to bottom, black, transparent 75%)",
-
-
-
-              }}
-
-
-
-            />
-
-
-
-
-
-
-
-            <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border border-[#FF4D00]/10" />
-
-
-
-            <div className="pointer-events-none absolute -right-8 -top-12 h-40 w-40 rounded-full border border-[#FF4D00]/10" />
-
-
-
-
-
-
-
             {/* Header */}
 
 
 
-            <div className="relative grid gap-5 border-b border-[#E9D8C5] p-4 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_minmax(320px,0.85fr)] lg:items-center lg:p-7">
+            <div className="relative grid gap-4 pb-4 sm:gap-6 sm:pb-6 lg:grid-cols-[1fr_minmax(320px,0.85fr)] lg:items-center lg:pb-7">
 
 
 
               <div className="min-w-0">
 
+                <div className="flex items-start justify-between gap-3">
+                  <h2 className="mt-1 min-w-0 flex-1 text-2xl font-semibold leading-tight tracking-[-0.035em] text-[#30251E] sm:text-3xl lg:text-[32px]">
+                    {deal.title}
+                  </h2>
 
-
-                <div className="flex items-center gap-2">
-
-
-
-                  <span className="h-2 w-2 rounded-full bg-[#FF4D00]" />
-
-
-
-                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#FF4D00] sm:text-[10px]">
-
-
-
-                    Olive Living · Mystery Deals
-
-
-
-                  </p>
-
-
-
+                  <span className={`mt-1 inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-semibold sm:text-xs ${isUpcoming ? "bg-[#F3F0EA] text-[#75695E]" : "bg-[#FFF0E8] text-[#E94B08]"}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${isUpcoming ? "bg-[#A69A8F]" : "bg-[#FF4D00] animate-pulse"}`} />
+                    {isUpcoming ? "Sắp mở bán" : "Đang diễn ra"}
+                  </span>
                 </div>
 
-
-
-
-
-
-
-                <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-[#30251E] sm:text-3xl lg:text-[34px]">
-
-
-
-                  {deal.title}
-
-
-
-                </h2>
-
-
-
-
-
-
-
                 {deal.description && (
-
-
-
-                  <p className="mt-2 max-w-md text-xs leading-5 text-[#78695C] sm:text-sm sm:leading-6">
-
-
-
+                  <p className="mt-3 max-w-md text-xs leading-5 text-[#77736C] sm:text-sm sm:leading-6">
                     {deal.description}
-
-
-
                   </p>
-
-
-
                 )}
-
-
-
-
-
-
-
-                <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FF4D00]/10 bg-[#FF4D00]/10 px-3 py-1.5 text-[10px] font-semibold text-[#C3420B] sm:text-xs">
-
-
-
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D00]" />
-
-
-
-                  {isUpcoming ? "Sắp mở bán" : "Đang diễn ra"}
-
-
-
-                </span>
-
-
-
               </div>
-
-
-
-
 
 
 
@@ -1692,46 +1193,6 @@ export default function MysteryJackpotDeals() {
 
 
               <div className="relative min-w-0">
-
-
-
-                <div className="mb-2 flex items-center justify-between gap-2">
-
-
-
-                  <p className="text-xs font-semibold text-[#78695C] sm:text-sm">
-
-
-
-                    {isUpcoming ? "Bắt đầu sau" : "Kết thúc sau"}
-
-
-
-                  </p>
-
-
-
-
-
-
-
-                  <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#B8754D] sm:text-[10px]">
-
-
-
-                    Limited time
-
-
-
-                  </span>
-
-
-
-                </div>
-
-
-
-
 
 
 
@@ -1756,222 +1217,6 @@ export default function MysteryJackpotDeals() {
 
 
             </div>
-
-
-
-
-
-
-
-            {/* Thanh điều hướng */}
-
-
-
-            <div className="relative flex items-center justify-between gap-3 px-4 pt-4 sm:px-5 sm:pt-5">
-
-
-
-              <p className="text-xs font-semibold text-[#78695C] sm:text-sm">
-
-
-
-                {isUpcoming ? "Khám phá bí mật" : "Ưu đãi giới hạn"}
-
-
-
-              </p>
-
-
-
-
-
-
-
-              <div className="flex gap-2">
-
-
-
-                <button
-
-
-
-                  type="button"
-
-
-
-                  aria-label="Sản phẩm trước"
-
-
-
-                  disabled={!canGoBack}
-
-
-
-                  onClick={() => moveSlider(deal.id, -1)}
-
-
-
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E4CDB8] bg-white text-[#FF4D00] transition hover:border-[#FF4D00] hover:bg-[#FFF0E5] disabled:cursor-not-allowed disabled:opacity-30"
-
-
-
-                >
-
-
-
-                  <svg
-
-
-
-                    viewBox="0 0 24 24"
-
-
-
-                    className="h-4 w-4"
-
-
-
-                    fill="none"
-
-
-
-                    stroke="currentColor"
-
-
-
-                    strokeWidth="2"
-
-
-
-                  >
-
-
-
-                    <path
-
-
-
-                      d="m15 18-6-6 6-6"
-
-
-
-                      strokeLinecap="round"
-
-
-
-                      strokeLinejoin="round"
-
-
-
-                    />
-
-
-
-                  </svg>
-
-
-
-                </button>
-
-
-
-
-
-
-
-                <button
-
-
-
-                  type="button"
-
-
-
-                  aria-label="Sản phẩm tiếp theo"
-
-
-
-                  disabled={!canGoForward}
-
-
-
-                  onClick={() => moveSlider(deal.id, 1)}
-
-
-
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF4D00] text-white shadow-sm transition hover:bg-[#E84600] disabled:cursor-not-allowed disabled:opacity-30"
-
-
-
-                >
-
-
-
-                  <svg
-
-
-
-                    viewBox="0 0 24 24"
-
-
-
-                    className="h-4 w-4"
-
-
-
-                    fill="none"
-
-
-
-                    stroke="currentColor"
-
-
-
-                    strokeWidth="2"
-
-
-
-                  >
-
-
-
-                    <path
-
-
-
-                      d="m9 18 6-6-6-6"
-
-
-
-                      strokeLinecap="round"
-
-
-
-                      strokeLinejoin="round"
-
-
-
-                    />
-
-
-
-                  </svg>
-
-
-
-                </button>
-
-
-
-              </div>
-
-
-
-            </div>
-
-
-
-
 
 
 
@@ -2003,7 +1248,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-              className="no-scrollbar relative flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain p-4 sm:gap-4 sm:px-5 sm:pb-6"
+              className="no-scrollbar relative flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain p-4 pb-5 sm:gap-4 sm:px-5 sm:pb-6"
 
 
 
@@ -2051,10 +1296,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
                 const quota = Math.max(0, Number(item.quota) || 0);
 
 
@@ -2075,10 +1316,6 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
                 return (
 
 
@@ -2095,7 +1332,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-                    className="w-[160px] flex-none snap-start overflow-hidden rounded-xl border border-transparent bg-transparent shadow-none backdrop-blur-none sm:w-[205px] sm:rounded-2xl lg:w-[220px]"
+                    className="w-[188px] flex-none snap-start overflow-hidden bg-transparent sm:w-[228px] lg:w-[248px]"
 
 
 
@@ -2115,21 +1352,29 @@ export default function MysteryJackpotDeals() {
 
 
 
+                        <div className="flex min-h-[124px] flex-col bg-white p-3 sm:min-h-[138px] sm:p-4">
 
 
-
-
-                        <div className="flex min-h-[132px] flex-col bg-white/25 p-3 sm:min-h-[145px] sm:p-4">
 
                           <div className="flex items-center gap-2">
 
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D00] shadow-[0_0_8px_rgba(255,77,0,0.45)]" />
+
+
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#FF4D00]" />
+
+
 
                             <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#9A8171] sm:text-[10px]">
 
+
+
                               Mystery drop
 
+
+
                             </span>
+
+
 
                           </div>
 
@@ -2137,7 +1382,11 @@ export default function MysteryJackpotDeals() {
 
                           <h3 className="mt-2 text-[13px] font-semibold leading-snug text-[#30251E] sm:text-sm">
 
+
+
                             Sản phẩm bí mật
+
+
 
                           </h3>
 
@@ -2145,51 +1394,99 @@ export default function MysteryJackpotDeals() {
 
                           <div className="mt-auto flex items-end justify-between gap-2 border-t border-white/70 pt-3">
 
+
+
                             <div className="min-w-0">
+
+
 
                               <p className="text-[9px] font-medium text-[#8A7B6D] sm:text-[10px]">Giá khi mở bán</p>
 
+
+
                               <p className="mt-0.5 text-xl font-extrabold leading-none tracking-tight text-[#FF4D00] sm:text-2xl">
+
+
 
                                 ???
 
+
+
                               </p>
+
+
 
                             </div>
 
+
+
                             <span className="mb-0.5 shrink-0 rounded-md bg-[#FF4D00] px-2 py-1.5 text-[10px] font-extrabold leading-none text-white sm:text-xs">
+
+
 
                               -25%
 
+
+
                             </span>
+
+
 
                           </div>
 
+
+
                           <button
+
+
 
                             type="button"
 
+
+
                             onClick={() => {
+
+
 
                               setInterestTarget({ dealId: deal.id, itemId: item.id });
 
+
+
                               setInterestName("");
+
+
 
                               setInterestPhone("");
 
+
+
                               setInterestError("");
+
+
 
                               setInterestSuccess(false);
 
+
+
                             }}
 
-                            className="mt-3 flex min-h-10 w-full items-center justify-center rounded-full bg-[#FF4D00] px-3 py-2 text-xs font-bold text-white shadow-[0_4px_12px_rgba(255,77,0,0.18)] transition hover:bg-[#E84600] active:scale-[0.98] sm:text-sm"
+
+
+                            className="mt-3 flex min-h-9 w-full items-center justify-center rounded-full bg-[#FF4D00] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#E84600] active:scale-[0.98] sm:text-sm"
+
+
 
                           >
 
+
+
                             Quan tâm
 
+
+
                           </button>
+
+
 
                         </div>
 
@@ -2223,7 +1520,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-                          <div className="relative aspect-square overflow-hidden bg-[#F0E7DC]">
+                          <div className="relative aspect-square overflow-hidden rounded-lg bg-[#F3F0EA]">
 
 
 
@@ -2275,11 +1572,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
-                            <span className="absolute left-2 top-2 rounded-full bg-[#FF4D00] px-2 py-1 text-[10px] font-bold text-white">
+                            <span className="absolute left-2 top-2 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-[#FF4D00]">
 
 
 
@@ -2295,11 +1588,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
-                          <div className="p-3">
+                          <div className="p-3 sm:p-3.5">
 
 
 
@@ -2315,11 +1604,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
-                            <p className="mt-2 text-sm font-bold text-[#FF4D00] sm:text-base">
+                            <p className="mt-2 text-sm font-semibold text-[#FF4D00] sm:text-base">
 
 
 
@@ -2328,10 +1613,6 @@ export default function MysteryJackpotDeals() {
 
 
                             </p>
-
-
-
-
 
 
 
@@ -2344,10 +1625,25 @@ export default function MysteryJackpotDeals() {
 
 
                             </p>
+
+
+
                             {originalPrice > salePrice && (
+
+
+
                               <p className="mt-1 text-[9px] font-semibold leading-4 text-emerald-700 sm:text-[10px]">
+
+
+
                                 Tiết kiệm {formatPrice(originalPrice - salePrice)}
+
+
+
                               </p>
+
+
+
                             )}
 
 
@@ -2360,15 +1656,11 @@ export default function MysteryJackpotDeals() {
 
 
 
+                        <div className="px-3.5 pb-3.5 sm:px-4 sm:pb-4">
 
 
 
-
-                        <div className="px-3 pb-3">
-
-
-
-                          <div className="h-1.5 overflow-hidden rounded-full bg-[#F0EBE5]">
+                          <div className="h-1 overflow-hidden rounded-full bg-[#EEECE7]">
 
 
 
@@ -2376,7 +1668,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-                              className="h-full rounded-full bg-[#FF4D00] transition-all"
+                              className="h-full rounded-full bg-[#FF4D00] transition-all duration-300"
 
 
 
@@ -2392,11 +1684,7 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
-                          <p className="mt-2 text-[10px] text-[#8A7B6D] sm:text-xs">
+                          <p className="mt-2 text-[10px] leading-4 text-[#8A7B6D] sm:text-xs">
 
 
 
@@ -2414,26 +1702,88 @@ export default function MysteryJackpotDeals() {
 
                           </p>
 
-                          <div className="mt-3 grid grid-cols-[minmax(0,1fr)_38px] gap-2">
+
+
+                          <div className="mt-3 grid grid-cols-[minmax(0,1fr)_38px] items-center gap-2">
+
+
+
                             <button
+
+
+
                               type="button"
+
+
+
                               disabled={remaining <= 0}
+
+
+
                               onClick={() => handleBuyNow(item, isUpcoming, now >= new Date(deal.end_at).getTime())}
-                              className="flex min-h-9 min-w-0 items-center justify-center gap-1 rounded-full bg-[#FF4D00] px-2 text-[10px] font-semibold text-white transition hover:bg-[#E84600] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs"
+
+
+
+                              className="flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-lg bg-[#FF4D00] px-2.5 text-[11px] font-semibold text-white transition-colors duration-150 hover:bg-[#E84600] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs"
+
+
+
                             >
+
+
+
                               <Zap size={12} className="shrink-0" aria-hidden="true" />
+
+
+
                               <span className="truncate">Mua ngay</span>
+
+
+
                             </button>
+
+
+
                             <button
+
+
+
                               type="button"
+
+
+
                               disabled={remaining <= 0}
+
+
+
                               aria-label={`Thêm ${item.product.name} vào giỏ hàng`}
+
+
+
                               title="Thêm vào giỏ hàng"
+
+
+
                               onClick={() => handleAddToCart(item, salePrice, isUpcoming, now >= new Date(deal.end_at).getTime())}
-                              className="flex min-h-9 items-center justify-center rounded-full border border-[#E4CDB8] bg-white text-[#30251E] transition hover:border-[#FF4D00] hover:text-[#FF4D00] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+
+
+
+                              className="flex h-9 w-[38px] items-center justify-center rounded-lg bg-[#F4F1EC] text-[#5F554D] transition-colors duration-150 hover:bg-[#FFF0E7] hover:text-[#FF4D00] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+
+
+
                             >
-                              <ShoppingCart size={15} aria-hidden="true" />
+
+
+
+                              <ShoppingCart size={16} strokeWidth={1.8} aria-hidden="true" />
+
+
+
                             </button>
+
+
+
                           </div>
 
 
@@ -2462,6 +1812,20 @@ export default function MysteryJackpotDeals() {
 
 
 
+
+
+              <button
+                type="button"
+                aria-label="Sản phẩm tiếp theo"
+                disabled={!canGoForward}
+                onClick={() => moveSlider(deal.id, 1)}
+                className="sticky right-2 top-1/2 z-20 -mr-1 ml-[-36px] flex h-7 w-7 flex-none -translate-y-[calc(50%+10px)] items-center justify-center self-center rounded-full border border-white/80 bg-white/80 text-[#625D55] shadow-sm backdrop-blur-sm transition hover:bg-white/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25"
+              >
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m9 18 6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
             </div>
 
 
@@ -2478,113 +1842,213 @@ export default function MysteryJackpotDeals() {
 
 
 
-
-
-
-
       {interestTarget && (
+
+
 
         <div
 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#24170F]/55 p-4 backdrop-blur-sm"
+
+
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#24211D]/45 p-4 backdrop-blur-sm"
+
+
 
           onMouseDown={(event) => {
 
+
+
             if (event.target === event.currentTarget && !interestSubmitting) setInterestTarget(null);
+
+
 
           }}
 
+
+
         >
+
+
 
           <div
 
+
+
             role="dialog"
+
+
 
             aria-modal="true"
 
+
+
             aria-labelledby="mystery-interest-title"
 
-            className="relative w-full max-w-md rounded-3xl border border-white/70 bg-[#FFFCF8] p-5 shadow-[0_24px_80px_rgba(35,20,10,0.25)] sm:p-7"
+
+
+            className="relative w-full max-w-md rounded-2xl border border-[#EAE7E1] bg-white p-5 shadow-[0_16px_48px_rgba(30,25,20,0.14)] sm:p-7"
+
+
 
           >
 
+
+
             <button
+
+
 
               type="button"
 
+
+
               aria-label="Đóng biểu mẫu"
+
+
 
               onClick={() => !interestSubmitting && setInterestTarget(null)}
 
+
+
               className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-[#F4EAE0] text-lg text-[#6D5544] transition hover:bg-[#EBD9C8]"
+
+
 
             >
 
+
+
               ×
+
+
 
             </button>
 
+
+
             {interestSuccess ? (
+
+
 
               <div className="py-5 text-center">
 
+
+
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FFF0E7] text-2xl font-bold text-[#FF4D00]">✓</div>
+
+
 
                 <h3 className="mt-4 text-xl font-bold text-[#30251E]">Đã ghi nhận quan tâm!</h3>
 
+
+
                 <p className="mt-2 text-sm leading-6 text-[#8A7B6D]">Olive Living sẽ liên hệ khi sản phẩm bí mật sắp mở bán.</p>
+
+
 
                 <button type="button" onClick={() => setInterestTarget(null)} className="mt-6 min-h-11 w-full rounded-full bg-[#FF4D00] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#E84600]">Đóng</button>
 
+
+
               </div>
+
+
 
             ) : (
 
+
+
               <>
+
+
 
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF4D00]">Mystery Jackpot Deals</p>
 
+
+
                 <h3 id="mystery-interest-title" className="mt-2 pr-8 text-2xl font-bold tracking-tight text-[#30251E]">Đừng bỏ lỡ ưu đãi</h3>
+
+
 
                 <p className="mt-2 text-sm leading-6 text-[#8A7B6D]">Để lại thông tin, Olive Living sẽ báo bạn khi sản phẩm bí mật mở bán với ưu đãi giảm 25%.</p>
 
+
+
                 <form onSubmit={submitInterest} className="mt-6 space-y-4">
 
+
+
                   <div>
+
+
 
                     <label htmlFor="mystery-customer-name" className="mb-1.5 block text-xs font-semibold text-[#5F4A3A]">Họ và tên</label>
 
+
+
                     <input id="mystery-customer-name" autoComplete="name" required maxLength={100} value={interestName} onChange={(event) => setInterestName(event.target.value)} placeholder="Nhập tên của bạn" className="min-h-12 w-full rounded-xl border border-[#E8D8C8] bg-white px-4 text-sm text-[#30251E] outline-none transition placeholder:text-[#B3A397] focus:border-[#FF4D00] focus:ring-4 focus:ring-[#FF4D00]/10" />
 
+
+
                   </div>
+
+
 
                   <div>
 
+
+
                     <label htmlFor="mystery-customer-phone" className="mb-1.5 block text-xs font-semibold text-[#5F4A3A]">Số điện thoại</label>
+
+
 
                     <input id="mystery-customer-phone" type="tel" autoComplete="tel" inputMode="tel" required maxLength={20} value={interestPhone} onChange={(event) => setInterestPhone(event.target.value)} placeholder="Ví dụ: 0901234567" className="min-h-12 w-full rounded-xl border border-[#E8D8C8] bg-white px-4 text-sm text-[#30251E] outline-none transition placeholder:text-[#B3A397] focus:border-[#FF4D00] focus:ring-4 focus:ring-[#FF4D00]/10" />
 
+
+
                   </div>
+
+
 
                   {interestError && <p role="alert" className="text-xs leading-5 text-red-600">{interestError}</p>}
 
+
+
                   <button type="submit" disabled={interestSubmitting} className="flex min-h-12 w-full items-center justify-center rounded-full bg-[#FF4D00] px-4 py-3 text-sm font-bold text-white shadow-[0_6px_18px_rgba(255,77,0,0.22)] transition hover:bg-[#E84600] disabled:cursor-not-allowed disabled:opacity-60">
+
+
 
                     {interestSubmitting ? "Đang gửi..." : "Gửi thông tin"}
 
+
+
                   </button>
+
+
 
                   <p className="text-center text-[10px] leading-4 text-[#A39487]">Thông tin chỉ được dùng để liên hệ về chương trình này.</p>
 
+
+
                 </form>
+
+
 
               </>
 
+
+
             )}
+
+
 
           </div>
 
+
+
         </div>
+
+
 
       )}
 
@@ -2592,9 +2056,15 @@ export default function MysteryJackpotDeals() {
 
       <style>{`
 
+
+
         .no-scrollbar::-webkit-scrollbar {
 
+
+
           display: none;
+
+
 
         }
 
@@ -2602,11 +2072,19 @@ export default function MysteryJackpotDeals() {
 
         .mystery-question-orb {
 
+
+
           isolation: isolate;
+
+
 
           animation: mystery-float 2.8s ease-in-out infinite;
 
+
+
           will-change: transform;
+
+
 
         }
 
@@ -2614,19 +2092,35 @@ export default function MysteryJackpotDeals() {
 
         .mystery-question-orb::before {
 
+
+
           content: "";
+
+
 
           position: absolute;
 
+
+
           inset: -9px;
+
+
 
           border: 1px solid rgba(255, 77, 0, 0.34);
 
+
+
           border-radius: 9999px;
+
+
 
           pointer-events: none;
 
+
+
           animation: mystery-ring 7s linear infinite;
+
+
 
         }
 
@@ -2634,23 +2128,43 @@ export default function MysteryJackpotDeals() {
 
         .mystery-question-orb::after {
 
+
+
           content: "";
+
+
 
           position: absolute;
 
+
+
           inset: -4px;
+
+
 
           border-radius: 9999px;
 
+
+
           background: rgba(255, 77, 0, 0.18);
+
+
 
           filter: blur(12px);
 
+
+
           z-index: -1;
+
+
 
           pointer-events: none;
 
+
+
           animation: mystery-glow 2.4s ease-in-out infinite;
+
+
 
         }
 
@@ -2658,11 +2172,19 @@ export default function MysteryJackpotDeals() {
 
         .mystery-question-mark {
 
+
+
           transform-origin: center;
+
+
 
           animation: mystery-bounce 2.8s ease-in-out infinite;
 
+
+
           text-shadow: 0 2px 14px rgba(255, 255, 255, 0.2);
+
+
 
         }
 
@@ -2670,9 +2192,15 @@ export default function MysteryJackpotDeals() {
 
         @keyframes mystery-float {
 
+
+
           0%, 100% { transform: translateY(0); }
 
+
+
           50% { transform: translateY(-4px); }
+
+
 
         }
 
@@ -2680,11 +2208,19 @@ export default function MysteryJackpotDeals() {
 
         @keyframes mystery-bounce {
 
+
+
           0%, 100% { transform: scale(1) rotate(0deg); }
+
+
 
           42% { transform: scale(1.08) rotate(-3deg); }
 
+
+
           58% { transform: scale(1.04) rotate(3deg); }
+
+
 
         }
 
@@ -2692,9 +2228,15 @@ export default function MysteryJackpotDeals() {
 
         @keyframes mystery-ring {
 
+
+
           from { transform: rotate(0deg); }
 
+
+
           to { transform: rotate(360deg); }
+
+
 
         }
 
@@ -2702,9 +2244,15 @@ export default function MysteryJackpotDeals() {
 
         @keyframes mystery-glow {
 
+
+
           0%, 100% { opacity: 0.35; transform: scale(0.96); }
 
+
+
           50% { opacity: 0.8; transform: scale(1.06); }
+
+
 
         }
 
@@ -2712,19 +2260,35 @@ export default function MysteryJackpotDeals() {
 
         @media (prefers-reduced-motion: reduce) {
 
+
+
           .mystery-question-orb,
+
+
 
           .mystery-question-orb::before,
 
+
+
           .mystery-question-orb::after,
+
+
 
           .mystery-question-mark {
 
+
+
             animation: none !important;
+
+
 
           }
 
+
+
         }
+
+
 
       `}</style>
 

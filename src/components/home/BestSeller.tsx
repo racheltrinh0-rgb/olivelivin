@@ -2,13 +2,16 @@ import React, { useRef } from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  Flame,
+  Heart,
 } from "lucide-react";
-import HomeProductCard from "./HomeProductCard";
+import { Link } from "@tanstack/react-router";
 
 type BestSellerProps = {
   products?: any[];
 };
+
+const formatVND = (price: number) =>
+  `${new Intl.NumberFormat("vi-VN").format(price)}₫`;
 
 /**
  * ============================================================
@@ -218,79 +221,35 @@ export default function BestSeller({
         {/* =====================================================
             SECTION HEADER
         ===================================================== */}
-        <div className="mb-7">
-          <div className="mb-3 inline-flex items-center rounded-full bg-[#FBF7F1] px-3 py-1.5">
-            <Flame
-              className="mr-1.5 h-3 w-3 text-[#C46E3E]"
-              strokeWidth={2}
-            />
-
-            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#B66A3C]">
-              Top Selling
+        <div className="mb-7 sm:mb-8">
+          {/* EDITORIAL EYEBROW */}
+          <div className="mb-3 inline-flex items-center gap-2">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-[#F8F2EB]">
+              <Heart className="h-3.5 w-3.5 text-[#A97956]" strokeWidth={1.7} />
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#A18F7E] sm:text-[11px]">
+              The Olive Edit
+            </span>
+            <span className="h-px w-8 bg-[#DED3C7]" />
+            <span className="text-[9px] uppercase tracking-[0.14em] text-[#B3A79B]">
+              Customer favorites
             </span>
           </div>
 
-          <div className="flex items-end justify-between gap-5">
-            <div>
-              <h2 className="font-serif text-[28px] font-medium leading-tight tracking-[-0.02em] text-[#292722] sm:text-[32px]">
-                Most Loved
+          <div className="flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="font-serif text-[30px] font-normal leading-[1.08] tracking-[-0.035em] text-[#292621] sm:text-[36px]">
+                Most Loved<span className="text-[#B98561]">.</span>
               </h2>
 
-              <p className="mt-2 max-w-[680px] text-[13px] leading-5 text-[#77736C]">
-                The pieces everyone’s talking about.
+              <p className="mt-2.5 max-w-[420px] text-[13px] leading-[1.65] text-[#81786F] sm:text-sm">
+                Thoughtfully chosen pieces, made to feel at home.
               </p>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-
-                {/* CUSTOMER FAVORITE */}
-                <span className="inline-flex items-center rounded-full bg-[#FBF7F1] px-3 py-1.5 text-[11px] font-medium text-[#B66A3C]">
-                  <span className="mr-1.5 text-[10px]">
-                    ⭐
-                  </span>
-
-                  Khách hàng yêu thích
-                </span>
-
-                {/* UPDATE */}
-                <span className="inline-flex items-center rounded-full bg-[#F7F6F3] px-3 py-1.5 text-[11px] text-[#77736C]">
-                  Cập nhật mỗi tuần
-                </span>
+              <div className="mt-3.5 inline-flex items-center gap-2 text-[11px] text-[#8D7B6B]">
+                <Heart className="h-3.5 w-3.5 text-[#B98561]" strokeWidth={1.7} />
+                <span>Được khách hàng yêu thích</span>
               </div>
-            </div>
-
-            {/* =================================================
-                DESKTOP NAVIGATION
-            ================================================= */}
-            <div className="hidden shrink-0 items-center gap-2 sm:flex">
-
-              <button
-                type="button"
-                onClick={() =>
-                  scroll("left")
-                }
-                aria-label="Xem sản phẩm trước"
-                className="grid h-9 w-9 place-items-center rounded-full border border-[#E4DED5] bg-white text-[#5D5A54] transition-colors hover:bg-[#F8F6F2]"
-              >
-                <ChevronLeft
-                  className="h-4 w-4"
-                  strokeWidth={1.7}
-                />
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  scroll("right")
-                }
-                aria-label="Xem sản phẩm tiếp theo"
-                className="grid h-9 w-9 place-items-center rounded-full border border-[#E4DED5] bg-white text-[#5D5A54] transition-colors hover:bg-[#F8F6F2]"
-              >
-                <ChevronRight
-                  className="h-4 w-4"
-                  strokeWidth={1.7}
-                />
-              </button>
-
             </div>
           </div>
         </div>
@@ -298,7 +257,7 @@ export default function BestSeller({
         {/* =====================================================
             DIVIDER
         ===================================================== */}
-        <div className="mb-7 h-px w-full bg-[#EAE6DF]" />
+        <div className="mb-6 h-px w-full bg-[#F0ECE6] sm:mb-7" />
 
         {/* =====================================================
             PRODUCT CAROUSEL
@@ -348,55 +307,107 @@ export default function BestSeller({
                       PRODUCT CARD
                       socialProof đã được inject vào product
                   ================================================= */}
-                  <HomeProductCard
-                    product={product}
-                  />
+                  <article
+                    className="
+                      group relative isolate h-full
+                      overflow-hidden rounded-[22px]
+                      border border-[#EAE7E2]
+                      bg-white
+                      shadow-[0_3px_14px_rgba(35,30,25,0.10)]
+                      transition-all duration-300
+                      hover:-translate-y-1
+                      hover:shadow-[0_8px_24px_rgba(35,30,25,0.15)]
+                    "
+                  >
+                    <Link
+                      to="/products/$slug"
+                      params={{ slug: product.slug }}
+                      className="block h-full"
+                    >
+                      <div className="relative aspect-[4/5] overflow-hidden rounded-t-[21px] bg-[#F5F3EF]">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name ?? "Product"}
+                            loading="lazy"
+                            className="
+                              h-full w-full object-cover
+                              transition-transform duration-500
+                              group-hover:scale-[1.03]
+                            "
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-xs text-[#A49A90]">
+                            Chưa có hình ảnh
+                          </div>
+                        )}
+
+                        {Number(product.compare_at_price ?? 0) > Number(product.price ?? 0) &&
+                          Number(product.price ?? 0) > 0 && (
+                            <span className="absolute left-3 top-3 rounded-full bg-[#FF4D00] px-2.5 py-1 text-[10px] font-semibold text-white">
+                              SALE
+                            </span>
+                          )}
+
+                        <span
+                          className="
+                            absolute bottom-3 left-3 right-3
+                            flex items-center justify-center
+                            rounded-full border border-white/70
+                            bg-white/75 px-3 py-2.5
+                            text-xs font-medium text-[#292621]
+                            shadow-[0_2px_10px_rgba(0,0,0,0.06)]
+                            backdrop-blur-md
+                            transition-colors duration-200
+                            group-hover:bg-white/90
+                            sm:bottom-4 sm:left-4 sm:right-4
+                          "
+                        >
+                          Xem sản phẩm
+                        </span>
+                      </div>
+
+                      <div className="flex min-h-[108px] flex-col p-3.5 sm:min-h-[120px] sm:p-4">
+                        <h3 className="line-clamp-2 text-[12px] font-medium leading-[1.6] text-[#39342F] sm:text-sm">
+                          {product.name}
+                        </h3>
+
+                        <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-3">
+                          {Number(product.price ?? 0) > 0 ? (
+                            <span className="text-[13px] font-semibold text-[#39342F] sm:text-sm">
+                              {formatVND(Number(product.price))}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[#8A8178]">Liên hệ</span>
+                          )}
+
+                          {Number(product.compare_at_price ?? 0) > Number(product.price ?? 0) && (
+                            <span className="text-[10px] text-[#A49A90] line-through sm:text-xs">
+                              {formatVND(Number(product.compare_at_price))}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  </article>
 
                 </div>
               )
             )}
 
           </div>
-        </div>
 
-        {/* =====================================================
-            MOBILE NAVIGATION
-        ===================================================== */}
-        <div className="mt-5 flex items-center justify-center gap-2 sm:hidden">
-
+          {/* Single subtle glass next button, balanced against the product cards */}
           <button
             type="button"
-            onClick={() =>
-              scroll("left")
-            }
-            aria-label="Xem sản phẩm trước"
-            className="grid h-9 w-9 place-items-center rounded-full border border-[#E4DED5] bg-white text-[#5D5A54] transition-colors hover:bg-[#F8F6F2]"
-          >
-            <ChevronLeft
-              className="h-4 w-4"
-              strokeWidth={1.7}
-            />
-          </button>
-
-          <span className="px-2 text-[11px] text-[#8A857D]">
-            Vuốt để xem thêm
-          </span>
-
-          <button
-            type="button"
-            onClick={() =>
-              scroll("right")
-            }
+            onClick={() => scroll("right")}
             aria-label="Xem sản phẩm tiếp theo"
-            className="grid h-9 w-9 place-items-center rounded-full border border-[#E4DED5] bg-white text-[#5D5A54] transition-colors hover:bg-[#F8F6F2]"
+            className="absolute right-2 top-[42%] z-20 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full border border-white/35 bg-white/35 text-[#39342F]/75 shadow-[0_1px_5px_rgba(0,0,0,0.06)] backdrop-blur-sm transition-all duration-200 hover:bg-white/55 active:scale-95 sm:right-3 sm:h-8 sm:w-8"
           >
-            <ChevronRight
-              className="h-4 w-4"
-              strokeWidth={1.7}
-            />
+            <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.6} />
           </button>
-
         </div>
+
 
       </div>
     </section>

@@ -1232,20 +1232,27 @@ useEffect(() => {
 
 
 function addToCart() {
+  // Cart thumbnails must use a still image, never the currently selected video.
+  const selectedImageIsVideo =
+    Boolean(selectedImage) &&
+    (
+      selectedMedia?.image_type === "video" ||
+      /\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(selectedImage)
+    );
 
+  const firstProductStillImage = (product.product_images ?? []).find(
+    (item: any) =>
+      item?.image_url &&
+      item?.image_type !== "video" &&
+      !/\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(item.image_url),
+  )?.image_url;
 
-
-const image =
-
-  selectedImage ||
-
-  selectedColor?.image_url ||
-
-  product.image_url ||
-
-  product.product_images?.[0]?.image_url ||
-
-  null;
+  const image =
+    (selectedImage && !selectedImageIsVideo ? selectedImage : null) ||
+    selectedColor?.image_url ||
+    product.image_url ||
+    firstProductStillImage ||
+    null;
 
 
 

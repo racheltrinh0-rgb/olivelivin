@@ -73,6 +73,7 @@ function CartPage() {
   const cart = useCart();
 
   const [items, setItems] = useState<PageCartItem[]>([]);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const [mounted, setMounted] = useState(false);
 
   const [vouchers, setVouchers] = useState<CartVoucher[]>([]);
@@ -361,15 +362,31 @@ function CartPage() {
                         params={{ id: product.id }}
                         className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[16px] bg-[linear-gradient(145deg,#E9EDE2_0%,#F5E7D9_52%,#F8F4ED_100%)] ring-1 ring-inset ring-[#D9DFD0] transition-transform duration-300 group-hover:scale-[1.015] sm:h-32 sm:w-32"
                       >
-                        <img
-                          src={
-                            product.image ||
-                            product.image_url ||
-                            "/placeholder.png"
-                          }
-                          alt={product.name}
-                          className="h-full w-full object-contain p-1.5 mix-blend-multiply drop-shadow-[0_5px_7px_rgba(54,50,40,0.12)] sm:p-2"
-                        />
+                        {product.image && !failedImages[product.id] ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            loading="lazy"
+                            onError={() =>
+                              setFailedImages((current) => ({
+                                ...current,
+                                [product.id]: true,
+                              }))
+                            }
+                            className="h-full w-full object-contain p-1.5 mix-blend-multiply drop-shadow-[0_5px_7px_rgba(54,50,40,0.12)] sm:p-2"
+                          />
+                        ) : (
+                          <div
+                            className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[linear-gradient(145deg,#E9EDE2_0%,#F5E7D9_52%,#F8F4ED_100%)] text-[#7B806D]"
+                            role="img"
+                            aria-label={`Ảnh sản phẩm ${product.name} chưa khả dụng`}
+                          >
+                            <ShoppingBag className="h-7 w-7 opacity-70" strokeWidth={1.3} />
+                            <span className="px-2 text-center text-[9px] font-medium leading-4 text-[#77766E]">
+                              Ảnh sản phẩm
+                            </span>
+                          </div>
+                        )}
                       </Link>
 
                       <div className="min-w-0 flex-1">

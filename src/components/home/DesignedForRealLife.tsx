@@ -11,21 +11,21 @@ type VideoItem = {
 
 const videos: VideoItem[] = [
   {
-    title: "Đèn cây đứng Memphis 20",
+    title: "Đèn cây đứng Half Round",
     description: "Ánh sáng linh hoạt cho không gian sống.",
-    video: "/videos/design-life-01.mp4",
-    href: "https://olivelivingvn.com/products/den-cay-dung-memphis-20-dieu-chinh-linh-hoat",
-    exploreLabel: "Explore Memphis 20",
+    video: "/videos/Đèn cây đứng Half Round bản 2.MP4",
+    href: "https://olivelivingvn.com/products/den-cao-dung-half-round-france-diem-nhan-sang-trong-cho-khong-gian",
+    exploreLabel: "Explore Half Round",
   },
   {
     title: "Đèn bàn Poulsen",
     description: "Vẻ đẹp thanh lịch trong từng góc nhỏ.",
     video: "/videos/design-life-02.mp4",
-    href: "https://olivelivingvn.com/products/den-ban-poulsen-ve-dep-thanh-lich",
-    exploreLabel: "Explore Poulsen",
+    href: "https://olivelivingvn.com/products/den-ban-ufo-cam-ung-3-che-do",
+    exploreLabel: "Explore UFO",
   },
   {
-    title: "Đèn bàn Bauhaus",
+    title: "Đèn bàn UFO",
     description: "Thiết kế tối giản, điểm nhấn sang trọng.",
     video: "/videos/design-life-03.mp4",
     href: "https://olivelivingvn.com/products/den-ban-bauhuas-thiet-ke-toi-gian-sang-trong",

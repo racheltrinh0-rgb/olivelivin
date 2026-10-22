@@ -18,7 +18,31 @@ const ICONS = {
   gift: Gift,
   truck: Truck,
   ticket: TicketPercent,
+  percent: TicketPercent,
 };
+
+function getVoucherIcon(voucher: any) {
+  const text = [
+    voucher.code,
+    voucher.title,
+    voucher.description,
+    voucher.badge,
+    voucher.event_type,
+    voucher.type,
+    voucher.icon,
+  ].filter(Boolean).join(" ").toLowerCase();
+
+  // Shipping-related vouchers always use a truck icon.
+  if (/free\s?ship|freeship|shipping|ship\s?fee|ph[ií]\s?v[aậ]n\s?chuy[eể]n|giao\s?h[aà]ng|h[oỏ]a\s?t[oố]c/.test(text)) {
+    return Truck;
+  }
+
+  if (voucher.type === "percent" || /\b\d+\s?%|gi[aả]m\s?\d+\s?%/.test(text)) {
+    return TicketPercent;
+  }
+
+  return ICONS[voucher.icon as keyof typeof ICONS] ?? Gift;
+}
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString("vi-VN", {
@@ -159,92 +183,110 @@ export default function Vouchers() {
           </Link>
         </div>
 
-        {/* Coupon shelf */}
+        {/* Premium marketplace voucher cards */}
         {loading ? (
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2">
             {[0, 1].map((item) => (
-              <div key={item} className="h-[138px] animate-pulse rounded-2xl border border-[#E5DED3] bg-white/65" />
+              <div key={item} className="h-[158px] animate-pulse rounded-2xl border border-[#F0E5DE] bg-white" />
             ))}
           </div>
         ) : visibleVouchers.length > 0 ? (
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             {visibleVouchers.map((voucher, index) => {
               const blackFriday = isBlackFriday(voucher);
               const upcoming = isUpcoming(voucher);
               const saved = savedCodes.includes(voucher.code);
-              const Icon = ICONS[voucher.icon as keyof typeof ICONS] ?? Gift;
+              const Icon = getVoucherIcon(voucher);
               const remaining = Math.max(0, Number(voucher.quantity || 0) - Number(voucher.used || 0));
+              const voucherText = `${voucher.code || ""} ${voucher.title || ""} ${voucher.description || ""}`.toLowerCase();
+              const isShipping = /free\s?ship|freeship|shipping|ship\s?fee|ph[ií]\s?v[aậ]n\s?chuy[eể]n|giao\s?h[aà]ng|h[oỏ]a\s?t[oố]c/.test(voucherText);
+              const discount = formatDiscount(voucher);
 
               return (
                 <motion.article
                   key={voucher.code}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.28, delay: index * 0.04 }}
-                  className="group relative overflow-hidden rounded-[14px] border border-[#E4DCCE] bg-[#FFFEFB] shadow-[0_3px_12px_rgba(62,52,40,0.025)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(62,52,40,0.06)] sm:rounded-[20px]"
+                  transition={{ duration: 0.24, delay: index * 0.04 }}
+                  className="group relative isolate overflow-hidden rounded-2xl border border-[#F0D8CD] bg-white shadow-[0_5px_18px_rgba(100,55,35,0.045)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F2A184] hover:shadow-[0_12px_28px_rgba(100,55,35,0.10)]"
                 >
-                  <div className="flex min-h-[104px] sm:min-h-[138px]">
-                    {/* Discount panel */}
-                    <div className="relative flex w-[78px] shrink-0 flex-col items-center justify-center overflow-hidden border-r border-dashed border-[#D9CDBD] bg-[#EEE7DB] px-1.5 py-2 sm:w-[118px] sm:px-2.5 sm:py-4">
-                      <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#F4F1EB] sm:-left-2.5 sm:h-5 sm:w-5" />
-                      <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#F4F1EB] sm:-right-2.5 sm:h-5 sm:w-5" />
-                      <div className="mb-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/70 text-[#9C8067] sm:mb-2 sm:h-9 sm:w-9">
-                        {blackFriday ? <Flame size={12} strokeWidth={1.5} /> : <Icon size={12} strokeWidth={1.5} />}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#F9A58B] via-[#EE4D2D] to-[#FFC5A9]" />
+                  <div className="flex min-h-[154px] sm:min-h-[164px]">
+                    {/* Discount ticket */}
+                    <div className="relative flex w-[108px] shrink-0 flex-col items-center justify-center overflow-hidden border-r border-dashed border-[#F0C7B7] bg-gradient-to-br from-[#FFF5EF] via-[#FFF0E8] to-[#FCE5DA] px-2 py-4 text-center sm:w-[126px]">
+                      <div className="absolute -left-[10px] top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-r border-[#F0D8CD] bg-[#F4F1EB]" />
+                      <div className="absolute -right-[10px] top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-l border-[#F0D8CD] bg-white" />
+                      <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[#EE4D2D] shadow-[0_3px_10px_rgba(238,77,45,0.10)] ring-1 ring-white">
+                        {blackFriday ? <Flame size={16} strokeWidth={1.8} /> : isShipping ? <Truck size={16} strokeWidth={1.8} /> : <Icon size={16} strokeWidth={1.8} />}
                       </div>
-                      <span className="max-w-full truncate text-[6px] font-semibold uppercase tracking-[0.04em] text-[#968675] sm:text-[8px] sm:tracking-[0.08em]">
-                        {blackFriday ? "Black Friday" : "Your reward"}
+                      <span className="text-[7px] font-bold uppercase tracking-[0.15em] text-[#C75A3C] sm:text-[8px]">
+                        {isShipping ? "Freeship" : voucher.type === "percent" ? "Ưu đãi %" : blackFriday ? "Hot deal" : "Voucher"}
                       </span>
-                      <p className="mt-0.5 text-[20px] font-normal leading-none tracking-[-0.06em] text-[#8B725A] sm:mt-1 sm:text-[29px]">
-                        {formatDiscount(voucher)}
+                      <p
+                        className={`mt-1.5 w-full break-words font-bold leading-[0.95] tracking-[-0.055em] text-[#E94B2B] ${
+                          discount.length >= 8
+                            ? "text-[13px] sm:text-[16px]"
+                            : discount.length >= 6
+                              ? "text-[17px] sm:text-[21px]"
+                              : "text-[25px] sm:text-[29px]"
+                        }`}
+                        title={discount}
+                      >
+                        {discount}
                       </p>
-                      <span className="mt-0.5 text-[7px] text-[#9B8D7D] sm:mt-1 sm:text-[8px]">ưu đãi</span>
+                      <span className="mt-2 rounded-full border border-[#F2C7B6] bg-white/70 px-2 py-0.5 text-[7px] font-medium text-[#A86A55]">
+                        Dành cho bạn
+                      </span>
                     </div>
 
-                    {/* Details panel */}
-                    <div className="flex min-w-0 flex-1 flex-col justify-between p-2 sm:p-4">
+                    {/* Voucher details */}
+                    <div className="flex min-w-0 flex-1 flex-col justify-between p-3.5 sm:p-4">
                       <div className="min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="min-w-0 truncate font-display text-[12px] leading-tight text-[#37332D] sm:text-[16px]">
-                            {voucher.title || (blackFriday ? "Black Friday Special" : "A little treat for you")}
+                        <div className="flex min-w-0 items-start gap-2">
+                          <h3 className="min-w-0 flex-1 break-words text-[13px] font-semibold leading-[1.3] text-[#2F2925] sm:text-[15px]">
+                            {voucher.title || (blackFriday ? "Ưu đãi đặc biệt" : "Voucher dành cho bạn")}
                           </h3>
                           {blackFriday ? (
-                            <span className="shrink-0 rounded-full bg-[#F2E5D6] px-2 py-1 text-[7px] font-semibold uppercase tracking-[0.08em] text-[#9B704C]">Special</span>
+                            <span className="shrink-0 rounded-md bg-[#FFF0E8] px-1.5 py-1 text-[7px] font-bold uppercase tracking-[0.08em] text-[#E94B2B]">Hot</span>
                           ) : voucher.badge ? (
-                            <span className="shrink-0 rounded-full px-2 py-1 text-[7px] font-medium text-white" style={{ backgroundColor: voucher.badge_color || "#858B78" }}>{voucher.badge}</span>
+                            <span className="shrink-0 rounded-md px-1.5 py-1 text-[7px] font-semibold text-white" style={{ backgroundColor: voucher.badge_color || "#EE4D2D" }}>{voucher.badge}</span>
                           ) : null}
                         </div>
-                        <p className="mt-0.5 line-clamp-1 text-[9px] leading-[1.35] text-[#81796F] sm:mt-1 sm:line-clamp-2 sm:text-[11px] sm:leading-[1.45]">
-                          {voucher.description || "Ưu đãi đặc biệt dành cho đơn hàng của bạn."}
+                        <p className="mt-1.5 line-clamp-2 text-[10px] leading-[1.5] text-[#756B64] sm:text-[11px]">
+                          {voucher.description || "Ưu đãi đặc biệt dành riêng cho đơn hàng của bạn."}
                         </p>
-                        <p className="mt-1 text-[8px] text-[#8A8175] sm:mt-1.5 sm:text-[10px]">
-                          Đơn tối thiểu <span className="font-semibold text-[#4B463E]">{Number(voucher.min_order || 0).toLocaleString("vi-VN")}đ</span>
-                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                          <span className="rounded-md bg-[#F8F5F1] px-2 py-1 text-[8px] text-[#76695F]">
+                            Đơn tối thiểu <strong className="font-semibold text-[#41372F]">{Number(voucher.min_order || 0).toLocaleString("vi-VN")}đ</strong>
+                          </span>
+                          {remaining > 0 && remaining <= 50 ? (
+                            <span className="rounded-md bg-[#FFF1E9] px-2 py-1 text-[8px] font-medium text-[#D95635]">Còn {remaining} mã</span>
+                          ) : null}
+                        </div>
                       </div>
 
-                      <div className="mt-1.5 flex items-end justify-between gap-1.5 sm:mt-2 sm:gap-2">
+                      <div className="mt-3 flex min-w-0 items-end justify-between gap-2 border-t border-dashed border-[#EDE3DC] pt-2.5">
                         <div className="min-w-0">
                           <button
                             type="button"
                             onClick={() => void copyCode(voucher.code)}
-                            className="inline-flex max-w-full items-center gap-1 rounded-md border border-[#E5DED3] bg-[#F9F6F0] px-1.5 py-0.5 text-[8px] font-semibold tracking-[0.01em] text-[#716454] transition hover:border-[#C9B9A4] hover:bg-white sm:gap-1.5 sm:px-2 sm:py-1 sm:text-[9px] sm:tracking-[0.03em]"
+                            className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-[#F0C8B8] bg-[#FFF8F4] px-2.5 py-1.5 text-[8px] font-bold tracking-[0.035em] text-[#D94B2A] transition hover:border-[#EE4D2D] hover:bg-[#FFF0E8] sm:text-[9px]"
                             aria-label={`Sao chép mã ${voucher.code}`}
                           >
                             <span className="truncate">{voucher.code}</span>
-                            <Copy size={9} className="shrink-0" />
+                            <Copy size={10} className="shrink-0" />
                           </button>
-                          <p className="mt-0.5 text-[7px] text-[#A49A8D] sm:mt-1 sm:text-[8px]">
+                          <p className="mt-1 text-[7px] text-[#9A9089] sm:text-[8px]">
                             {upcoming ? `Bắt đầu ${formatDate(voucher.start_at)}` : `HSD ${formatDate(voucher.end_at)}`}
-                            {` · Còn ${remaining}`}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => saveVoucher(voucher)}
                           disabled={saved}
-                          className={`inline-flex h-7 shrink-0 items-center justify-center gap-1 rounded-full px-2.5 text-[8px] font-medium transition sm:h-9 sm:px-3.5 sm:text-[10px] ${saved ? "bg-[#E5E9E0] text-[#626C58]" : "bg-[#737B69] text-white hover:bg-[#5F6856]"}`}
+                          className={`inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-lg px-3.5 text-[9px] font-semibold transition sm:h-9 sm:px-4 sm:text-[10px] ${saved ? "border border-[#DCE7D6] bg-[#F1F7ED] text-[#58734A]" : "bg-gradient-to-r from-[#F05A37] to-[#E94727] text-white shadow-[0_3px_8px_rgba(238,77,45,0.18)] hover:from-[#DF4828] hover:to-[#D83D20] active:scale-[0.98]"}`}
                         >
-                          {saved && <Check size={11} strokeWidth={2} />}
-                          {saved ? "Đã lưu" : "Lưu mã"}
+                          {saved ? <><Check size={11} /> Đã lưu</> : "Lưu mã"}
                         </button>
                       </div>
                     </div>
@@ -254,8 +296,8 @@ export default function Vouchers() {
             })}
           </div>
         ) : (
-          <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-[#DCD3C6] bg-white/50 px-5 py-8 text-center">
-            <TicketPercent className="mx-auto text-[#A99A88]" size={24} strokeWidth={1.3} />
+          <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-[#E6CFC3] bg-white px-5 py-8 text-center">
+            <TicketPercent className="mx-auto text-[#EE4D2D]" size={24} strokeWidth={1.4} />
             <p className="mt-3 text-sm text-[#514B43]">Hiện chưa có ưu đãi nào.</p>
             <p className="mt-1 text-xs text-[#8B8379]">Quay lại sau để khám phá các ưu đãi mới nhé.</p>
           </div>

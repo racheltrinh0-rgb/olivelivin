@@ -1014,7 +1014,7 @@ function ShopPage() {
 
       {vouchersQ.data && vouchersQ.data.length > 0 && (
         <section
-          className="mb-8 w-full overflow-hidden rounded-[20px] bg-[#F7F5F0] p-3.5 sm:rounded-[24px] sm:p-5 lg:p-6"
+          className="mb-5 w-full overflow-hidden rounded-[18px] bg-[#F7F5F0] p-2.5 sm:mb-6 sm:rounded-[20px] sm:p-3.5 lg:p-4"
           style={{
             backgroundColor: "#F7F5F0",
             backgroundImage:
@@ -1023,24 +1023,24 @@ function ShopPage() {
             backgroundPosition: "center",
           }}
         >
-          <div className="mb-4 flex items-end justify-between gap-3 sm:mb-5">
+          <div className="mb-2.5 flex items-end justify-between gap-2 sm:mb-3">
             <div className="min-w-0">
-              <p className="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.18em] text-[#687354] sm:text-[10px]">
+              <p className="inline-flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.16em] text-[#687354] sm:text-[9px]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#687354]" />
                 Ưu đãi hôm nay
               </p>
               <h2
-                className="mt-1.5 text-[20px] leading-tight tracking-[-0.025em] text-[#292B25] sm:text-[25px]"
+                className="mt-1 text-[17px] leading-tight tracking-[-0.025em] text-[#292B25] sm:text-[22px]"
                 style={{ fontFamily: '"Times New Roman", Times, serif' }}
               >
                 Voucher dành cho bạn
               </h2>
-              <p className="mt-1 text-[10px] text-[#858478] sm:text-xs">
+              <p className="mt-0.5 text-[9px] text-[#858478] sm:text-[11px]">
                 Chọn ưu đãi phù hợp cho đơn hàng của bạn.
               </p>
             </div>
 
-            <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[9px] font-semibold text-[#657052] shadow-[0_2px_8px_rgba(40,45,30,0.06)] sm:text-[10px]">
+            <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[8px] font-semibold text-[#657052] shadow-[0_2px_8px_rgba(40,45,30,0.06)] sm:text-[9px]">
               {vouchersQ.data.length} ưu đãi
             </span>
           </div>
@@ -1048,7 +1048,7 @@ function ShopPage() {
           <div className="relative">
             <div
               ref={voucherScrollRef}
-              className=" -mx-1 flex gap-3 overflow-x-auto px-1 pb-2 snap-x snap-mandatory scroll-px-1 sm:mx-0 sm:grid sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none sm:grid-cols-2 lg:grid-cols-3"
+              className=" -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 snap-x snap-mandatory scroll-px-1 sm:mx-0 sm:grid sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none sm:grid-cols-2 lg:grid-cols-3"
               style={{ scrollbarWidth: "none" }}
             >
               {vouchersQ.data.map((voucher: any, index: number) => {
@@ -1075,42 +1075,42 @@ function ShopPage() {
                 <article
                   key={voucher.id}
                   className={
-                    "group relative flex h-[116px] w-[82vw] max-w-[330px] shrink-0 snap-start overflow-hidden rounded-[14px] bg-white shadow-[0_4px_14px_rgba(45,43,34,0.06)] transition-all duration-200 hover:shadow-[0_8px_20px_rgba(45,43,34,0.10)] sm:h-auto sm:w-auto sm:max-w-none sm:shrink sm:rounded-[16px] " +
+                    "group relative flex h-[100px] w-[82vw] max-w-[330px] shrink-0 snap-start overflow-hidden rounded-[12px] bg-white shadow-[0_3px_10px_rgba(45,43,34,0.05)] ring-1 ring-black/[0.02] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(45,43,34,0.08)] before:pointer-events-none before:absolute before:left-0 before:top-1/2 before:z-20 before:h-4 before:w-4 before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-full before:bg-[#F7F5F0] after:pointer-events-none after:absolute after:right-0 after:top-1/2 after:z-20 after:h-4 after:w-4 after:translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-[#F7F5F0] sm:h-auto sm:min-h-[104px] sm:w-auto sm:max-w-none sm:shrink sm:rounded-[14px] " +
                     (!showAllVouchers && index >= 3 ? "sm:hidden" : "")
                   }
                 >
-                  <div className="flex w-[58px] shrink-0 flex-col items-center justify-center border-r border-dashed border-[#DADCCF] bg-[#EAEDE2] px-1.5 py-2 text-center sm:w-[96px] sm:px-2 sm:py-5">
-                    <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#657052] shadow-sm sm:mb-2 sm:h-10 sm:w-10">
+                  <div className="relative flex w-[66px] shrink-0 flex-col items-center justify-center border-r border-dashed border-[#DADCCF] bg-[#EAEDE2] px-1 py-1.5 text-center before:absolute before:right-[-7px] before:top-1/2 before:z-[2] before:h-3.5 before:w-3.5 before:-translate-y-1/2 before:rounded-full before:bg-white after:absolute after:right-[-7px] after:top-1/2 after:z-[3] after:h-3.5 after:w-3.5 after:-translate-y-1/2 after:rounded-full after:border after:border-[#EAEDE2] after:opacity-70 sm:w-[84px] sm:px-2 sm:py-3">
+                    <div className="mb-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#657052] shadow-sm sm:mb-1 sm:h-8 sm:w-8">
                       <Ticket size={14} strokeWidth={1.6} className="sm:hidden" />
                       <Ticket size={17} strokeWidth={1.6} className="hidden sm:block" />
                     </div>
-                    <span className="text-[7px] font-semibold uppercase tracking-[0.08em] text-[#7B806D] sm:text-[8px] sm:tracking-[0.12em]">
+                    <span className="text-[6px] font-semibold uppercase tracking-[0.06em] text-[#7B806D] sm:text-[7px] sm:tracking-[0.1em]">
                       Ưu đãi
                     </span>
-                    <span className="mt-0.5 max-w-full break-words text-[14px] font-bold leading-tight tracking-[-0.04em] text-[#4D5745] min-[390px]:text-[12px] sm:mt-1 sm:text-[20px]">
+                    <span className="mt-0.5 max-w-full whitespace-nowrap text-[11px] font-bold leading-tight tracking-[-0.04em] text-[#4D5745] sm:mt-0.5 sm:text-[16px]">
                       {isShipping ? "SHIP" : type === "percent" ? `${value}%` : `${value.toLocaleString("vi-VN")}đ`}
                     </span>
                   </div>
 
-                  <div className="flex min-w-0 flex-1 flex-col justify-center p-2.5 sm:p-4">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center p-2 sm:p-3">
                     <div className="flex min-w-0 items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-[12px] font-bold leading-4 text-[#34382E] min-[390px]:text-[11px] sm:text-[14px]">
+                        <p className="truncate text-[11px] font-bold leading-4 text-[#34382E] min-[390px]:text-[10px] sm:text-[12px]">
                           {discountText}
                         </p>
-                        <p className="mt-0.5 line-clamp-2 text-[9px] leading-[1.4] text-[#77786E] min-[390px]:text-[8px] sm:mt-1 sm:text-[10px] sm:leading-[1.45]">
+                        <p className="mt-0.5 line-clamp-2 text-[8px] leading-[1.35] text-[#77786E] min-[390px]:text-[7px] sm:mt-0.5 sm:text-[9px] sm:leading-[1.4]">
                           {voucher.description ||
                             (minOrder > 0
                               ? `Áp dụng cho đơn từ ${minOrder.toLocaleString("vi-VN")}đ`
                               : "Áp dụng theo điều kiện voucher")}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded-full bg-[#F0F3EA] px-2 py-1 text-[8px] font-semibold text-[#687354] sm:px-2 sm:py-1 sm:text-[8px]">
+                      <span className="shrink-0 rounded-full bg-[#F0F3EA] px-1.5 py-0.5 text-[7px] font-semibold text-[#687354] sm:px-2 sm:py-0.5 sm:text-[7px]">
                         Có sẵn
                       </span>
                     </div>
 
-                    <div className="mt-1.5 text-[8px] leading-tight text-[#99988D] min-[390px]:text-[7px] sm:mt-2 sm:text-[9px]">
+                    <div className="mt-1 text-[7px] leading-tight text-[#99988D] min-[390px]:text-[6px] sm:mt-1 sm:text-[8px]">
                       {type === "percent" && maxDiscount !== null
                         ? `Giảm tối đa ${maxDiscount.toLocaleString("vi-VN")}đ`
                         : minOrder > 0
@@ -1122,7 +1122,7 @@ function ShopPage() {
                       type="button"
                       onClick={() => copyVoucher(code)}
                       aria-label={`Sao chép mã ${code}`}
-                      className="mt-2 flex min-h-8 w-full items-center justify-between gap-2 rounded-lg border border-dashed border-[#C9CEBC] bg-[#F8F9F5] px-2.5 py-1.5 text-[9px] font-bold tracking-[0.02em] text-[#4D5745] transition hover:border-[#8D9878] hover:bg-[#EFF2E8] min-[390px]:text-[8px] sm:mt-2.5 sm:min-h-8 sm:gap-2 sm:rounded-lg sm:px-2.5 sm:py-1.5 sm:text-[10px] sm:tracking-[0.04em]"
+                      className="mt-1.5 flex min-h-6 w-full items-center justify-between gap-2 rounded-md border border-dashed border-[#C9CEBC] bg-[#F8F9F5] px-2 py-1 text-[8px] font-bold tracking-[0.02em] text-[#4D5745] transition hover:border-[#8D9878] hover:bg-[#EFF2E8] min-[390px]:text-[7px] sm:mt-2 sm:min-h-7 sm:gap-2 sm:rounded-lg sm:px-2.5 sm:py-1 sm:text-[9px] sm:tracking-[0.04em]"
                     >
                       <span className="min-w-0 truncate">{code}</span>
                       <span className="inline-flex shrink-0 items-center gap-1">

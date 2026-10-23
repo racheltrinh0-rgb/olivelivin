@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -6,6 +7,7 @@ import { calculateVoucherDiscount } from "./voucher-engine/calculator";
 import { Check, ChevronDown, CircleDollarSign, Tag, TicketPercent, Truck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 import VoucherCard from "./VoucherCard";
 import { useVoucher } from "./hooks/useVoucher";
@@ -63,6 +65,7 @@ export default function CheckoutVoucher({
 
   const [voucherCode, setVoucherCode] = useState("");
   const [checkingCode, setCheckingCode] = useState(false);
+  const [promoInputOpen, setPromoInputOpen] = useState(false);
 
   const { vouchers, loading } = useVoucher(phone);
 
@@ -841,50 +844,61 @@ export default function CheckoutVoucher({
   };
 
   return (
-    <div className="w-full min-w-0 space-y-1.5 text-[#222222]">
-      {/* ================= HEADER ================= */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="hidden">
-            <Tag className="h-3.5 w-3.5" strokeWidth={1.8} />
-          </div>
-
-          <div className="min-w-0">
-            <h3 className="text-[11px] font-semibold leading-4 text-[#222222]">
-              Voucher ưu đãi
-            </h3>
-            <p className="mt-0.5 text-[8px] leading-3 text-[#777777]">
-              Tối đa 3 voucher
-            </p>
-          </div>
+    <div className="w-full min-w-0 space-y-1 text-[#222222]">
+      {/* ================= VOUCHER HEADER ================= */}
+      <div className="flex min-h-[40px] items-center justify-between gap-2.5 rounded-[10px] border border-[#E5E8E1] bg-white px-2.5 py-1.5 shadow-[0_1px_5px_rgba(28,36,20,0.045)]">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <h3 className="font-[Arial,sans-serif] text-[11px] font-semibold leading-4 text-[#30342C]">
+            Voucher ưu đãi
+          </h3>
         </div>
 
         <Button
           type="button"
           variant="outline"
           size="sm"
+          aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
-          className="h-7 shrink-0 gap-1 rounded-md border-[#DCDDD7] bg-white px-2 text-[9px] font-medium text-[#333333] shadow-none hover:bg-[#F5F5F3] hover:text-[#111111]"
+          className="group relative isolate flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#DDE3D8] bg-gradient-to-br from-white via-[#FAFBF8] to-[#EDF1E9] p-0 text-[#4F604E] shadow-[0_1px_3px_rgba(30,40,20,0.06)] transition-all duration-200 hover:border-[#C9D5C2] hover:shadow-[0_2px_6px_rgba(30,40,20,0.09)] active:scale-[0.97]"
         >
-          {open ? "Đóng" : "Chọn"}
-          <ChevronDown
-            className={`h-3.5 w-3.5 transition-transform ${
-              open ? "rotate-180" : ""
-            }`}
-            strokeWidth={1.8}
-          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+          >
+            <span
+              className={`absolute -left-1/2 top-0 h-full w-1/2 skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/90 to-transparent transition-transform duration-700 ease-out ${
+                open
+                  ? "translate-x-[280%]"
+                  : "translate-x-[-30%] group-hover:translate-x-[280%]"
+              }`}
+            />
+          </span>
+
+          <span className="relative z-10 flex items-center justify-center">
+            <ChevronDown
+              className={`h-4 w-4 transition-transform duration-300 ease-out ${
+                open ? "rotate-180" : ""
+              }`}
+              strokeWidth={2}
+            />
+          </span>
         </Button>
       </div>
 
       {/* ================= VOUCHER LIST ================= */}
       {open && (
-        <div className="space-y-3">
+        <motion.div
+          initial={{ opacity: 0, height: 0, y: -6 }}
+          animate={{ opacity: 1, height: "auto", y: 0 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className="space-y-2 overflow-hidden"
+        >
           <section>
-            <h4 className="mb-2 text-[11px] font-semibold text-[#333333]">
+            <h4 className="mb-1.5 text-[10px] font-semibold text-[#333333]">
               Voucher giảm giá
             </h4>
 
-            <div className="space-y-2.5">
+            <div className="space-y-1.5">
               {discountVouchers.map((voucher) => (
                 <VoucherCard
                   key={voucher.id}
@@ -930,11 +944,11 @@ export default function CheckoutVoucher({
           </section>
 
           <section>
-            <h4 className="mb-2 text-[11px] font-semibold text-[#333333]">
+            <h4 className="mb-1.5 text-[10px] font-semibold text-[#333333]">
               Voucher Freeship
             </h4>
 
-            <div className="space-y-2.5">
+            <div className="space-y-1.5">
               {shippingVouchers.map((voucher) => (
                 <VoucherCard
                   key={voucher.id}
@@ -965,11 +979,11 @@ export default function CheckoutVoucher({
           </section>
 
           <section>
-            <h4 className="mb-2 text-[11px] font-semibold text-[#333333]">
+            <h4 className="mb-1.5 text-[10px] font-semibold text-[#333333]">
               Voucher khách hàng
             </h4>
 
-            <div className="space-y-2.5">
+            <div className="space-y-1.5">
               {customerVouchers.map((voucher) => (
                 <VoucherCard
                   key={voucher.id}
@@ -1013,53 +1027,91 @@ export default function CheckoutVoucher({
               </p>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* ================= PROMO CODE ================= */}
-      <section className="rounded-md bg-[#F4F6F1] p-1.5">
-        <div className="mb-1 flex items-center justify-between gap-2">
-          <p className="text-[10px] font-medium leading-4 text-[#30342C]">
-            Mã giảm giá
-          </p>
-          <p className="text-[8px] leading-3 text-[#858B7E]">
-            Nhập mã để áp dụng
-          </p>
-        </div>
-        <div className="flex items-center gap-1 rounded border border-[#DDE3D8] bg-white p-0.5">
-          <input
-            value={voucherCode}
-            onChange={(e) => {
-              setVoucherCode(e.target.value.toUpperCase());
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                void applyVoucherCode();
-              }
-            }}
-            placeholder="Nhập mã giảm giá"
-            autoComplete="off"
-            className="h-7 min-w-0 flex-1 border-0 bg-transparent px-2 text-[10px] font-medium uppercase text-[#30342C] outline-none placeholder:normal-case placeholder:text-[#858B7E] focus:ring-0"
-          />
+      <section className="overflow-hidden rounded-xl border border-[#E5E8E1] bg-white shadow-[0_2px_7px_rgba(28,36,20,0.055)]">
+        <div className="flex min-h-[40px] items-center justify-between gap-3 px-3 py-2">
+          <div className="min-w-0">
+            <p className="font-[Arial,sans-serif] text-[11px] font-semibold leading-4 text-[#30342C]">
+              Mã giảm giá
+            </p>
+          </div>
+
           <Button
             type="button"
-            disabled={checkingCode}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void applyVoucherCode();
-            }}
-            className="relative z-50 !h-7 shrink-0 pointer-events-auto rounded !bg-[#6F8B62] px-2.5 text-[9px] font-medium !text-white shadow-none hover:!bg-[#5F7954] disabled:cursor-not-allowed disabled:!bg-[#D8D8D5] disabled:!text-[#777777]"
+            variant="outline"
+            size="sm"
+            onClick={() => setPromoInputOpen((value) => !value)}
+            className={cn(
+              "group relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[#DDE3D8] p-0",
+              "bg-gradient-to-br from-white via-[#FAFBF8] to-[#EDF1E9]",
+              "text-[#4F604E]",
+              "shadow-[0_1px_3px_rgba(30,40,20,0.06)] transition-all duration-200",
+              "hover:border-[#C9D5C2] hover:shadow-[0_2px_6px_rgba(30,40,20,0.09)]",
+              "active:scale-[0.97]",
+            )}
           >
-            {checkingCode ? "Đang kiểm tra..." : "Áp dụng"}
+            <span className="relative z-10 flex items-center justify-center">
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 transition-transform duration-300",
+                  promoInputOpen && "rotate-180",
+                )}
+              />
+            </span>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -translate-x-[140%] skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/80 to-transparent transition-transform duration-700 group-hover:translate-x-[180%]"
+            />
           </Button>
         </div>
+
+        {promoInputOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, y: -4 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -4 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden px-3 pb-3"
+          >
+            <div className="flex items-center gap-1.5 rounded-lg border border-[#DDE3D8] bg-[#F9FAF7] p-1">
+              <input
+                value={voucherCode}
+                onChange={(e) => {
+                  setVoucherCode(e.target.value.toUpperCase());
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    void applyVoucherCode();
+                  }
+                }}
+                placeholder="Nhập mã giảm giá"
+                autoComplete="off"
+                className="h-7 min-w-0 flex-1 border-0 bg-transparent px-2 text-[10px] font-medium uppercase text-[#30342C] outline-none placeholder:normal-case placeholder:text-[#858B7E] focus:ring-0"
+              />
+              <Button
+                type="button"
+                disabled={checkingCode || !voucherCode.trim()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  void applyVoucherCode();
+                }}
+                className="relative z-10 !h-7 shrink-0 rounded-md !bg-[#6F8B62] px-2.5 text-[9px] font-semibold !text-white shadow-none transition-colors hover:!bg-[#5F7954] disabled:cursor-not-allowed disabled:!bg-[#D8D8D5] disabled:!text-[#777777]"
+              >
+                {checkingCode ? "Đang kiểm tra..." : "Áp dụng"}
+              </Button>
+            </div>
+          </motion.div>
+        )}
       </section>
 
       {/* ================= APPLIED DISCOUNTS ================= */}
-      <section className="rounded-md border-0 bg-transparent px-0 py-1">
-        <div className="flex items-center justify-between gap-3">
+      <section className="rounded-md border-0 bg-transparent px-0 py-0.5">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
             <CircleDollarSign
               className="h-3.5 w-3.5 shrink-0 text-[#5F6F5D]"
@@ -1067,7 +1119,7 @@ export default function CheckoutVoucher({
             />
 
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold text-[#333333]">
+              <p className="text-[10px] font-semibold text-[#333333]">
                 Ưu đãi đang áp dụng
               </p>
 
@@ -1079,15 +1131,15 @@ export default function CheckoutVoucher({
             variant="outline"
             size="sm"
             onClick={() => setOpen(true)}
-            className="h-6 shrink-0 rounded-md border-[#E5E5E0] bg-transparent px-2 text-[9px] font-medium text-[#444444] shadow-none hover:bg-[#F5F5F3]"
+            className="h-5 shrink-0 rounded-md border-[#E5E5E0] bg-transparent px-2 text-[8px] font-medium text-[#444444] shadow-none hover:bg-[#F5F5F3]"
           >
             Thay đổi
           </Button>
         </div>
 
-        <div className="mt-1.5 space-y-0">
+        <div className="mt-1 space-y-0">
           {summary.discountVoucher && (
-            <div className="flex items-center justify-between gap-2.5 border-t border-[#ECEDE8] px-1 py-1.5">
+            <div className="flex items-center justify-between gap-2 border-t border-[#ECEDE8] px-1 py-1">
               <div className="flex min-w-0 items-center gap-2">
                 <Check
                   className="h-3 w-3 shrink-0 text-[#4F604E]"
@@ -1117,7 +1169,7 @@ export default function CheckoutVoucher({
           )}
 
           {summary.shippingVoucher && (
-            <div className="flex items-center justify-between gap-3 border-t border-[#ECEDE8] px-1 py-2">
+            <div className="flex items-center justify-between gap-2 border-t border-[#ECEDE8] px-1 py-1">
               <div className="flex min-w-0 items-center gap-2">
                 <Truck
                   className="h-3 w-3 shrink-0 text-[#4F604E]"
@@ -1165,7 +1217,7 @@ export default function CheckoutVoucher({
           {!summary.discountVoucher &&
             !summary.shippingVoucher &&
             !summary.customerVoucher && (
-              <p className="py-2 text-center text-[9px] text-[#888888]">
+              <p className="py-1 text-center text-[8px] text-[#888888]">
                 Chưa có voucher nào được áp dụng.
               </p>
             )}
@@ -1173,21 +1225,21 @@ export default function CheckoutVoucher({
       </section>
 
       {/* ================= TOTAL ================= */}
-      <section className="rounded-lg bg-[#F3F4F1] px-3 py-2.5">
+      <section className="rounded-md bg-[#F3F4F1] px-2.5 py-2">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-[8px] font-semibold uppercase tracking-[0.13em] text-[#777777]">
+            <p className="text-[7px] font-semibold uppercase tracking-[0.1em] text-[#777777]">
               Tổng thanh toán
             </p>
 
             {summary.totalDiscount > 0 && (
-              <p className="mt-1 text-[9px] font-medium text-[#5F6F5D]">
+              <p className="mt-0.5 text-[8px] font-medium text-[#5F6F5D]">
                 Đã giảm {summary.totalDiscount.toLocaleString("vi-VN")}đ
               </p>
             )}
           </div>
 
-          <p className="shrink-0 text-[18px] font-bold tracking-[-0.02em] text-[#222222]">
+          <p className="shrink-0 text-[16px] font-bold tracking-[-0.02em] text-[#222222]">
             {finalTotal.toLocaleString("vi-VN")}đ
           </p>
         </div>

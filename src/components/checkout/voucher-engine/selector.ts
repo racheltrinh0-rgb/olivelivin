@@ -5,6 +5,7 @@ import type {
 
 import {
   calculateVoucherDiscount,
+  getVoucherEligibleSubtotal,
 } from "./calculator";
 
 /* ============================================================
@@ -19,60 +20,63 @@ export function selectBestDiscountVoucher(
   cartItems: any[]
 ): VoucherDisplay | null {
   let best: VoucherDisplay | null = null;
-
   let bestSaving = 0;
 
   for (const voucher of vouchers) {
-
     /*
-     * Bỏ freeship
+     * Bỏ voucher freeship
      */
-    if (
-      voucher.type === "shipping"
-    ) {
+    if (voucher.type === "shipping") {
       continue;
     }
 
     /*
      * Voucher cá nhân
-     * không được auto apply
+     * Không được auto apply
      */
-    if (
-      voucher.isWelcome === true
-    ) {
+    if (voucher.isWelcome === true) {
       continue;
     }
 
     /*
-     * Voucher theo sản phẩm
+     * Tính subtotal đủ điều kiện.
+     *
+     * Voucher theo sản phẩm:
+     * chỉ tính sản phẩm có id trùng applyId.
+     *
+     * Voucher toàn đơn:
+     * dùng toàn bộ subtotal.
      */
-    if (
-      voucher.applyType === "product"
-    ) {
+    const eligibleSubtotal =
+      getVoucherEligibleSubtotal(
+        voucher,
+        subtotal,
+        cartItems
+      );
 
-      const hasProduct =
-        cartItems.some(
-          (item: any) =>
-            String(item.id) ===
-            String(voucher.applyId)
-        );
-
-      if (!hasProduct) {
-        continue;
-      }
+    /*
+     * Không có giá trị đơn hàng
+     * đủ điều kiện thì bỏ qua.
+     */
+    if (eligibleSubtotal <= 0) {
+      continue;
     }
 
+    /*
+     * Tính mức giảm trên subtotal đủ điều kiện.
+     */
     const saving =
       calculateVoucherDiscount(
         voucher,
-        subtotal
+        eligibleSubtotal
       );
 
-    if (
-      saving > bestSaving
-    ) {
+    /*
+     * Chỉ chọn voucher có mức giảm
+     * cao hơn voucher hiện tại.
+     */
+    if (saving > bestSaving) {
       bestSaving = saving;
-
       best = voucher;
     }
   }
@@ -88,17 +92,11 @@ function isShippingVoucherEligible(
   voucher: VoucherDisplay,
   subtotal: number
 ): boolean {
-
-  if (
-    voucher.type !== "shipping"
-  ) {
+  if (voucher.type !== "shipping") {
     return false;
   }
 
-  if (
-    subtotal <
-    voucher.min_order
-  ) {
+  if (subtotal < voucher.min_order) {
     return false;
   }
 
@@ -108,25 +106,22 @@ function isShippingVoucherEligible(
 /*
  * Voucher STANDARD:
  *
- * - dùng được cho STANDARD
- * - cũng được dùng làm fallback cho EXPRESS
+ * - Dùng được cho STANDARD
+ * - Cũng được dùng làm fallback cho EXPRESS
  *
  * Voucher EXPRESS:
  *
- * - chỉ dùng cho EXPRESS
+ * - Chỉ dùng cho EXPRESS
  */
 function isShippingMethodCompatible(
   voucher: VoucherDisplay,
   shippingMethod: ShippingMethod
 ): boolean {
-
   const method =
     voucher.shipping_method ?? null;
 
   /*
-   * Voucher cũ không có
-   * shipping_method:
-   *
+   * Voucher cũ không có shipping_method:
    * coi như STANDARD / generic.
    */
   if (!method) {
@@ -137,9 +132,7 @@ function isShippingMethodCompatible(
    * Đang giao thường:
    * chỉ nhận STANDARD.
    */
-  if (
-    shippingMethod === "standard"
-  ) {
+  if (shippingMethod === "standard") {
     return method === "standard";
   }
 
@@ -149,9 +142,7 @@ function isShippingMethodCompatible(
    * EXPRESS được ưu tiên.
    * STANDARD được phép fallback.
    */
-  if (
-    shippingMethod === "express"
-  ) {
+  if (shippingMethod === "express") {
     return (
       method === "express" ||
       method === "standard"
@@ -163,8 +154,9 @@ function isShippingMethodCompatible(
 
 /* ============================================================
    SHIPPING
-   ============================================================
- *
+============================================================ */
+
+/*
  * Business rule:
  *
  * STANDARD
@@ -177,35 +169,29 @@ function isShippingMethodCompatible(
  *   → STANDARD voucher fallback
  *
  * Không bao giờ trả về 2 voucher.
-============================================================ */
+ */
 
 export function selectBestShippingVoucher(
   vouchers: VoucherDisplay[],
   subtotal: number,
   shippingMethod: ShippingMethod
 ): VoucherDisplay | null {
-
   const shippingVouchers =
-    vouchers.filter(
-      (voucher) =>
-        isShippingVoucherEligible(
-          voucher,
-          subtotal
-        )
+    vouchers.filter((voucher) =>
+      isShippingVoucherEligible(
+        voucher,
+        subtotal
+      )
     );
 
-  if (
-    shippingMethod === "standard"
-  ) {
-
-    /*
-     * STANDARD:
-     * không được dùng EXPRESS.
-     */
+  /*
+   * STANDARD:
+   * Không được dùng EXPRESS.
+   */
+  if (shippingMethod === "standard") {
     const standardVouchers =
       shippingVouchers.filter(
         (voucher) => {
-
           const method =
             voucher.shipping_method;
 
@@ -224,13 +210,11 @@ export function selectBestShippingVoucher(
      * ưu tiên min_order cao hơn.
      */
     return (
-      standardVouchers
-        .sort(
-          (a, b) =>
-            b.value - a.value ||
-            b.min_order -
-              a.min_order
-        )[0] ?? null
+      standardVouchers.sort(
+        (a, b) =>
+          b.value - a.value ||
+          b.min_order - a.min_order
+      )[0] ?? null
     );
   }
 
@@ -250,18 +234,13 @@ export function selectBestShippingVoucher(
   /*
    * EXPRESS luôn được ưu tiên.
    */
-  if (
-    expressVouchers.length > 0
-  ) {
-
+  if (expressVouchers.length > 0) {
     return (
-      expressVouchers
-        .sort(
-          (a, b) =>
-            b.value - a.value ||
-            b.min_order -
-              a.min_order
-        )[0] ?? null
+      expressVouchers.sort(
+        (a, b) =>
+          b.value - a.value ||
+          b.min_order - a.min_order
+      )[0] ?? null
     );
   }
 
@@ -273,7 +252,6 @@ export function selectBestShippingVoucher(
   const standardVouchers =
     shippingVouchers.filter(
       (voucher) => {
-
         const method =
           voucher.shipping_method;
 
@@ -285,12 +263,10 @@ export function selectBestShippingVoucher(
     );
 
   return (
-    standardVouchers
-      .sort(
-        (a, b) =>
-          b.value - a.value ||
-          b.min_order -
-            a.min_order
-      )[0] ?? null
+    standardVouchers.sort(
+      (a, b) =>
+        b.value - a.value ||
+        b.min_order - a.min_order
+    )[0] ?? null
   );
 }

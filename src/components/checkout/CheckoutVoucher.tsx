@@ -21,6 +21,36 @@ import type {
   VoucherDisplay,
 } from "./voucher.types";
 
+function isDiscountVoucherEligible(
+  voucher: VoucherDisplay | null,
+  cartItems: any[],
+): boolean {
+  if (!voucher) return false;
+
+  const applyType = String(
+    voucher.applyType ?? (voucher as any).apply_type ?? "all",
+  ).trim().toLowerCase();
+
+  const applyId = voucher.applyId ?? (voucher as any).apply_id ?? null;
+
+  if (["all", "cart", "order"].includes(applyType)) return true;
+
+  if (["product", "products", "specific_product"].includes(applyType)) {
+    if (!applyId) return false;
+    const targetId = String(applyId).trim();
+
+    return (cartItems ?? []).some((item: any) => {
+      const productId = String(
+        item.product_id ?? item.productId ?? item.id ?? "",
+      ).trim();
+      const variantId = String(item.variant_id ?? item.variantId ?? "").trim();
+      return productId === targetId || variantId === targetId;
+    });
+  }
+
+  return false;
+}
+
 export default function CheckoutVoucher({
   subtotal,
   shippingFee,
@@ -628,23 +658,14 @@ export default function CheckoutVoucher({
         data.applyId ??
         null;
 
-      if (
-        applyType === "product" &&
-        applyId != null
-      ) {
-        const hasProduct =
-          (cartItems ?? []).some(
-            (item: any) =>
-              String(item.id) ===
-              String(applyId),
-          );
+      const productScopeVoucher = {
+        applyType,
+        applyId,
+      } as VoucherDisplay;
 
-        if (!hasProduct) {
-          toast.error(
-            "Voucher này chỉ áp dụng cho đúng sản phẩm.",
-          );
-          return;
-        }
+      if (!isDiscountVoucherEligible(productScopeVoucher, cartItems)) {
+        toast.error("Voucher không áp dụng cho sản phẩm này.");
+        return;
       }
 
       const dbType = String(
@@ -870,7 +891,10 @@ export default function CheckoutVoucher({
                   voucher={voucher}
                   bestVoucher={bestDiscount}
                   selected={selectedDiscount?.id === voucher.id}
-                  disabled={subtotal < voucher.min_order}
+                  disabled={
+                    subtotal < voucher.min_order ||
+                    !isDiscountVoucherEligible(voucher, cartItems)
+                  }
                   saving={
                     summary.discountVoucher?.id === voucher.id
                       ? summary.discountAmount
@@ -884,6 +908,16 @@ export default function CheckoutVoucher({
                     if (value === null) {
                       setAutoSelect(false);
                       setSelectedDiscount(null);
+                      return;
+                    }
+
+                    if (!isDiscountVoucherEligible(value, cartItems)) {
+                      toast.error("Voucher không áp dụng cho sản phẩm này.");
+                      return;
+                    }
+
+                    if (subtotal < value.min_order) {
+                      toast.error("Đơn hàng chưa đạt giá trị tối thiểu.");
                       return;
                     }
 

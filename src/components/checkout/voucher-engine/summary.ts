@@ -1,5 +1,7 @@
+
 import type {
   VoucherSummary,
+  VoucherDisplay,
 } from "../voucher.types";
 
 import type {
@@ -10,6 +12,7 @@ import {
   calculateVoucherDiscount,
   calculateShippingDiscount,
   calculateVoucherSaving,
+  getVoucherEligibleSubtotal,
 } from "./calculator";
 
 import {
@@ -17,35 +20,98 @@ import {
   selectBestShippingVoucher,
 } from "./selector";
 
+/* ============================================================
+   DISCOUNT VOUCHER ELIGIBILITY
+============================================================ */
+
+function isDiscountVoucherEligible(
+  voucher: VoucherDisplay | null,
+  cartItems: any[]
+): boolean {
+  if (!voucher) {
+    return false;
+  }
+
+  const applyType = String(
+    voucher.applyType ??
+      (voucher as any).apply_type ??
+      "all"
+  ).toLowerCase();
+
+  const applyId =
+    voucher.applyId ??
+    (voucher as any).apply_id ??
+    null;
+
+  /*
+   * Voucher áp dụng toàn đơn.
+   */
+  if (
+    applyType !== "product" &&
+    applyType !== "specific_product"
+  ) {
+    return true;
+  }
+
+  /*
+   * Voucher theo sản phẩm nhưng thiếu applyId.
+   */
+  if (
+    applyId === null ||
+    applyId === undefined ||
+    String(applyId).trim() === ""
+  ) {
+    return false;
+  }
+
+  /*
+   * Kiểm tra sản phẩm có trong giỏ hàng.
+   */
+  return (cartItems ?? []).some(
+    (item: any) =>
+      String(item.id) === String(applyId)
+  );
+}
+
+/* ============================================================
+   BUILD VOUCHER SUMMARY
+============================================================ */
+
 export function buildVoucherSummary(
   input: VoucherEngineInput
 ): VoucherSummary {
-
   /*
    * ==========================================================
    * DISCOUNT VOUCHER
    * ==========================================================
+   *
+   * Không sử dụng selectedDiscount mù quáng.
+   *
+   * Voucher đã chọn phải còn phù hợp với giỏ hàng.
    */
 
-  const discountVoucher =
-    input.selectedDiscount ??
-    selectBestDiscountVoucher(
-      input.vouchers,
-      input.subtotal,
+  const selectedDiscountIsEligible =
+    isDiscountVoucherEligible(
+      input.selectedDiscount,
       input.cartItems
     );
+
+  const discountVoucher =
+    selectedDiscountIsEligible
+      ? input.selectedDiscount
+      : selectBestDiscountVoucher(
+          input.vouchers,
+          input.subtotal,
+          input.cartItems
+        );
 
   /*
    * ==========================================================
    * SHIPPING VOUCHER
    * ==========================================================
    *
-   * IMPORTANT:
-   *
-   * Không dùng selectedShipping mù quáng.
-   *
    * Khi shippingMethod / subtotal thay đổi,
-   * phải kiểm tra lại voucher đã chọn có còn hợp lệ hay không.
+   * phải kiểm tra lại voucher đã chọn.
    */
 
   let shippingVoucher =
@@ -55,8 +121,8 @@ export function buildVoucherSummary(
    * Nếu có voucher đang chọn,
    * kiểm tra lại theo shipping method hiện tại.
    */
-  if (shippingVoucher) {
 
+  if (shippingVoucher) {
     const isShippingVoucher =
       shippingVoucher.type === "shipping";
 
@@ -75,7 +141,6 @@ export function buildVoucherSummary(
     if (
       input.shippingMethod === "standard"
     ) {
-
       /*
        * Express voucher không được dùng
        * cho giao thường.
@@ -93,7 +158,6 @@ export function buildVoucherSummary(
     if (
       input.shippingMethod === "express"
     ) {
-
       /*
        * Express:
        *
@@ -108,7 +172,7 @@ export function buildVoucherSummary(
 
     /*
      * Nếu voucher hiện tại không còn hợp lệ
-     * → bỏ nó và chọn lại voucher tốt nhất.
+     * → chọn lại voucher tốt nhất.
      */
     if (
       !isShippingVoucher ||
@@ -139,14 +203,27 @@ export function buildVoucherSummary(
 
   /*
    * ==========================================================
-   * DISCOUNT
+   * DISCOUNT AMOUNT
    * ==========================================================
+   *
+   * Voucher theo sản phẩm:
+   * chỉ tính trên tổng tiền sản phẩm đủ điều kiện.
+   *
+   * Voucher toàn đơn:
+   * tính trên toàn bộ subtotal.
    */
+
+  const eligibleSubtotal =
+    getVoucherEligibleSubtotal(
+      discountVoucher,
+      input.subtotal,
+      input.cartItems
+    );
 
   const discountAmount =
     calculateVoucherDiscount(
       discountVoucher,
-      input.subtotal
+      eligibleSubtotal
     );
 
   /*

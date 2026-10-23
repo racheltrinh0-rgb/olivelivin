@@ -7,9 +7,8 @@ import { formatVND } from "@/lib/format";
 
 import { getImageUrl } from "@/lib/storage";
 
-import { ShoppingCart, Truck, Clock3 } from "lucide-react";
+import { ShoppingCart, Truck, Clock3, ExternalLink } from "lucide-react";
 
-import { motion } from "framer-motion";
 
 import clsx from "clsx";
 
@@ -310,6 +309,14 @@ function getSocialProof(product: Product) {
 
 
 
+// Shorten card titles cleanly without adding an ellipsis.
+const getShortProductName = (name: string, maxWords = 5) => {
+  // Keep only the product's main name; remove marketing/descriptive suffixes.
+  const mainName = name.split(/\s+[–—-]\s+/)[0].trim();
+  const words = mainName.split(/\s+/);
+  return words.length > maxWords ? words.slice(0, maxWords).join(" ") : mainName;
+};
+
 export function ProductCard({
   product,
 
@@ -406,11 +413,17 @@ export function ProductCard({
 
             h-full
 
+            min-w-0
+
             flex-col
 
             overflow-hidden
 
-            rounded-xl border-0 bg-white font-sans transition-colors duration-200
+            rounded-[24px] border-0 bg-white font-sans
+            shadow-[0_10px_28px_rgba(35,30,25,0.16)]
+            transition-all duration-300
+            hover:-translate-y-1
+            hover:shadow-[0_18px_42px_rgba(35,30,25,0.24)]
 
           `,
 
@@ -437,38 +450,50 @@ export function ProductCard({
 
             relative
 
-            aspect-square
+            mx-1.5 mt-1.5
+
+            aspect-[4/5]
 
             overflow-hidden
 
-            bg-[#F6F3EE]
+            rounded-[20px]
+
+            bg-[#F2F2F2]
 
           "
 
         >
 
           {(showFlashSale || product.express_available === true) && (
-            <div className="absolute left-1.5 right-1.5 top-1.5 z-30 flex items-start justify-between gap-1 sm:left-3 sm:right-3 sm:top-3 sm:gap-2">
-              {showFlashSale ? (
-                <span
-                  className="inline-flex h-5 min-w-0 shrink items-center justify-center rounded-full bg-[#E96B35] px-1.5 text-[7px] font-semibold leading-none text-white shadow-sm sm:h-6 sm:px-2.5 sm:text-[9px]"
-                  title={product.flash_sale_title || `Flash Sale giảm ${flashSaleDiscount}%`}
-                >
-                  <span className="truncate">FLASH SALE -{flashSaleDiscount}%</span>
-                </span>
-              ) : <span />}
-
+            <div className="absolute left-2 right-2 top-2 z-30 flex items-start justify-start gap-1.5 sm:left-3 sm:right-3 sm:top-3 sm:gap-2">
               {product.express_available === true && (
                 <span
-                  className="inline-flex h-5 shrink-0 items-center justify-center gap-0.5 rounded-full border border-[#E8D7C8] bg-white/95 px-1.5 text-[7px] font-semibold leading-none text-[#A85B32] shadow-sm sm:h-6 sm:gap-1.5 sm:px-2.5 sm:text-[9px]"
+                  className="inline-flex h-5 shrink-0 items-center justify-center gap-0.5 rounded-full bg-white px-1.5 text-[8px] font-bold leading-none text-[#33382D] shadow-[0_2px_6px_rgba(0,0,0,0.14)] sm:h-6 sm:gap-1 sm:px-2.5 sm:text-[10px]"
                   title="Có hỗ trợ giao hỏa tốc"
                 >
-                  <Truck className="h-3 w-3 shrink-0" aria-hidden="true" />
+                  <Truck className="h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3" aria-hidden="true" />
                   Hỏa tốc
+                </span>
+              )}
+
+              {showFlashSale && (
+                <span
+                  className="inline-flex h-5 min-w-0 shrink items-center justify-center rounded-full bg-[#4D5745] px-1.5 text-[8px] font-extrabold leading-none tracking-[-0.02em] text-white shadow-[0_2px_7px_rgba(0,0,0,0.16)] sm:h-6 sm:px-2.5 sm:text-[10px]"
+                  title={product.flash_sale_title || `Flash Sale giảm ${flashSaleDiscount}%`}
+                >
+                  <span className="truncate">SAVE {flashSaleDiscount}%</span>
                 </span>
               )}
             </div>
           )}
+
+          <span
+            aria-hidden="true"
+            className="absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-lg border border-white/75 bg-white/90 text-[#292621] shadow-[0_3px_9px_rgba(0,0,0,0.16)] backdrop-blur-md transition-all duration-200 group-hover:bg-white group-hover:text-[#4D5745] sm:right-3 sm:top-3 sm:h-10 sm:w-10"
+          >
+            <ExternalLink size={15} strokeWidth={1.8} className="sm:hidden" />
+            <ExternalLink size={18} strokeWidth={1.8} className="hidden sm:block" />
+          </span>
 
           <div className="absolute inset-0 flex items-center justify-center">
 
@@ -536,17 +561,17 @@ export function ProductCard({
 
             flex-col
 
-            px-2
+            px-3.5
 
-            pb-2.5
+            pb-4
 
-            pt-1.5
+            pt-3
 
-            sm:px-3
+            sm:px-4
 
-            sm:pb-3.5
+            sm:pb-5
 
-            sm:pt-2.5
+            sm:pt-3.5
 
             lg:px-4
 
@@ -566,147 +591,23 @@ export function ProductCard({
 
           <h3
   className="
-    line-clamp-2
-    min-h-[30px]
+    min-h-[32px]
+    max-w-full
+    overflow-hidden
     font-sans
-    text-[11.5px]
-    font-medium
-    leading-[1.3]
+    text-[11px]
+    font-bold
+    leading-[1.45]
     sm:min-h-[36px]
     sm:text-[13px]
+    sm:font-semibold
     tracking-[-0.005em]
     text-[#393530]
   "
   style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
 >
-  {product.name}
+  {getShortProductName(product.name)}
 </h3>
-
-
-
-          {/* ====================================================
-
-              RATING + COLORS
-
-          ==================================================== */}
-
-
-
-          <div className="mt-1.5 flex min-h-[16px] items-center justify-between">
-
-            <div className="flex items-center gap-1.5">
-
-              <span
-
-                className="
-
-                  text-[9px]
-
-                  tracking-[0.8px]
-
-                  text-[#B49A63]
-
-                "
-
-                aria-label={`Đánh giá ${socialProof.rating.toFixed(1)} trên 5`}
-
-              >
-
-                ★★★★★
-
-              </span>
-
-
-
-              <span className="text-[9px] text-[#6F6861]">
-
-                {socialProof.rating.toFixed(1)}
-
-              </span>
-
-
-
-              <span className="text-[9px] text-[#AAA29A]">
-
-                ({socialProof.reviews})
-
-              </span>
-
-            </div>
-
-
-
-            {product.color_preview?.length ? (
-
-              <div className="flex items-center gap-1">
-
-                {product.color_preview
-
-                  .slice(0, 3)
-
-                  .map((color, index) => (
-
-                    <span
-
-                      key={`${product.id}-${index}`}
-
-                      className="
-
-                        h-3
-
-                        w-3
-
-                        rounded-full
-
-                        border
-
-                        border-white
-
-                        shadow-[0_1px_3px_rgba(0,0,0,0.12)]
-
-                        ring-1
-
-                        ring-[#DDD6CE]
-
-                      "
-
-                      style={{
-
-                        backgroundColor:
-
-                          color,
-
-                      }}
-
-                    />
-
-                  ))}
-
-
-
-                {product.color_preview
-
-                  .length > 3 && (
-
-                  <span className="ml-0.5 text-[9px] text-[#9A928A]">
-
-                    +
-
-                    {product
-
-                      .color_preview
-
-                      .length - 3}
-
-                  </span>
-
-                )}
-
-              </div>
-
-            ) : null}
-
-          </div>
 
 
 
@@ -735,8 +636,8 @@ export function ProductCard({
           )}
 
           <div className={clsx(
-            "flex min-w-0 items-baseline gap-x-1.5",
-            showFlashSale ? "mt-1 min-h-[22px]" : "mt-1.5 min-h-[22px] sm:mt-2.5"
+            "flex min-w-0 items-baseline gap-x-2",
+            showFlashSale ? "mt-3 min-h-[22px]" : "mt-3 min-h-[22px]"
           )}>
             <span className="shrink-0 text-[15px] font-semibold leading-tight tracking-[-0.035em] text-[#34352F] sm:text-[18px]">
               {formatVND(salePrice)}
@@ -756,169 +657,6 @@ export function ProductCard({
           )}
 
 
-
-          {/* ====================================================
-
-              SERVICE INFO + SOLD
-
-          ==================================================== */}
-
-
-
-          <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[8px] text-[#81786F] sm:mt-2 sm:gap-1.5 sm:text-[10px]">
-            <span className="shrink-0">Freeship</span>
-            <span className="text-[#C8C0B8]">·</span>
-            <span className="shrink-0">Đổi trả 15 ngày</span>
-            <span className="hidden text-[#C8C0B8] sm:inline">·</span>
-            <span
-              className="hidden truncate sm:inline"
-              title={`${socialProof.sold.toLocaleString("vi-VN")} lượt mua`}
-            >
-              {socialProof.sold.toLocaleString("vi-VN")} đã bán
-            </span>
-          </div>
-
-
-
-          {/* ====================================================
-
-              CTA
-
-          ==================================================== */}
-
-
-
-          <div className="mt-2 flex items-center gap-1.5 pt-0 sm:mt-auto sm:gap-2 sm:pt-3">
-
-            <motion.button
-
-              whileHover={{ y: -1 }}
-
-              whileTap={{
-
-                scale: 0.985,
-
-              }}
-
-              className="
-
-                h-9
-
-                min-w-0
-
-                flex-1
-
-                rounded-lg
-
-                bg-[#5E6754]
-
-                px-2
-
-                text-[10px]
-
-                font-medium
-
-                tracking-[0.01em]
-
-                text-white
-
-                transition-colors
-
-                duration-200
-
-                hover:bg-[#4F5847]
-
-              "
-
-            >
-
-              Mua ngay
-
-            </motion.button>
-
-
-
-            <button
-
-              type="button"
-
-              aria-label={`Thêm ${product.name} vào giỏ hàng`}
-
-              onClick={(event) => {
-                // The card is wrapped in a product Link; stop its navigation.
-                event.preventDefault();
-                event.stopPropagation();
-
-                if (product.stock !== undefined && Number(product.stock) <= 0) {
-                  toast.error("Sản phẩm hiện đã hết hàng");
-                  return;
-                }
-
-                add(
-                  {
-                    id: product.id,
-                    slug: product.slug,
-                    name: product.name,
-                    price: salePrice,
-                    image: product.image_url || null,
-                  },
-                  1
-                );
-
-                toast.success("Đã thêm vào giỏ hàng", {
-                  description: `${product.name} × 1`,
-                });
-              }}
-
-              className="
-
-                flex
-
-                h-9
-
-                w-9
-
-                shrink-0
-
-                items-center
-
-                justify-center
-
-                rounded-lg
-
-                border
-
-                border-[#DDD5CC]
-
-                bg-[#FAF8F5]
-
-                text-[#5E5A55]
-
-                transition-all
-
-                duration-200
-
-                hover:border-[#5E6754]
-
-                hover:bg-[#5E6754]
-
-                hover:text-white
-
-              "
-
-            >
-
-              <ShoppingCart
-
-                size={16}
-
-                strokeWidth={1.7}
-
-              />
-
-            </button>
-
-          </div>
 
         </div>
 

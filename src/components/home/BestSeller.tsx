@@ -3,6 +3,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Heart,
+  ExternalLink,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
@@ -350,20 +351,10 @@ export default function BestSeller({
                           )}
 
                         <span
-                          className="
-                            absolute bottom-3 left-3 right-3
-                            flex items-center justify-center
-                            rounded-full border border-white/70
-                            bg-white/75 px-3 py-2.5
-                            text-xs font-medium text-[#292621]
-                            shadow-[0_2px_10px_rgba(0,0,0,0.06)]
-                            backdrop-blur-md
-                            transition-colors duration-200
-                            group-hover:bg-white/90
-                            sm:bottom-4 sm:left-4 sm:right-4
-                          "
+                          aria-hidden="true"
+                          className="absolute right-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-xl border border-white/75 bg-white/85 text-[#292621] shadow-[0_2px_8px_rgba(0,0,0,0.10)] backdrop-blur-md transition-all duration-200 group-hover:bg-white group-hover:text-[#4D5745] sm:right-3 sm:top-3 sm:h-10 sm:w-10"
                         >
-                          Xem sản phẩm
+                          <ExternalLink size={18} strokeWidth={1.8} />
                         </span>
                       </div>
 

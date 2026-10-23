@@ -156,7 +156,7 @@ export default function Vouchers() {
   const hiddenVoucherCount = Math.max(0, vouchers.length - 2);
 
   return (
-    <section className="relative overflow-hidden bg-[#F4F1EB] py-5 sm:py-9 lg:py-[60px]">
+    <section className="relative overflow-hidden bg-[#F4F1EB] py-4 sm:py-9 lg:py-[60px]">
       <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#E7DED0]/55 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-28 -left-20 h-64 w-64 rounded-full bg-white/70 blur-3xl" />
 
@@ -175,7 +175,7 @@ export default function Vouchers() {
           </p>
           <Link
             to="/voucher-register"
-            className="group mx-auto mt-3 inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-[#33382D] px-3.5 text-[8px] font-medium text-white transition hover:bg-[#4A5141] active:scale-[0.98] sm:mt-5 sm:h-10 sm:gap-2 sm:px-5 sm:text-[10px]"
+            className="group mx-auto mt-3 inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-[#4D5745] px-3.5 text-[8px] font-medium text-white transition hover:bg-[#4A5141] active:scale-[0.98] sm:mt-5 sm:h-10 sm:gap-2 sm:px-5 sm:text-[10px]"
           >
             <Gift size={11} strokeWidth={1.6} />
             Khám phá ưu đãi thành viên
@@ -191,7 +191,7 @@ export default function Vouchers() {
             ))}
           </div>
         ) : visibleVouchers.length > 0 ? (
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4">
             {visibleVouchers.map((voucher, index) => {
               const blackFriday = isBlackFriday(voucher);
               const upcoming = isUpcoming(voucher);
@@ -208,42 +208,42 @@ export default function Vouchers() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.24, delay: index * 0.04 }}
-                  className="group relative isolate overflow-hidden rounded-2xl border border-[#F0D8CD] bg-white shadow-[0_5px_18px_rgba(100,55,35,0.045)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F2A184] hover:shadow-[0_12px_28px_rgba(100,55,35,0.10)]"
+                  className="group relative isolate overflow-hidden rounded-[18px] border border-[#EAE1D5] bg-[#FFFEFC] shadow-[0_5px_18px_rgba(54,45,34,0.07)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D8C8B5] hover:shadow-[0_12px_28px_rgba(54,45,34,0.12)]"
                 >
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#F9A58B] via-[#EE4D2D] to-[#FFC5A9]" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#D8B99D] via-[#B98561] to-[#E9D8C5]" />
                   <div className="flex min-h-[154px] sm:min-h-[164px]">
                     {/* Discount ticket */}
-                    <div className="relative flex w-[108px] shrink-0 flex-col items-center justify-center overflow-hidden border-r border-dashed border-[#F0C7B7] bg-gradient-to-br from-[#FFF5EF] via-[#FFF0E8] to-[#FCE5DA] px-2 py-4 text-center sm:w-[126px]">
-                      <div className="absolute -left-[10px] top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-r border-[#F0D8CD] bg-[#F4F1EB]" />
-                      <div className="absolute -right-[10px] top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-l border-[#F0D8CD] bg-white" />
-                      <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[#EE4D2D] shadow-[0_3px_10px_rgba(238,77,45,0.10)] ring-1 ring-white">
+                    <div className="relative flex w-[88px] shrink-0 flex-col items-center justify-center overflow-hidden border-r border-dashed border-[#E6D5C4] bg-gradient-to-br from-[#F7F1E8] via-[#F3EADF] to-[#EDE1D2] px-1.5 py-3 text-center sm:w-[126px] sm:px-2 sm:py-4">
+                      <div className="absolute -left-[10px] top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-r border-[#E6D5C4] bg-[#F4F1EB]" />
+                      <div className="absolute -right-[10px] top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-l border-[#E6D5C4] bg-[#FFFEFC]" />
+                      <div className="mb-1.5 flex h-8 w-8 items-center justify-center rounded-xl bg-white text-[#A97956] shadow-[0_3px_10px_rgba(54,45,34,0.08)] ring-1 ring-white sm:mb-2 sm:h-9 sm:w-9 sm:rounded-2xl">
                         {blackFriday ? <Flame size={16} strokeWidth={1.8} /> : isShipping ? <Truck size={16} strokeWidth={1.8} /> : <Icon size={16} strokeWidth={1.8} />}
                       </div>
-                      <span className="text-[7px] font-bold uppercase tracking-[0.15em] text-[#C75A3C] sm:text-[8px]">
+                      <span className="text-[7px] font-bold uppercase tracking-[0.15em] text-[#8E7057] sm:text-[8px]">
                         {isShipping ? "Freeship" : voucher.type === "percent" ? "Ưu đãi %" : blackFriday ? "Hot deal" : "Voucher"}
                       </span>
                       <p
-                        className={`mt-1.5 w-full break-words font-bold leading-[0.95] tracking-[-0.055em] text-[#E94B2B] ${
+                        className={`mt-1.5 w-full break-words font-bold leading-[0.95] tracking-[-0.055em] text-[#9B6847] ${
                           discount.length >= 8
-                            ? "text-[13px] sm:text-[16px]"
+                            ? "text-[12px] sm:text-[16px]"
                             : discount.length >= 6
-                              ? "text-[17px] sm:text-[21px]"
-                              : "text-[25px] sm:text-[29px]"
+                              ? "text-[15px] sm:text-[21px]"
+                               : "text-[22px] sm:text-[29px]"
                         }`}
                         title={discount}
                       >
                         {discount}
                       </p>
-                      <span className="mt-2 rounded-full border border-[#F2C7B6] bg-white/70 px-2 py-0.5 text-[7px] font-medium text-[#A86A55]">
+                      <span className="mt-1.5 rounded-full border border-[#E5D5C5] bg-white/75 px-1.5 py-0.5 text-[6px] font-medium text-[#8E7057] sm:mt-2 sm:px-2 sm:text-[7px]">
                         Dành cho bạn
                       </span>
                     </div>
 
                     {/* Voucher details */}
-                    <div className="flex min-w-0 flex-1 flex-col justify-between p-3.5 sm:p-4">
+                    <div className="flex min-w-0 flex-1 flex-col justify-between p-2.5 sm:p-4">
                       <div className="min-w-0">
                         <div className="flex min-w-0 items-start gap-2">
-                          <h3 className="min-w-0 flex-1 break-words text-[13px] font-semibold leading-[1.3] text-[#2F2925] sm:text-[15px]">
+                          <h3 className="min-w-0 flex-1 break-words text-[12px] font-bold leading-[1.3] text-[#34312B] sm:text-[15px]">
                             {voucher.title || (blackFriday ? "Ưu đãi đặc biệt" : "Voucher dành cho bạn")}
                           </h3>
                           {blackFriday ? (
@@ -252,11 +252,11 @@ export default function Vouchers() {
                             <span className="shrink-0 rounded-md px-1.5 py-1 text-[7px] font-semibold text-white" style={{ backgroundColor: voucher.badge_color || "#EE4D2D" }}>{voucher.badge}</span>
                           ) : null}
                         </div>
-                        <p className="mt-1.5 line-clamp-2 text-[10px] leading-[1.5] text-[#756B64] sm:text-[11px]">
+                        <p className="mt-1 line-clamp-2 text-[9px] leading-[1.4] text-[#81776C] sm:mt-1.5 sm:text-[11px]">
                           {voucher.description || "Ưu đãi đặc biệt dành riêng cho đơn hàng của bạn."}
                         </p>
-                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                          <span className="rounded-md bg-[#F8F5F1] px-2 py-1 text-[8px] text-[#76695F]">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1 sm:mt-2 sm:gap-1.5">
+                          <span className="rounded-md bg-[#F5F1EA] px-1.5 py-1 text-[7px] text-[#76695F] sm:px-2 sm:text-[8px]">
                             Đơn tối thiểu <strong className="font-semibold text-[#41372F]">{Number(voucher.min_order || 0).toLocaleString("vi-VN")}đ</strong>
                           </span>
                           {remaining > 0 && remaining <= 50 ? (
@@ -265,18 +265,18 @@ export default function Vouchers() {
                         </div>
                       </div>
 
-                      <div className="mt-3 flex min-w-0 items-end justify-between gap-2 border-t border-dashed border-[#EDE3DC] pt-2.5">
+                      <div className="mt-2 flex min-w-0 items-end justify-between gap-1.5 border-t border-dashed border-[#EDE3DC] pt-2 sm:mt-3 sm:gap-2 sm:pt-2.5">
                         <div className="min-w-0">
                           <button
                             type="button"
                             onClick={() => void copyCode(voucher.code)}
-                            className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-[#F0C8B8] bg-[#FFF8F4] px-2.5 py-1.5 text-[8px] font-bold tracking-[0.035em] text-[#D94B2A] transition hover:border-[#EE4D2D] hover:bg-[#FFF0E8] sm:text-[9px]"
+                            className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-[#E3D4C4] bg-[#F8F4EE] px-2 py-1.5 text-[7px] font-bold tracking-[0.025em] text-[#80634B] transition hover:border-[#B98561] hover:bg-[#F2E8DC] sm:px-2.5 sm:text-[9px]"
                             aria-label={`Sao chép mã ${voucher.code}`}
                           >
                             <span className="truncate">{voucher.code}</span>
                             <Copy size={10} className="shrink-0" />
                           </button>
-                          <p className="mt-1 text-[7px] text-[#9A9089] sm:text-[8px]">
+                          <p className="mt-1 text-[6px] text-[#9A9089] sm:text-[8px]">
                             {upcoming ? `Bắt đầu ${formatDate(voucher.start_at)}` : `HSD ${formatDate(voucher.end_at)}`}
                           </p>
                         </div>
@@ -284,7 +284,7 @@ export default function Vouchers() {
                           type="button"
                           onClick={() => saveVoucher(voucher)}
                           disabled={saved}
-                          className={`inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-lg px-3.5 text-[9px] font-semibold transition sm:h-9 sm:px-4 sm:text-[10px] ${saved ? "border border-[#DCE7D6] bg-[#F1F7ED] text-[#58734A]" : "bg-gradient-to-r from-[#F05A37] to-[#E94727] text-white shadow-[0_3px_8px_rgba(238,77,45,0.18)] hover:from-[#DF4828] hover:to-[#D83D20] active:scale-[0.98]"}`}
+                          className={`inline-flex h-7 shrink-0 items-center justify-center gap-1 rounded-full px-2.5 text-[8px] font-semibold transition sm:h-9 sm:px-4 sm:text-[10px] ${saved ? "border border-[#DCE7D6] bg-[#F1F7ED] text-[#58734A]" : "bg-[#4D5745] text-white shadow-[0_3px_8px_rgba(77,87,69,0.18)] hover:bg-[#414A3A] active:scale-[0.98]"}`}
                         >
                           {saved ? <><Check size={11} /> Đã lưu</> : "Lưu mã"}
                         </button>
@@ -308,7 +308,7 @@ export default function Vouchers() {
             <button
               type="button"
               onClick={() => setShowAll((value) => !value)}
-              className="group inline-flex h-8 items-center gap-1.5 rounded-full border border-[#D8D0C4] bg-white/50 px-3.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#71695E] transition hover:border-[#BDB09F] hover:bg-white sm:h-9 sm:gap-2 sm:px-4 sm:text-[9px] sm:tracking-[0.12em]"
+              className="group inline-flex h-8 items-center gap-1.5 rounded-full border border-[#D8D0C4] bg-white/75 px-3.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#4D5745] shadow-[0_3px_10px_rgba(54,45,34,0.05)] transition hover:border-[#BDB09F] hover:bg-white sm:h-9 sm:gap-2 sm:px-4 sm:text-[9px] sm:tracking-[0.12em]"
             >
               {showAll ? "Thu gọn ưu đãi" : `Xem thêm ${hiddenVoucherCount} ưu đãi`}
               <ArrowRight size={12} className={`transition-transform ${showAll ? "rotate-180" : "group-hover:translate-x-0.5"}`} />

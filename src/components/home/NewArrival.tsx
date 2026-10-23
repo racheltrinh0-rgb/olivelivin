@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 
 type ProductCardProduct = {
   id: string | number;
@@ -40,7 +40,6 @@ export default function NewArrival({ products }: NewArrivalProps) {
   return (
     <section className="relative w-full bg-white py-8 sm:py-10 lg:py-12">
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        {/* EDITORIAL HEADER */}
         <div className="mb-6 flex items-end justify-between gap-4 sm:mb-7">
           <div className="min-w-0">
             <div className="mb-2 flex items-center gap-2">
@@ -49,7 +48,6 @@ export default function NewArrival({ products }: NewArrivalProps) {
                 Olive Living Selection
               </p>
             </div>
-
             <h2 className="font-serif text-[28px] font-normal leading-[1.12] tracking-[-0.035em] text-[#292621] sm:text-[32px] lg:text-[36px]">
               New Arrivals<span className="text-[#B98561]">.</span>
             </h2>
@@ -59,7 +57,6 @@ export default function NewArrival({ products }: NewArrivalProps) {
           </div>
         </div>
 
-        {/* PRODUCT SCROLLER */}
         <div className="relative">
           <div
             ref={scrollerRef}
@@ -77,7 +74,6 @@ export default function NewArrival({ products }: NewArrivalProps) {
                   className="group relative w-[68%] min-w-[220px] max-w-[280px] shrink-0 snap-start overflow-hidden rounded-[20px] bg-white shadow-[0_3px_14px_rgba(35,30,25,0.08)] transition-shadow duration-300 hover:shadow-[0_7px_22px_rgba(35,30,25,0.12)] sm:w-[42%] md:w-[30%] lg:w-[23%]"
                 >
                   <Link to="/products/$slug" params={{ slug: product.slug }} className="block h-full">
-                    {/* PRODUCT IMAGE */}
                     <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] bg-[#F5F3EF]">
                       {product.image_url ? (
                         <img
@@ -98,17 +94,19 @@ export default function NewArrival({ products }: NewArrivalProps) {
                         </span>
                       )}
 
-                      <span className="absolute bottom-3 left-3 right-3 flex items-center justify-center rounded-full border border-white/65 bg-white/75 px-3 py-2.5 text-xs font-medium text-[#292621] shadow-[0_2px_8px_rgba(0,0,0,0.05)] backdrop-blur-md transition-colors duration-200 group-hover:bg-white/90 sm:bottom-4 sm:left-4 sm:right-4">
-                        Xem sản phẩm
+                      {/* Icon button matching the circled control in the reference */}
+                      <span
+                        aria-hidden="true"
+                        className="absolute right-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-xl border border-white/75 bg-white/85 text-[#292621] shadow-[0_2px_8px_rgba(0,0,0,0.10)] backdrop-blur-md transition-all duration-200 group-hover:bg-white group-hover:text-[#4D5745] sm:right-3 sm:top-3 sm:h-10 sm:w-10"
+                      >
+                        <ExternalLink size={18} strokeWidth={1.8} />
                       </span>
                     </div>
 
-                    {/* PRODUCT DETAILS */}
                     <div className="flex min-h-[108px] flex-col px-3.5 pb-4 pt-3.5 sm:min-h-[120px] sm:px-4 sm:pb-5 sm:pt-4">
                       <h3 className="line-clamp-2 text-[12px] font-medium leading-[1.65] text-[#39342F] sm:text-sm">
                         {product.name}
                       </h3>
-
                       <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-3">
                         {price > 0 ? (
                           <span className="text-[13px] font-semibold text-[#39342F] sm:text-sm">
@@ -130,7 +128,6 @@ export default function NewArrival({ products }: NewArrivalProps) {
             })}
           </div>
 
-          {/* SUBTLE GLASS NEXT BUTTON */}
           {products.length > 1 && (
             <button
               type="button"

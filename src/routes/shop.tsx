@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 
 
@@ -17,6 +17,8 @@ import {
   ArrowDown,
 
   ArrowUp,
+  ChevronLeft,
+  ChevronRight,
 
   Copy,
 
@@ -99,6 +101,21 @@ function ShopPage() {
   const [showAllVouchers, setShowAllVouchers] =
 
     useState(false);
+
+  const voucherScrollRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollVouchers = (direction: "left" | "right") => {
+    const container = voucherScrollRef.current;
+    if (!container) return;
+
+    container.scrollBy({
+      left:
+        direction === "left"
+          ? -container.clientWidth * 0.82
+          : container.clientWidth * 0.82,
+      behavior: "smooth",
+    });
+  };
 
 
 
@@ -992,772 +1009,179 @@ function ShopPage() {
 
 
       {/* =================================================
-
-          HOME VOUCHERS
-
+          HOME VOUCHERS — CLEAN RESPONSIVE DESIGN
       ================================================== */}
 
-
-
-      {vouchersQ.data &&
-
-        vouchersQ.data.length > 0 && (
-
-          <section className="relative isolate mb-8 w-full overflow-hidden rounded-[16px] border border-[#F2D7C7] bg-gradient-to-br from-[#FFF8F1] via-white to-[#FFF0E7] shadow-[0_8px_28px_rgba(124,72,39,0.10)]">
-            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[4px] bg-gradient-to-r from-[#FF4D00] via-[#FF7A35] to-[#E83D2A]" />
-            <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 z-0 h-36 w-36 rounded-full bg-[#FF6A00]/[0.09] blur-2xl" />
-            <div aria-hidden="true" className="pointer-events-none absolute -left-12 bottom-0 z-0 h-32 w-32 rounded-full bg-[#E8B98D]/[0.16] blur-2xl" />
-
-            {/* DECORATIVE VOUCHER PATTERN — trải đều toàn bộ section */}
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 720 420"
-              preserveAspectRatio="none"
-              className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-[0.26]"
-              fill="none"
-              stroke="#F4A66F"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M-25 90 C65 15 125 145 220 70 S365 35 425 100 S590 150 745 55" strokeDasharray="2 9" />
-              <path d="M-15 260 C70 190 130 320 225 245 S370 205 450 270 S615 320 745 230" strokeDasharray="2 9" />
-              <path d="M-10 385 C70 325 140 415 230 355 S380 330 470 385 S625 410 740 350" strokeDasharray="2 9" />
-              <g transform="translate(55 35) rotate(-22 65 35)">
-                <path d="M12 4 H112 Q124 4 124 16 V25 Q109 35 124 45 V54 Q124 66 112 66 H12 Q0 66 0 54 V45 Q15 35 0 25 V16 Q0 4 12 4Z" />
-                <text x="62" y="47" fill="#F4A66F" stroke="none" fontSize="30" textAnchor="middle">%</text>
-              </g>
-              <g transform="translate(520 30) rotate(17 60 35)">
-                <path d="M12 4 H108 Q120 4 120 16 V25 Q105 35 120 45 V54 Q120 66 108 66 H12 Q0 66 0 54 V45 Q15 35 0 25 V16 Q0 4 12 4Z" />
-                <text x="60" y="47" fill="#F4A66F" stroke="none" fontSize="30" textAnchor="middle">%</text>
-              </g>
-              <g transform="translate(300 145) rotate(-12 38 22)">
-                <path d="M8 2 H68 Q76 2 76 10 V17 Q66 22 76 28 V35 Q76 43 68 43 H8 Q0 43 0 35 V28 Q10 22 0 17 V10 Q0 2 8 2Z" />
-                <path d="M38 5 V40" strokeDasharray="3 5" />
-              </g>
-              <g transform="translate(30 300) rotate(14 55 30)">
-                <path d="M10 0 H100 Q110 0 110 10 V20 Q98 30 110 40 V50 Q110 60 100 60 H10 Q0 60 0 50 V40 Q12 30 0 20 V10 Q0 0 10 0Z" />
-                <text x="55" y="39" fill="#F4A66F" stroke="none" fontSize="26" textAnchor="middle">%</text>
-              </g>
-              <g transform="translate(560 290) rotate(-18 55 30)">
-                <path d="M10 0 H100 Q110 0 110 10 V20 Q98 30 110 40 V50 Q110 60 100 60 H10 Q0 60 0 50 V40 Q12 30 0 20 V10 Q0 0 10 0Z" />
-                <text x="55" y="39" fill="#F4A66F" stroke="none" fontSize="26" textAnchor="middle">%</text>
-              </g>
-              <path d="M210 160 l4 11 11 4-11 4-4 11-4-11-11-4 11-4Z" />
-              <path d="M475 175 l4 10 10 4-10 4-4 10-4-10-10-4 10-4Z" />
-              <path d="M280 330 l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" />
-              <path d="M675 180 l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" />
-              <circle cx="260" cy="35" r="5" />
-              <circle cx="430" cy="145" r="4" />
-              <circle cx="170" cy="220" r="4" />
-              <circle cx="500" cy="235" r="5" />
-              <circle cx="390" cy="375" r="4" />
-              <circle cx="690" cy="335" r="4" />
-            </svg>
-
-            <div className="relative z-10 px-3 pb-3 pt-4 sm:px-4 sm:pb-4 sm:pt-5">
-
-
-
-            {/* TITLE */}
-
-
-
-            <div className="mb-3 flex items-end justify-between">
-
-              <div>
-
-                <p className="inline-flex items-center gap-1.5 rounded-full bg-[#FF4D00]/[0.09] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.18em] text-[#D9430B]">
-                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#FF4D00] shadow-[0_0_0_3px_rgba(255,77,0,0.12)]" />
-                  ƯU ĐÃI HÔM NAY
-                </p>
-
-
-
-                <h2
-
-                  className="
-
-                    mt-1
-
-                    text-[19px]
-
-                    font-normal
-
-                    leading-tight
-
-                    tracking-[-0.02em]
-
-                    text-[#252525]
-
-                    sm:text-[22px]
-
-                  "
-
-                  style={{
-
-                    fontFamily:
-
-                      '"Times New Roman", Times, serif',
-
-                  }}
-
-                >
-
-                  Voucher dành cho bạn
-
-                </h2>
-
-              </div>
-
-
-
-              <span
-
-                className="
-
-                  rounded-full
-
-                  bg-white/90
-
-                  px-2.5
-
-                  py-1
-
-                  text-[9px]
-
-                  font-semibold
-
-                  text-[#9A4A2A]
-
-                  shadow-sm
-
-                "
-
+      {vouchersQ.data && vouchersQ.data.length > 0 && (
+        <section
+          className="mb-8 w-full overflow-hidden rounded-[20px] bg-[#F7F5F0] p-3.5 sm:rounded-[24px] sm:p-5 lg:p-6"
+          style={{
+            backgroundColor: "#F7F5F0",
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1200 420' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%238c9677' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke-width='1.3' stroke-dasharray='4 6' opacity='.22'%3E%3Cpath d='M45 52 H125 A12 12 0 0 0 149 52 H215 V116 H149 A12 12 0 0 0 125 116 H45 Z' transform='rotate(-8 130 84)'/%3E%3Cpath d='M970 280 H1045 A12 12 0 0 0 1069 280 H1145 V346 H1069 A12 12 0 0 0 1045 346 H970 Z' transform='rotate(7 1057 313)'/%3E%3Cpath d='M390 335 H440 A10 10 0 0 0 460 335 H510 V385 H460 A10 10 0 0 0 440 385 H390 Z' transform='rotate(-9 450 360)'/%3E%3C/g%3E%3Cg stroke-width='1.5' opacity='.26'%3E%3Cpath d='M300 64 q18 -15 36 0 q-18 15 -36 0 M318 64 q-4 12 -13 17'/%3E%3Cpath d='M780 325 q18 -15 36 0 q-18 15 -36 0 M798 325 q-4 12 -13 17' transform='rotate(15 798 325)'/%3E%3Cpath d='M600 95 q24 -18 48 0 q-24 18 -48 0 M624 95 q-5 14 -17 20' transform='rotate(-12 624 95)'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%238c9677' opacity='.28'%3E%3Cpath d='M545 45 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z'/%3E%3Cpath d='M870 190 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z'/%3E%3Cpath d='M185 265 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z'/%3E%3C/g%3E%3Cpath d='M70 220 q45 -25 82 5 t82 0 M690 200 q42 -20 76 3 t70 0' fill='none' stroke='%238c9677' stroke-width='1.5' opacity='.18'/%3E%3C/svg%3E\")",
+            backgroundSize: "100% 100%",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="mb-4 flex items-end justify-between gap-3 sm:mb-5">
+            <div className="min-w-0">
+              <p className="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.18em] text-[#687354] sm:text-[10px]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#687354]" />
+                Ưu đãi hôm nay
+              </p>
+              <h2
+                className="mt-1.5 text-[20px] leading-tight tracking-[-0.025em] text-[#292B25] sm:text-[25px]"
+                style={{ fontFamily: '"Times New Roman", Times, serif' }}
               >
-
-                {vouchersQ.data.length} ưu đãi
-
-              </span>
-
+                Voucher dành cho bạn
+              </h2>
+              <p className="mt-1 text-[10px] text-[#858478] sm:text-xs">
+                Chọn ưu đãi phù hợp cho đơn hàng của bạn.
+              </p>
             </div>
 
+            <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[9px] font-semibold text-[#657052] shadow-[0_2px_8px_rgba(40,45,30,0.06)] sm:text-[10px]">
+              {vouchersQ.data.length} ưu đãi
+            </span>
+          </div>
 
-
-            {/* =================================================
-
-                VOUCHER GRID
-
-            ================================================== */}
-
-
-
+          <div className="relative">
             <div
-
-              className="
-
-                grid
-
-                grid-cols-2
-
-                gap-2.5
-
-                sm:grid-cols-2
-
-                lg:grid-cols-3
-
-              "
-
+              ref={voucherScrollRef}
+              className=" -mx-1 flex gap-3 overflow-x-auto px-1 pb-2 snap-x snap-mandatory scroll-px-1 sm:mx-0 sm:grid sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none sm:grid-cols-2 lg:grid-cols-3"
+              style={{ scrollbarWidth: "none" }}
             >
-
-              {(
-
-                showAllVouchers
-
-                  ? vouchersQ.data
-
-                  : vouchersQ.data.slice(0, 2)
-
-              ).map((voucher: any) => {
-
-
-
-                const code = String(
-
-                  voucher.code ?? ""
-
-                );
-
-
-
-                const type = String(
-
-                  voucher.type ?? ""
-
-                ).toLowerCase();
-
-
-
-                const value = Number(
-
-                  voucher.value ?? 0
-
-                );
-
-
-
-                const minOrder = Number(
-
-                  voucher.min_order ?? 0
-
-                );
-
-
-
-                const maxDiscount =
-
-                  voucher.max_discount !== null &&
-
-                  voucher.max_discount !== undefined
-
-                    ? Number(
-
-                        voucher.max_discount
-
-                      )
-
-                    : null;
-
-
-
-                const isShipping =
-
-                  type === "shipping";
-
-
-
-                let discountText = "";
-
-
-
-                if (isShipping) {
-
-                  discountText =
-
-                    "MIỄN PHÍ SHIP";
-
-                } else if (
-
-                  type === "percent"
-
-                ) {
-
-                  discountText =
-
-                    `${value}% OFF`;
-
-                } else {
-
-                  discountText =
-
-                    `GIẢM ${value.toLocaleString(
-
-                      "vi-VN"
-
-                    )}đ`;
-
-                }
-
-
-
-                return (
-
-                  <div
-
-                    key={voucher.id}
-
-                    className="
-
-                      group
-
-                      relative
-
-                      min-w-0
-
-                      overflow-hidden
-
-                      rounded-[11px]
-
-                      border
-
-                      border-[#EBD9CB]
-
-                      bg-white/95
-
-                      p-2.5
-
-                      shadow-[0_3px_12px_rgba(90,55,30,0.045)]
-
-                      transition-all
-
-                      duration-200
-
-                      hover:-translate-y-0.5
-
-                      hover:border-[#F5B18F]
-
-                      hover:shadow-[0_7px_18px_rgba(255,77,0,0.09)]
-
-                      sm:p-3
-
-                    "
-
-                  >
-
-                    {/* DECORATION */}
-
-
-
-                    <div
-
-                      className="
-
-                        pointer-events-none
-
-                        absolute
-
-                        -right-6
-
-                        -top-6
-
-                        h-14
-
-                        w-14
-
-                        rounded-full
-
-                        bg-white/70
-
-                      "
-
-                    />
-
-
-
-                    <div
-
-                      className="
-
-                        relative
-
-                        flex
-
-                        min-w-0
-
-                        flex-col
-
-                      "
-
-                    >
-
-
-
-                      {/* TOP */}
-
-
-
-                      <div
-
-                        className="
-
-                          flex
-
-                          min-w-0
-
-                          items-center
-
-                          gap-2
-
-                        "
-
-                      >
-
-
-
-                        {/* ICON */}
-
-
-
-                        <div
-
-                          className="
-
-                            flex
-
-                            h-8
-
-                            w-8
-
-                            shrink-0
-
-                            items-center
-
-                            justify-center
-
-                            rounded-[9px]
-
-                            bg-[#FFF2E8]
-
-                            text-[#D95A21]
-
-                            ring-1 ring-[#F6D9C7]
-
-                            sm:h-9
-
-                            sm:w-9
-
-                          "
-
-                        >
-
-                          <Ticket
-
-                            size={14}
-
-                            strokeWidth={1.5}
-
-                          />
-
-                        </div>
-
-
-
-                        {/* CONTENT */}
-
-
-
-                        <div className="min-w-0 flex-1">
-
-                          <p
-
-                            className="
-
-                              truncate
-
-                              text-[12px]
-
-                              font-semibold
-
-                              leading-4
-
-                              tracking-tight
-
-                              text-[#C94313]
-
-                              sm:text-[13px]
-
-                            "
-
-                          >
-
-                            {discountText}
-
-                          </p>
-
-
-
-                          <p
-
-                            className="
-
-                              mt-0.5
-
-                              truncate
-
-                              text-[8px]
-
-                              leading-3
-
-                              text-neutral-500
-
-                              sm:text-[9px]
-
-                            "
-
-                          >
-
-                            {voucher.description ||
-
-                              (minOrder > 0
-
-                                ? `Đơn từ ${minOrder.toLocaleString(
-
-                                    "vi-VN"
-
-                                  )}đ`
-
-                                : "Áp dụng đơn hàng")}
-
-                          </p>
-
-                        </div>
-
-                      </div>
-
-
-
-                      {/* INFO */}
-
-
-
-                      <div
-
-                        className="
-
-                          mt-1.5
-
-                          min-h-[12px]
-
-                          truncate
-
-                          text-[7px]
-
-                          leading-3
-
-                          text-neutral-400
-
-                        "
-
-                      >
-
-                        {type === "percent" &&
-
-                        maxDiscount !== null
-
-                          ? `Tối đa ${maxDiscount.toLocaleString(
-
-                              "vi-VN"
-
-                            )}đ`
-
-                          : minOrder > 0
-
-                            ? `Đơn từ ${minOrder.toLocaleString(
-
-                                "vi-VN"
-
-                              )}đ`
-
-                            : "Áp dụng toàn shop"}
-
-                      </div>
-
-
-
-                      {/* COPY BUTTON */}
-
-
-
-                      <button
-
-                        type="button"
-
-                        onClick={() =>
-
-                          copyVoucher(code)
-
-                        }
-
-                        className="
-
-                          mt-1.5
-
-                          flex
-
-                          h-6
-
-                          w-full
-
-                          items-center
-
-                          justify-center
-
-                          gap-1
-
-                          rounded-full
-
-                          border
-
-                          border-[#E8C6B2]
-
-                          bg-[#FFF9F5]
-
-                          px-2
-
-                          text-[7px]
-
-                          font-bold
-
-                          uppercase
-
-                          tracking-[0.06em]
-
-                          text-[#4A4742]
-
-                          transition
-
-                          hover:bg-[#F5F1EA]
-
-                          sm:h-7
-
-                          sm:text-[8px]
-
-                        "
-
-                      >
-
-                        {copiedVoucher ===
-
-                        code ? (
-
-                          <>
-
-                            <Check size={9} />
-
-                            Đã sao chép
-
-                          </>
-
-                        ) : (
-
-                          <>
-
-                            <Copy size={9} />
-
-                            {code}
-
-                          </>
-
-                        )}
-
-                      </button>
-
+              {vouchersQ.data.map((voucher: any, index: number) => {
+              const code = String(voucher.code ?? "");
+              const type = String(voucher.type ?? "").toLowerCase();
+              const value = Number(voucher.value ?? 0);
+              const minOrder = Number(voucher.min_order ?? 0);
+              const maxDiscount =
+                voucher.max_discount !== null && voucher.max_discount !== undefined
+                  ? Number(voucher.max_discount)
+                  : null;
+              const isShipping = type === "shipping";
+
+              let discountText = "";
+              if (isShipping) {
+                discountText = "MIỄN PHÍ SHIP";
+              } else if (type === "percent") {
+                discountText = `GIẢM ${value}%`;
+              } else {
+                discountText = `GIẢM ${value.toLocaleString("vi-VN")}đ`;
+              }
+
+              return (
+                <article
+                  key={voucher.id}
+                  className={
+                    "group relative flex h-[116px] w-[82vw] max-w-[330px] shrink-0 snap-start overflow-hidden rounded-[14px] bg-white shadow-[0_4px_14px_rgba(45,43,34,0.06)] transition-all duration-200 hover:shadow-[0_8px_20px_rgba(45,43,34,0.10)] sm:h-auto sm:w-auto sm:max-w-none sm:shrink sm:rounded-[16px] " +
+                    (!showAllVouchers && index >= 3 ? "sm:hidden" : "")
+                  }
+                >
+                  <div className="flex w-[58px] shrink-0 flex-col items-center justify-center border-r border-dashed border-[#DADCCF] bg-[#EAEDE2] px-1.5 py-2 text-center sm:w-[96px] sm:px-2 sm:py-5">
+                    <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#657052] shadow-sm sm:mb-2 sm:h-10 sm:w-10">
+                      <Ticket size={14} strokeWidth={1.6} className="sm:hidden" />
+                      <Ticket size={17} strokeWidth={1.6} className="hidden sm:block" />
                     </div>
-
+                    <span className="text-[7px] font-semibold uppercase tracking-[0.08em] text-[#7B806D] sm:text-[8px] sm:tracking-[0.12em]">
+                      Ưu đãi
+                    </span>
+                    <span className="mt-0.5 max-w-full break-words text-[14px] font-bold leading-tight tracking-[-0.04em] text-[#4D5745] min-[390px]:text-[12px] sm:mt-1 sm:text-[20px]">
+                      {isShipping ? "SHIP" : type === "percent" ? `${value}%` : `${value.toLocaleString("vi-VN")}đ`}
+                    </span>
                   </div>
 
+                  <div className="flex min-w-0 flex-1 flex-col justify-center p-2.5 sm:p-4">
+                    <div className="flex min-w-0 items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-[12px] font-bold leading-4 text-[#34382E] min-[390px]:text-[11px] sm:text-[14px]">
+                          {discountText}
+                        </p>
+                        <p className="mt-0.5 line-clamp-2 text-[9px] leading-[1.4] text-[#77786E] min-[390px]:text-[8px] sm:mt-1 sm:text-[10px] sm:leading-[1.45]">
+                          {voucher.description ||
+                            (minOrder > 0
+                              ? `Áp dụng cho đơn từ ${minOrder.toLocaleString("vi-VN")}đ`
+                              : "Áp dụng theo điều kiện voucher")}
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-[#F0F3EA] px-2 py-1 text-[8px] font-semibold text-[#687354] sm:px-2 sm:py-1 sm:text-[8px]">
+                        Có sẵn
+                      </span>
+                    </div>
+
+                    <div className="mt-1.5 text-[8px] leading-tight text-[#99988D] min-[390px]:text-[7px] sm:mt-2 sm:text-[9px]">
+                      {type === "percent" && maxDiscount !== null
+                        ? `Giảm tối đa ${maxDiscount.toLocaleString("vi-VN")}đ`
+                        : minOrder > 0
+                          ? `Đơn tối thiểu ${minOrder.toLocaleString("vi-VN")}đ`
+                          : "Áp dụng toàn shop"}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => copyVoucher(code)}
+                      aria-label={`Sao chép mã ${code}`}
+                      className="mt-2 flex min-h-8 w-full items-center justify-between gap-2 rounded-lg border border-dashed border-[#C9CEBC] bg-[#F8F9F5] px-2.5 py-1.5 text-[9px] font-bold tracking-[0.02em] text-[#4D5745] transition hover:border-[#8D9878] hover:bg-[#EFF2E8] min-[390px]:text-[8px] sm:mt-2.5 sm:min-h-8 sm:gap-2 sm:rounded-lg sm:px-2.5 sm:py-1.5 sm:text-[10px] sm:tracking-[0.04em]"
+                    >
+                      <span className="min-w-0 truncate">{code}</span>
+                      <span className="inline-flex shrink-0 items-center gap-1">
+                        {copiedVoucher === code ? (
+                          <>
+                            <Check size={10} className="sm:hidden" />
+                            <Check size={11} className="hidden sm:block" />
+                            <span className="hidden sm:inline">Đã sao chép</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={10} className="sm:hidden" />
+                            <Copy size={11} className="hidden sm:block" />
+                            <span className="hidden sm:inline">Sao chép</span>
+                          </>
+                        )}
+                      </span>
+                    </button>
+                  </div>
+                </article>
                 );
-
               })}
-
             </div>
 
-
-
-            {/* =================================================
-
-                EXPAND / COLLAPSE
-
-            ================================================== */}
-
-
-
-            {vouchersQ.data.length > 2 && (
-
-              <button
-
-                type="button"
-
-                onClick={() =>
-
-                  setShowAllVouchers(
-
-                    (prev) => !prev
-
-                  )
-
-                }
-
-                className="
-
-                  mx-auto
-
-                  mt-4
-
-                  flex
-
-                  items-center
-
-                  gap-1.5
-
-                  rounded-full
-
-                  border
-
-                  border-[#E8C6B2]
-
-                  bg-white/95
-
-                  px-4
-
-                  py-2
-
-                  text-[8px]
-
-                  font-medium
-
-                  uppercase
-
-                  tracking-[0.12em]
-
-                  text-[#B74417]
-
-                  shadow-[0_3px_12px_rgba(124,72,39,0.08)]
-
-                  backdrop-blur-sm
-
-                  transition-all
-
-                  duration-300
-
-                  hover:bg-[#F7F3ED]
-
-                "
-
-              >
-
-                {showAllVouchers ? (
-
-                  <>
-
-                    Thu gọn
-
-                    <ArrowUp size={11} />
-
-                  </>
-
-                ) : (
-
-                  <>
-
-                    Xem thêm voucher
-
-                    <ArrowDown size={11} />
-
-                  </>
-
-                )}
-
-              </button>
-
+            {vouchersQ.data.length > 1 && (
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 sm:hidden">
+                {/* Subtle edge fade with one compact, translucent next button */}
+                <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#F7F7F1]/45 via-[#F7F7F1]/15 to-transparent" />
+                <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-1">
+                  <button
+                    type="button"
+                    onClick={() => scrollVouchers("right")}
+                    aria-label="Lướt voucher tiếp theo"
+                    className="group/mirror pointer-events-auto relative flex h-5 w-5 items-center justify-center overflow-hidden rounded-full border border-white/35 bg-white/20 text-[#5F6B4F]/55 shadow-[inset_0_1px_1px_rgba(255,255,255,0.35)] backdrop-blur-sm transition-all duration-200 hover:bg-white/35 hover:text-[#5F6B4F]/80 active:scale-95"
+                  >
+                    <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-full bg-[linear-gradient(145deg,rgba(255,255,255,0.48)_0%,rgba(255,255,255,0.10)_45%,rgba(255,255,255,0)_70%)]" />
+                    <span aria-hidden="true" className="pointer-events-none absolute -left-1/2 top-0 h-full w-1/2 -skew-x-[25deg] bg-gradient-to-r from-transparent via-white/55 to-transparent opacity-0 transition-all duration-500 group-hover/mirror:left-full group-hover/mirror:opacity-70" />
+                    <ChevronRight className="relative z-10" size={10} strokeWidth={1.7} />
+                  </button>
+                </div>
+              </div>
             )}
-
-                      </div>
-          </section>
-
-        )}
+          </div>
 
 
+          {vouchersQ.data.length > 2 && (
+            <div className="mt-3 hidden justify-center sm:flex">
+              <button
+                type="button"
+                onClick={() => setShowAllVouchers((prev: boolean) => !prev)}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#5F6B4F] shadow-[0_3px_12px_rgba(45,55,35,0.08)] transition hover:bg-[#EEF1E7]"
+              >
+                {showAllVouchers ? "THU GỌN VOUCHER" : "XEM THÊM VOUCHER"}
+                {showAllVouchers ? <ArrowUp size={13} /> : <ArrowDown size={13} />}
+              </button>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* =================================================
 

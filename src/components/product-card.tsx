@@ -399,7 +399,7 @@ export function ProductCard({
 
       }}
 
-      className="group block h-full"
+      className="group block h-full w-full"
 
     >
 
@@ -450,7 +450,7 @@ export function ProductCard({
 
             relative
 
-            mx-1.5 mt-1.5
+            mx-0.5 mt-1
 
             aspect-[4/5]
 
@@ -468,12 +468,15 @@ export function ProductCard({
             <div className="absolute left-2 right-2 top-2 z-30 flex items-start justify-start gap-1.5 sm:left-3 sm:right-3 sm:top-3 sm:gap-2">
               {product.express_available === true && (
                 <span
-                  className="inline-flex h-5 shrink-0 items-center justify-center gap-0.5 rounded-full bg-white px-1.5 text-[8px] font-bold leading-none text-[#33382D] shadow-[0_2px_6px_rgba(0,0,0,0.14)] sm:h-6 sm:gap-1 sm:px-2.5 sm:text-[10px]"
-                  title="Có hỗ trợ giao hỏa tốc"
-                >
-                  <Truck className="h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3" aria-hidden="true" />
-                  Hỏa tốc
-                </span>
+  className="inline-flex h-5 shrink-0 items-center justify-center gap-0.5 rounded-full bg-[#E8F7EE] px-1.5 text-[8px] font-bold leading-none text-[#16834A] shadow-[0_2px_6px_rgba(0,0,0,0.08)] sm:h-6 sm:gap-1 sm:px-2.5 sm:text-[10px]"
+  title="Có hỗ trợ giao hỏa tốc"
+>
+  <Truck
+    className="h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3"
+    aria-hidden="true"
+  />
+  Hỏa tốc
+</span>
               )}
 
               {showFlashSale && (
@@ -489,9 +492,9 @@ export function ProductCard({
 
           <span
             aria-hidden="true"
-            className="absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-lg border border-white/75 bg-white/90 text-[#292621] shadow-[0_3px_9px_rgba(0,0,0,0.16)] backdrop-blur-md transition-all duration-200 group-hover:bg-white group-hover:text-[#4D5745] sm:right-3 sm:top-3 sm:h-10 sm:w-10"
+            className="absolute right-2 top-2 z-20 flex h-6 w-6 items-center justify-center rounded-lg border border-white/75 bg-white/90 text-[#292621] shadow-[0_3px_9px_rgba(0,0,0,0.16)] backdrop-blur-md transition-all duration-200 group-hover:bg-white group-hover:text-[#4D5745] sm:right-3 sm:top-3 sm:h-10 sm:w-10"
           >
-            <ExternalLink size={15} strokeWidth={1.8} className="sm:hidden" />
+            <ExternalLink size={12} strokeWidth={1.8} className="sm:hidden" />
             <ExternalLink size={18} strokeWidth={1.8} className="hidden sm:block" />
           </span>
 
@@ -561,7 +564,7 @@ export function ProductCard({
 
             flex-col
 
-            px-3.5
+            px-2
 
             pb-4
 

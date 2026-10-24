@@ -352,9 +352,9 @@ export default function BestSeller({
 
                         <span
                           aria-hidden="true"
-                          className="absolute right-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-xl border border-white/75 bg-white/85 text-[#292621] shadow-[0_2px_8px_rgba(0,0,0,0.10)] backdrop-blur-md transition-all duration-200 group-hover:bg-white group-hover:text-[#4D5745] sm:right-3 sm:top-3 sm:h-10 sm:w-10"
+                          className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg border border-white/75 bg-white/85 text-[#292621] shadow-[0_2px_6px_rgba(0,0,0,0.08)] backdrop-blur-md transition-all duration-200 group-hover:bg-white group-hover:text-[#4D5745] sm:right-3 sm:top-3 sm:h-8 sm:w-8"
                         >
-                          <ExternalLink size={18} strokeWidth={1.8} />
+                          <ExternalLink size={15} strokeWidth={1.8} />
                         </span>
                       </div>
 

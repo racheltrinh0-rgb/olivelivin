@@ -106,7 +106,7 @@ export default function FloatingSupport({
 
      
 {/* MYSTERY JACKPOT - DISCOUNT 25% */}
-<a
+{/*<a
   href={`/#${MYSTERY_JACKPOT_ID}`}
   onClick={handleFlashSaleClick}
   aria-label="Khám phá Mystery Jackpot giảm giá 25%"
@@ -122,7 +122,7 @@ export default function FloatingSupport({
     alt="Giảm giá 25%"
     className="h-full w-full object-contain"
   />
-</a>
+</a>*/}
     </div>
   );
 }

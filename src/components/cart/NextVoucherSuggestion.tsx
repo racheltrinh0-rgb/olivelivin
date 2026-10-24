@@ -193,7 +193,7 @@ export default function NextVoucherSuggestion({ subtotal }: Props) {
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-2 border-t border-dashed border-[#E9E1D6] pt-2.5">
                     <span className="min-w-0 truncate font-mono text-[10px] font-semibold tracking-wide text-[#66533E]">{voucher.code || "Áp dụng tại thanh toán"}</span>
-                    <button type="button" onClick={() => void copyCode(voucher.code)} className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-[#292B24] px-3 text-[10px] font-semibold text-white transition hover:bg-[#47483F] active:scale-[0.98]">
+                    <button type="button" onClick={() => void copyCode(voucher.code)} className="checkout-mirror-button h-7 shrink-0 gap-1.5 px-3 text-[10px] font-semibold tracking-wide active:scale-[0.98]">
                       {voucher.code ? <><Copy className="h-3 w-3" /> Sao chép</> : "Chi tiết"}
                     </button>
                   </div>

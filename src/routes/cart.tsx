@@ -16,6 +16,7 @@ import { formatVND } from "@/lib/format";
 import NextVoucherSuggestion from "@/components/cart/NextVoucherSuggestion";
 import { cn } from "@/lib/utils";
 
+
 export const Route = createFileRoute("/cart")({
   component: CartPage,
 });
@@ -286,7 +287,7 @@ function CartPage() {
         <div className="mb-7 border-b border-[#E7E2D9] pb-6 sm:mb-9 sm:pb-7">
           <Link
             to="/"
-            className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-medium text-[#77766E] transition-colors hover:bg-white hover:text-[#5F6B50]"
+            className="checkout-mirror-button mb-4 px-3 py-2 text-xs font-medium"
           >
             <ArrowLeft className="h-4 w-4" />
             Tiếp tục mua sắm
@@ -309,7 +310,7 @@ function CartPage() {
               <button
                 type="button"
                 onClick={handleClearCart}
-                className="inline-flex items-center gap-2 rounded-full border border-[#E7DCD5] bg-white/70 px-4 py-2.5 text-xs font-medium text-[#8A6D62] transition-colors hover:border-[#E7B5A1] hover:bg-[#FFF4EF] hover:text-[#C45A24]"
+                className="inline-flex items-center gap-2 rounded-full border border-[#E7DCD5] bg-white/70 px-4 py-2.5 text-xs font-medium text-[#8A6D62] transition-colors hover:border-[#E7B5A1] hover:bg-[#FFF4EF] hover:text-[#C45A24] checkout-mirror-button"
               >
                 <Trash2 className="h-4 w-4" />
                 Xóa giỏ hàng
@@ -335,7 +336,7 @@ function CartPage() {
 
             <Link
               to="/"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#626E53] px-7 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#515D44]"
+              className="checkout-mirror-button mt-6 px-7 py-3.5 text-sm font-semibold"
             >
               Khám phá sản phẩm
               <ArrowRight className="h-4 w-4" />
@@ -429,7 +430,7 @@ function CartPage() {
                             onClick={() =>
                               removeItem(product.id, product.name)
                             }
-                            className="shrink-0 rounded-full p-2 text-[#A09C93] transition-colors hover:bg-[#FFF0EA] hover:text-[#C45A24]"
+                            className="shrink-0 rounded-full p-2 text-[#A09C93] transition-colors hover:bg-[#FFF0EA] hover:text-[#C45A24] checkout-mirror-button"
                             aria-label={`Xóa ${product.name}`}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -447,7 +448,7 @@ function CartPage() {
                                 )
                               }
                               disabled={item.quantity <= 1}
-                              className="grid h-7 w-7 place-items-center rounded-full text-[#77766E] transition-colors hover:bg-white hover:text-[#5F6B50] disabled:cursor-not-allowed disabled:opacity-40"
+                              className="grid h-7 w-7 place-items-center rounded-full text-[#77766E] transition-colors hover:bg-white hover:text-[#5F6B50] disabled:cursor-not-allowed disabled:opacity-40 checkout-mirror-button"
                               aria-label="Giảm số lượng"
                             >
                               <Minus className="h-3 w-3" />
@@ -465,7 +466,7 @@ function CartPage() {
                                   item.quantity + 1,
                                 )
                               }
-                              className="grid h-7 w-7 place-items-center rounded-full text-[#77766E] transition-colors hover:bg-white hover:text-[#5F6B50]"
+                              className="grid h-7 w-7 place-items-center rounded-full text-[#77766E] transition-colors hover:bg-white hover:text-[#5F6B50] checkout-mirror-button"
                               aria-label="Tăng số lượng"
                             >
                               <Plus className="h-3 w-3" />
@@ -558,7 +559,7 @@ function CartPage() {
                 <button
                   type="button"
                   onClick={handleCheckout}
-                  className="relative z-10 flex w-full items-center justify-center gap-2 rounded-full bg-[#626E53] px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_5px_14px_rgba(77,91,61,0.16)] transition-all hover:-translate-y-0.5 hover:bg-[#515D44] hover:shadow-[0_8px_20px_rgba(77,91,61,0.2)] active:translate-y-0"
+                  className="checkout-mirror-button w-full px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.12em]"
                 >
                   Tiến hành thanh toán
                   <ArrowRight className="h-4 w-4" />

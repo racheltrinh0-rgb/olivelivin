@@ -68,8 +68,8 @@ export default function DesignedForRealLife() {
   };
 
   return (
-    <section className="w-full bg-white py-8 sm:py-10 lg:py-12">
-      <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
+    <section className="w-full overflow-hidden bg-white py-8 sm:py-10 lg:py-12">
+      <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-7 lg:px-8">
         {/* EDITORIAL HEADER */}
         <div className="mb-5 flex items-end justify-between gap-4 sm:mb-7">
           <div>
@@ -95,13 +95,13 @@ export default function DesignedForRealLife() {
           <div
             ref={carouselRef}
             className="
-              -mx-4 flex snap-x snap-mandatory gap-3
+              -mx-1 flex snap-x snap-mandatory gap-4
               overflow-x-auto overscroll-x-contain
-              px-4 pb-3 pt-1
+              px-1 pb-8 pt-4
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
-              sm:mx-0 sm:gap-4 sm:px-0
-              lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-visible
+              sm:mx-0 sm:gap-5 sm:px-0
+              lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible
             "
           >
             {videos.map((item, index) => (
@@ -110,9 +110,14 @@ export default function DesignedForRealLife() {
                 data-video-card
                 className="
                   group relative isolate aspect-[3/4]
-                  w-[78%] shrink-0 snap-start overflow-hidden
-                  rounded-[12px] bg-[#E8E5DF]
-                  sm:w-[45%] lg:w-auto
+                  w-[86%] min-w-[270px] max-w-[420px] shrink-0 snap-start
+                  overflow-hidden rounded-[24px] bg-[#E8E5DF]
+                  shadow-[0_12px_32px_rgba(35,30,25,0.18)]
+                  transition-all duration-500
+                  hover:-translate-y-1
+                  hover:shadow-[0_18px_42px_rgba(35,30,25,0.24)]
+                  sm:w-[45%] sm:rounded-[26px]
+                  lg:w-auto lg:min-w-0
                 "
               >
                 <video
@@ -129,15 +134,17 @@ export default function DesignedForRealLife() {
                   }}
                 />
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
 
-                <div className="absolute inset-x-0 bottom-0 p-3.5 text-white sm:p-5">
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-5">
                   <p className="mb-1.5 text-[9px] font-medium uppercase tracking-[0.18em] text-white/75">
                     0{index + 1} <span className="mx-1 text-white/45">/</span> 04
                   </p>
+
                   <h3 className="text-[15px] font-medium leading-snug tracking-[-0.015em] sm:text-[19px]">
                     {item.title}
                   </h3>
+
                   <p className="mt-1.5 text-[10px] leading-relaxed text-white/85 sm:text-[11px]">
                     {item.description}
                   </p>
@@ -154,7 +161,9 @@ export default function DesignedForRealLife() {
                     "
                   >
                     <span>{item.exploreLabel}</span>
-                    <span aria-hidden="true" className="text-sm font-normal">↗</span>
+                    <span aria-hidden="true" className="text-sm font-normal">
+                      ↗
+                    </span>
                   </a>
                 </div>
               </article>

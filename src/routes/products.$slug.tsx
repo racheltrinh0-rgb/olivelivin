@@ -806,89 +806,95 @@ const flashCountdown = {
 };
 
 async function loadBestVoucher() {
-
-
-
-
-
   const productPrice =
-
     Number(selectedColor?.price) ||
-
-    Number(product.price);
-
-
+    Number(product.price) ||
+    0;
 
   const { data, error } = await supabase
-
     .from("vouchers")
-
     .select("*")
-
     .eq("active", true)
-
     .lte("min_order", productPrice);
 
-
-
   if (error) {
-
-    console.error(error);
-
+    console.error("Could not load product vouchers:", error);
     setBestVoucher(null);
-
     return;
-
   }
-
-
 
   if (!data?.length) {
-
     setBestVoucher(null);
-
     return;
-
   }
 
+  /*
+   * Voucher applicability:
+   * - all / general / empty scope: applies to every product
+   * - product: applies only to the product whose ID matches apply_id
+   * - category: applies only to products whose category_id matches apply_id
+   *
+   * Keep this display-side eligibility check aligned with the voucher
+   * validation used in cart/checkout.
+   */
+  const eligibleVouchers = data.filter((voucher: any) => {
+    const applyType = String(
+      voucher.apply_type ?? voucher.apply_scope ?? "all",
+    )
+      .trim()
+      .toLowerCase();
 
+    const applyId = voucher.apply_id ?? voucher.target_id ?? null;
 
-  const best = data.sort((a: any, b: any) => {
+    if (
+      !applyType ||
+      ["all", "general", "everyone", "all_products", "global"].includes(applyType)
+    ) {
+      return true;
+    }
 
-    const valueA =
+    if (
+      ["product", "specific_product", "products"].includes(applyType)
+    ) {
+      return applyId != null && String(applyId) === String(product.id);
+    }
 
-      a.type === "percent"
+    if (
+      ["category", "specific_category", "categories"].includes(applyType)
+    ) {
+      return applyId != null && String(applyId) === String(product.category_id);
+    }
 
-        ? Math.min(productPrice * a.value / 100, a.max_discount)
+    // Unknown targeting values should not accidentally be shown on every PDP.
+    return false;
+  });
 
-        : a.value;
+  if (!eligibleVouchers.length) {
+    setBestVoucher(null);
+    return;
+  }
 
+  const getDiscountValue = (voucher: any) => {
+    const value = Number(voucher.value) || 0;
 
+    if (String(voucher.type).toLowerCase() === "percent") {
+      const rawDiscount = (productPrice * value) / 100;
+      const maxDiscount = Number(voucher.max_discount);
 
-    const valueB =
+      return Number.isFinite(maxDiscount) && maxDiscount > 0
+        ? Math.min(rawDiscount, maxDiscount)
+        : rawDiscount;
+    }
 
-      b.type === "percent"
+    return value;
+  };
 
-        ? Math.min(productPrice * b.value / 100, b.max_discount)
-
-        : b.value;
-
-
-
-    return valueB - valueA;
-
-  })[0];
-
-
-
-  console.log("Voucher:", best);
-
-
+  const best = [...eligibleVouchers].sort(
+    (a: any, b: any) => getDiscountValue(b) - getDiscountValue(a),
+  )[0];
 
   setBestVoucher(best);
-
 }
-
 
 
 useEffect(() => {
@@ -1837,6 +1843,110 @@ const cartItem = {
               )}
 
           </div>
+
+
+
+          {/* Product voucher — responsive green card with live countdown */}
+          {bestVoucher && (
+            <div className="mt-3 overflow-hidden rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-green-50 p-3 shadow-sm sm:p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-800">
+                      {bestVoucher.title || bestVoucher.code}
+                    </span>
+                    <span className="rounded-full bg-emerald-600 px-2 py-1 text-[10px] font-bold text-white">
+                      {String(bestVoucher.type).toLowerCase() === "percent"
+                        ? `-${Number(bestVoucher.value)}%`
+                        : `-${formatVND(Number(bestVoucher.value) || 0)}`}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-slate-700">
+                    {bestVoucher.description || "Ưu đãi dành riêng cho sản phẩm này."}
+                  </p>
+                </div>
+                <button
+  type="button"
+  onClick={async () => {
+    try {
+      await navigator.clipboard.writeText(String(bestVoucher.code || ""));
+      toast.success("Đã sao chép mã voucher");
+    } catch {
+      toast.error("Không thể sao chép mã. Vui lòng sao chép thủ công.");
+    }
+  }}
+  className="
+    group relative isolate inline-flex min-h-10 w-full shrink-0
+    items-center justify-center overflow-hidden rounded-full
+    border border-emerald-600 bg-white/70 px-4 py-2
+    text-[10px] font-bold uppercase tracking-[0.08em]
+    text-emerald-700
+    shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]
+    backdrop-blur transition-all duration-300
+    hover:bg-emerald-600 hover:text-white
+    active:scale-[0.98]
+    sm:w-auto
+  "
+>
+  {/* Mirror shine effect */}
+  <span
+    aria-hidden="true"
+    className="
+      pointer-events-none absolute inset-0 z-0
+      -translate-x-[150%] skew-x-[-20deg]
+      bg-gradient-to-r from-transparent
+      via-white/80 to-transparent
+      transition-transform duration-700
+      group-hover:translate-x-[150%]
+    "
+  />
+
+  <span className="relative z-10">
+    Sao chép mã
+  </span>
+</button>
+
+              </div>
+              {bestVoucher.end_at && (() => {
+                const remaining = Math.max(
+                  0,
+                  Math.floor((new Date(bestVoucher.end_at).getTime() - (flashNow || Date.now())) / 1000),
+                );
+                const days = Math.floor(remaining / 86400);
+                const hours = Math.floor((remaining % 86400) / 3600);
+                const minutes = Math.floor((remaining % 3600) / 60);
+                const seconds = remaining % 60;
+                const expired = remaining <= 0;
+                return (
+                  <div className="mt-3 flex flex-col items-center gap-2 border-t border-emerald-100 pt-3">
+                    <div className="flex items-center justify-center gap-1.5 text-[10px] font-medium text-emerald-800">
+                      <Clock3 size={13} aria-hidden="true" />
+                      <span>{expired ? "Voucher đã hết hạn" : "Ưu đãi kết thúc sau"}</span>
+                    </div>
+                    {!expired && (
+                      <div className="flex w-full items-center justify-center gap-1.5 tabular-nums">
+                        {[
+                          ["Ngày", days],
+                          ["Giờ", hours],
+                          ["Phút", minutes],
+                          ["Giây", seconds],
+                        ].map(([label, value]) => (
+                          <div key={label} className="min-w-[42px] rounded-md bg-emerald-700 px-2 py-1.5 text-center text-white">
+                            <div className="text-sm font-semibold leading-4">
+                              {String(value).padStart(2, "0")}
+                            </div>
+                            <div className="mt-0.5 text-[8px] uppercase tracking-wide text-emerald-100">
+                              {label}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
 
           {/* Short description */}
 

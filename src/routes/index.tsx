@@ -26,7 +26,7 @@ import FeaturedCollectionShowcaseReverse from "@/components/home/FeaturedCollect
 import FurnitureCollectionShowcase from "@/components/home/FurnitureCollectionShowcase";
 import FloorLampCollectionShowcase from "@/components/home/FloorLampCollectionShowcase";
 import BeforeAfterSlider from "@/components/home/BeforeAfterSlider";
-import FlashSalePopup from "@/components/home/FlashSalePopup";
+import FlashSalePopup from "@/components/FlashSalePopup";
 import CustomerFeedbackGallery from "@/components/home/CustomerFeedbackGallery";
 import BF08VoucherPopup from "@/components/BF08VoucherPopup";
 import OliveTrustSection from "@/components/home/OliveTrustSection";
@@ -401,7 +401,11 @@ function HomePage() {
 
       {/* <WelcomeVoucherModal /> */}
 
-      <BF08VoucherPopup />
+     {/*<BF08VoucherPopup />*/}
+
+       {/* HALF ROUND POPUP */}
+       
+    <FlashSalePopup />
 
 
       {/* =====================================================
@@ -665,12 +669,10 @@ function HomePage() {
 
 
       {/* =====================================================
-          FLASH SALE POPUP - DISABLED
-      ===================================================== */}
+    HALF ROUND POPUP
+===================================================== */}
 
-      {/*
-      <FlashSalePopup />
-      */}
+<FlashSalePopup />
 
 
       {/* =====================================================

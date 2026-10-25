@@ -854,3 +854,45 @@ border-top:1px solid #E5E5E5;
     transition: none;
   }
 }
+.ambient-glow-button {
+  position: relative;
+  isolation: isolate;
+}
+
+.ambient-glow-button::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  z-index: -2;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  filter: blur(12px);
+  opacity: 0.45;
+  transition: opacity 300ms ease;
+}
+
+.ambient-glow-button:hover::before {
+  opacity: 0.9;
+}
+
+.ambient-glow-button:hover .ambient-shine {
+  animation: ambientShine 0.8s ease-in-out;
+}
+
+@keyframes ambientShine {
+  from {
+    left: -50%;
+  }
+
+  to {
+    left: 130%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-glow-button,
+  .ambient-shine {
+    animation: none !important;
+    transition: none !important;
+  }
+}

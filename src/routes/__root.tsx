@@ -315,6 +315,7 @@ function RootShell({
               fbq('track', 'PageView');
             `,
           }}
+          
         />
 
         {/* GOOGLE TAG MANAGER */}

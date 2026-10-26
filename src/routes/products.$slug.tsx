@@ -1846,67 +1846,41 @@ const cartItem = {
 
 
 
-          {/* Product voucher — responsive green card with live countdown */}
+          {/* Product voucher — compact coupon ticket */}
           {bestVoucher && (
-            <div className="mt-3 overflow-hidden rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-green-50 p-3 shadow-sm sm:p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-800">
-                      {bestVoucher.title || bestVoucher.code}
-                    </span>
-                    <span className="rounded-full bg-emerald-600 px-2 py-1 text-[10px] font-bold text-white">
-                      {String(bestVoucher.type).toLowerCase() === "percent"
-                        ? `-${Number(bestVoucher.value)}%`
-                        : `-${formatVND(Number(bestVoucher.value) || 0)}`}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-xs leading-5 text-slate-700">
-                    {bestVoucher.description || "Ưu đãi dành riêng cho sản phẩm này."}
-                  </p>
+            <div className="mt-3 overflow-hidden rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/60 p-2.5 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <span className="inline-flex min-w-0 items-center truncate rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-emerald-800">
+                    {bestVoucher.title || bestVoucher.code}
+                  </span>
+                  <span className="shrink-0 rounded-full bg-emerald-600 px-2 py-1 text-[10px] font-bold text-white">
+                    {String(bestVoucher.type).toLowerCase() === "percent"
+                      ? `-${Number(bestVoucher.value)}%`
+                      : `-${formatVND(Number(bestVoucher.value) || 0)}`}
+                  </span>
                 </div>
                 <button
-  type="button"
-  onClick={async () => {
-    try {
-      await navigator.clipboard.writeText(String(bestVoucher.code || ""));
-      toast.success("Đã sao chép mã voucher");
-    } catch {
-      toast.error("Không thể sao chép mã. Vui lòng sao chép thủ công.");
-    }
-  }}
-  className="
-    group relative isolate inline-flex min-h-10 w-full shrink-0
-    items-center justify-center overflow-hidden rounded-full
-    border border-emerald-600 bg-white/70 px-4 py-2
-    text-[10px] font-bold uppercase tracking-[0.08em]
-    text-emerald-700
-    shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]
-    backdrop-blur transition-all duration-300
-    hover:bg-emerald-600 hover:text-white
-    active:scale-[0.98]
-    sm:w-auto
-  "
->
-  {/* Mirror shine effect */}
-  <span
-    aria-hidden="true"
-    className="
-      pointer-events-none absolute inset-0 z-0
-      -translate-x-[150%] skew-x-[-20deg]
-      bg-gradient-to-r from-transparent
-      via-white/80 to-transparent
-      transition-transform duration-700
-      group-hover:translate-x-[150%]
-    "
-  />
-
-  <span className="relative z-10">
-    Sao chép mã
-  </span>
-</button>
-
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(String(bestVoucher.code || ""));
+                      toast.success("Đã sao chép mã voucher");
+                    } catch {
+                      toast.error("Không thể sao chép mã. Vui lòng sao chép thủ công.");
+                    }
+                  }}
+                  className="group relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-emerald-600 bg-white/80 px-2.5 py-1 text-[8px] font-bold uppercase leading-none tracking-[0.04em] text-emerald-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur transition-all duration-300 hover:bg-emerald-600 hover:text-white active:scale-[0.97]"
+                >
+                  <span aria-hidden="true" className="pointer-events-none absolute inset-0 -translate-x-[150%] skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/80 to-transparent transition-transform duration-700 group-hover:translate-x-[150%]" />
+                  <span className="relative z-10">Sao chép mã</span>
+                </button>
               </div>
+
+              <p className="mt-1.5 text-[11px] leading-4 text-slate-600">
+                {bestVoucher.description || "Ưu đãi dành riêng cho sản phẩm này."}
+              </p>
+
               {bestVoucher.end_at && (() => {
                 const remaining = Math.max(
                   0,
@@ -1918,24 +1892,30 @@ const cartItem = {
                 const seconds = remaining % 60;
                 const expired = remaining <= 0;
                 return (
-                  <div className="mt-3 flex flex-col items-center gap-2 border-t border-emerald-100 pt-3">
+                  <div className="mt-2 flex flex-col items-center gap-1.5 border-t border-dashed border-emerald-200 pt-2">
+                    <style>{`@keyframes voucherCountdownMirror { 0% { transform: translateX(-180%) skewX(-20deg); opacity: 0; } 18% { opacity: .75; } 65% { opacity: .45; } 100% { transform: translateX(180%) skewX(-20deg); opacity: 0; } } @keyframes voucherCountdownFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }`}</style>
                     <div className="flex items-center justify-center gap-1.5 text-[10px] font-medium text-emerald-800">
-                      <Clock3 size={13} aria-hidden="true" />
+                      <Clock3 size={12} aria-hidden="true" />
                       <span>{expired ? "Voucher đã hết hạn" : "Ưu đãi kết thúc sau"}</span>
                     </div>
                     {!expired && (
-                      <div className="flex w-full items-center justify-center gap-1.5 tabular-nums">
+                      <div className="grid w-full grid-cols-[1.25fr_1fr_1fr_1fr] items-stretch gap-2 tabular-nums">
                         {[
                           ["Ngày", days],
                           ["Giờ", hours],
                           ["Phút", minutes],
                           ["Giây", seconds],
-                        ].map(([label, value]) => (
-                          <div key={label} className="min-w-[42px] rounded-md bg-emerald-700 px-2 py-1.5 text-center text-white">
-                            <div className="text-sm font-semibold leading-4">
+                        ].map(([label, value], index) => (
+                          <div
+                            key={label}
+                            className={`group relative isolate flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-lg border px-1.5 py-2 text-center text-white shadow-sm ${index === 0 ? "min-h-[48px] border-emerald-800 bg-gradient-to-br from-emerald-600 to-emerald-800 shadow-[0_3px_10px_rgba(5,150,105,0.2)]" : index === 1 ? "min-h-[46px] border-emerald-500 bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-[0_3px_10px_rgba(5,150,105,0.16)]" : "min-h-[42px] border-emerald-600/20 bg-emerald-700"}`}
+                            style={{ animation: "voucherCountdownFloat 2.4s ease-in-out infinite", animationDelay: `${index * 0.12}s` }}
+                          >
+                            <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 w-[65%] bg-gradient-to-r from-transparent via-white/45 to-transparent" style={{ animation: "voucherCountdownMirror 2.8s ease-in-out infinite", animationDelay: `${index * 0.4}s` }} />
+                            <div className={`relative z-10 font-bold leading-none ${index === 0 ? "text-[16px]" : index === 1 ? "text-[20px]" : "text-[13px]"}`}>
                               {String(value).padStart(2, "0")}
                             </div>
-                            <div className="mt-0.5 text-[8px] uppercase tracking-wide text-emerald-100">
+                            <div className={`relative z-10 mt-1 uppercase tracking-wide ${index === 0 ? "text-[9px] text-emerald-50" : index === 1 ? "text-[8px] font-bold text-emerald-50" : "text-[8px] text-emerald-100"}`}>
                               {label}
                             </div>
                           </div>
@@ -1945,76 +1925,6 @@ const cartItem = {
                   </div>
                 );
               })()}
-            </div>
-          )}
-
-          {/* Short description */}
-
-          {product.short_description && (
-
-            <p className="mt-2.5 line-clamp-2 text-[11px] leading-[1.55] text-neutral-600">
-
-              {product.short_description}
-
-            </p>
-
-          )}
-
-          {/* Color — understated premium swatch selector */}
-          {product.product_colors?.length > 0 && (
-            <div className="mt-3 border-y border-neutral-200 py-2.5">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-neutral-600">
-                  Màu sắc
-                </span>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {product.product_colors.map((color: any) => {
-                  const isSelected = selectedColor?.id === color.id;
-                  return (
-                    <button
-                      type="button"
-                      key={color.id}
-                      onClick={() => {
-                        setSelectedColor(color);
-                        setSelectedImage("");
-                      }}
-                      title={color.name}
-                      aria-label={`Chọn màu ${color.name}`}
-                      aria-pressed={isSelected}
-                      className={`group inline-flex min-h-10 items-center gap-2 rounded-md border px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 ${
-                        isSelected
-                          ? "border-neutral-800 bg-white"
-                          : "border-transparent bg-transparent hover:border-neutral-300"
-                      }`}
-                    >
-                      {color.image_url ? (
-                        <img
-                          src={color.image_url}
-                          alt=""
-                          className={`h-8 w-8 shrink-0 rounded-md border object-cover ${
-                            isSelected ? "border-neutral-500" : "border-neutral-200"
-                          }`}
-                        />
-                      ) : (
-                        <span
-                          className={`h-8 w-8 shrink-0 rounded-md border ${
-                            isSelected ? "border-neutral-500" : "border-neutral-200"
-                          }`}
-                          style={{ background: color.hex || "#ddd" }}
-                        />
-                      )}
-                      <span className="text-[10px] font-semibold text-neutral-900">
-                        {color.name}
-                      </span>
-                      {isSelected && (
-                        <Check size={12} className="ml-0.5 text-neutral-800" strokeWidth={2} />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
           )}
 
@@ -2247,80 +2157,60 @@ const cartItem = {
 
 
 
-            <div className="grid grid-cols-2 items-center gap-2">
-
-              <div className="flex h-10 w-full items-center justify-between overflow-hidden rounded-lg border border-neutral-300 bg-white">
-
+            <div className="grid grid-cols-[2fr_3fr] items-center gap-2">
+              {/* Quantity selector — 40% */}
+              <div className="relative isolate flex h-9 min-w-0 items-center justify-between overflow-hidden rounded-full border border-white/65 bg-white/[0.10] shadow-[inset_0_1px_1px_rgba(255,255,255,0.82),inset_0_-1px_1px_rgba(255,255,255,0.12),0_3px_14px_rgba(0,0,0,0.07)] backdrop-blur-2xl transition-all duration-300 hover:border-white/90 hover:bg-white/[0.18]" style={{ backgroundImage: "linear-gradient(135deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 38%, rgba(255,255,255,0.20) 68%, rgba(255,255,255,0.08) 100%)" }}>
+                <span aria-hidden="true" className="pointer-events-none absolute inset-x-3 top-px z-0 h-px rounded-full bg-gradient-to-r from-transparent via-white/95 to-transparent opacity-90" />
                 <motion.button
-
                   type="button"
-
                   whileTap={{ scale: 0.9 }}
-
-                  onClick={() =>
-
-                    setQty((q) => Math.max(1, q - 1))
-
-                  }
-
-                  className="flex h-full w-9 items-center justify-center"
-
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  aria-label="Giảm số lượng"
+                  className="relative z-10 flex h-full min-w-0 flex-1 items-center justify-center text-neutral-800 transition-colors hover:bg-white/20"
                 >
-
-                  <Minus size={14} />
-
+                  <Minus size={13} />
                 </motion.button>
 
-
-
-                <span className="text-sm font-medium">
-
+                <span className="relative z-10 min-w-[1.25rem] text-center text-sm font-medium tabular-nums text-neutral-900">
                   {qty}
-
                 </span>
 
-
-
                 <motion.button
-
                   type="button"
-
                   whileTap={{ scale: 0.9 }}
-
                   onClick={() => setQty((q) => q + 1)}
-
-                  className="flex h-full w-9 items-center justify-center"
-
+                  aria-label="Tăng số lượng"
+                  className="relative z-10 flex h-full min-w-0 flex-1 items-center justify-center text-neutral-800 transition-colors hover:bg-white/20"
                 >
-
-                  <Plus size={14} />
-
+                  <Plus size={13} />
                 </motion.button>
-
               </div>
 
-
-
-              <button
-
+              {/* Liquid Glass / mirror-finish Add to Cart — 60% */}
+              <motion.button
                 type="button"
-
                 onClick={addToCart}
-
                 disabled={!inStock}
-
-                className="h-10 w-full rounded-lg border border-neutral-300 bg-neutral-100 px-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-neutral-700 transition-colors duration-200 hover:border-neutral-400 hover:bg-neutral-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400"
-
+                whileTap={inStock ? { scale: 0.98 } : undefined}
+                className="group relative isolate flex h-9 min-w-0 w-full items-center justify-center gap-1.5 overflow-hidden rounded-full border border-white/65 bg-white/[0.10] px-2.5 text-[9px] font-semibold uppercase tracking-[0.04em] text-neutral-900 shadow-[inset_0_1px_1px_rgba(255,255,255,0.82),inset_0_-1px_1px_rgba(255,255,255,0.12),0_3px_14px_rgba(0,0,0,0.07)] backdrop-blur-2xl transition-all duration-300 hover:border-white/90 hover:bg-white/[0.18] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_5px_18px_rgba(0,0,0,0.1)] disabled:cursor-not-allowed disabled:border-white/35 disabled:bg-white/[0.06] disabled:text-neutral-400 disabled:shadow-none"
+                style={{ backgroundImage: "linear-gradient(135deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 38%, rgba(255,255,255,0.20) 68%, rgba(255,255,255,0.08) 100%)" }}
               >
-
-                {inStock
-
-                  ? "Thêm vào giỏ"
-
-                  : "Hết hàng"}
-
-              </button>
-
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-0 w-[70%] skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/75 to-transparent"
+                  style={{ animation: "cartLiquidMirror 3.2s ease-in-out infinite" }}
+                />
+                <span aria-hidden="true" className="pointer-events-none absolute inset-x-3 top-px z-0 h-px rounded-full bg-gradient-to-r from-transparent via-white/95 to-transparent opacity-90" />
+                <span className="relative z-10 truncate">
+                  {inStock ? "Thêm vào giỏ" : "Hết hàng"}
+                </span>
+                {inStock && (
+                  <span aria-hidden="true" className="relative z-10 shrink-0 text-xs transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                    ↗
+                  </span>
+                )}
+                <style>{`@keyframes cartLiquidMirror { 0% { transform: translateX(-180%) skewX(-20deg); opacity: 0; } 18% { opacity: .7; } 58% { opacity: .45; } 100% { transform: translateX(240%) skewX(-20deg); opacity: 0; } }`}</style>
+              </motion.button>
             </div>
 
 

@@ -75,6 +75,7 @@ function CartPage() {
 
   const [items, setItems] = useState<PageCartItem[]>([]);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+  const [resolvedColorImages, setResolvedColorImages] = useState<Record<string, string>>({});
   const [mounted, setMounted] = useState(false);
 
   const [vouchers, setVouchers] = useState<CartVoucher[]>([]);
@@ -100,6 +101,74 @@ function CartPage() {
 
   useEffect(() => {
     setItems(cart.items.map(toPageCartItem));
+  }, [cart.items]);
+
+  // Resolve the thumbnail from the exact color selected by the customer.
+  // This also repairs older cart entries whose saved image was the default product image.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSelectedColorImages() {
+      const colorItems = cart.items.filter((item) => item.productColorId);
+      if (!colorItems.length) {
+        setResolvedColorImages({});
+        return;
+      }
+
+      const entries = await Promise.all(
+        colorItems.map(async (item) => {
+          const colorId = String(item.productColorId);
+          const key = `${item.id}:${colorId}`;
+
+          try {
+            const { data: colorRow, error: colorError } = await supabase
+              .from("product_colors")
+              .select("id,image_url")
+              .eq("id", colorId)
+              .maybeSingle();
+
+            if (colorError) {
+              console.warn("Could not load selected color image:", colorError);
+            }
+
+            if (colorRow?.image_url) {
+              return [key, colorRow.image_url] as const;
+            }
+
+            const { data: colorImage, error: imageError } = await supabase
+              .from("product_images")
+              .select("image_url,sort_order")
+              .eq("color_id", colorId)
+              .eq("image_type", "image")
+              .order("sort_order", { ascending: true })
+              .limit(1)
+              .maybeSingle();
+
+            if (imageError) {
+              console.warn("Could not load product image for selected color:", imageError);
+            }
+
+            return colorImage?.image_url
+              ? ([key, colorImage.image_url] as const)
+              : ([key, ""] as const);
+          } catch (error) {
+            console.warn("Selected color image lookup failed:", error);
+            return [key, ""] as const;
+          }
+        }),
+      );
+
+      if (!cancelled) {
+        setResolvedColorImages(
+          Object.fromEntries(entries.filter((entry) => Boolean(entry[1]))),
+        );
+      }
+    }
+
+    void loadSelectedColorImages();
+    return () => {
+      cancelled = true;
+    };
   }, [cart.items]);
 
   // Load the voucher currently saved by the customer.
@@ -363,15 +432,15 @@ function CartPage() {
                         params={{ id: product.id }}
                         className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[16px] bg-[linear-gradient(145deg,#E9EDE2_0%,#F5E7D9_52%,#F8F4ED_100%)] ring-1 ring-inset ring-[#D9DFD0] transition-transform duration-300 group-hover:scale-[1.015] sm:h-32 sm:w-32"
                       >
-                        {product.image && !failedImages[product.id] ? (
+                        {(resolvedColorImages[`${product.id}:${item.productColorId}`] || product.image) && !failedImages[`${product.id}:${item.productColorId ?? "default"}`] ? (
                           <img
-                            src={product.image}
+                            src={resolvedColorImages[`${product.id}:${item.productColorId}`] || product.image || ""}
                             alt={product.name}
                             loading="lazy"
                             onError={() =>
                               setFailedImages((current) => ({
                                 ...current,
-                                [product.id]: true,
+                                [`${product.id}:${item.productColorId ?? "default"}`]: true,
                               }))
                             }
                             className="h-full w-full object-contain p-1.5 mix-blend-multiply drop-shadow-[0_5px_7px_rgba(54,50,40,0.12)] sm:p-2"

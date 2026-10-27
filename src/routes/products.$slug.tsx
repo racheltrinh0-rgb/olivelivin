@@ -1253,9 +1253,19 @@ function addToCart() {
       !/\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(item.image_url),
   )?.image_url;
 
-  const image =
-    (selectedImage && !selectedImageIsVideo ? selectedImage : null) ||
+  const colorSpecificImage =
     selectedColor?.image_url ||
+    (product.product_images ?? []).find(
+      (item: any) =>
+        item.color_id === selectedColor?.id &&
+        item.image_type !== "video" &&
+        item.image_url &&
+        !/\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(item.image_url),
+    )?.image_url;
+
+  const image =
+    colorSpecificImage ||
+    (selectedImage && !selectedImageIsVideo ? selectedImage : null) ||
     product.image_url ||
     firstProductStillImage ||
     null;
@@ -1931,43 +1941,88 @@ const cartItem = {
 
           {/* Product color selector — restored */}
           {(product.product_colors ?? []).length > 0 && (
-            <div className="mt-3 rounded-xl border border-neutral-200 bg-white px-3.5 py-3">
-              <div className="mb-2.5 flex items-center justify-between gap-3">
-                <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-neutral-500">
+            <div className="mt-3 rounded-xl border border-neutral-200/70 bg-white/70 px-3 py-2.5">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <span className="text-[9px] font-medium uppercase tracking-[0.14em] text-neutral-400">
                   Màu sắc
                 </span>
-                <span className="text-[11px] font-medium text-neutral-800">
+                <span className="text-[10px] font-medium text-neutral-700">
                   {selectedColor?.name || "Chọn màu"}
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {(product.product_colors ?? []).map((color: any) => {
                   const isSelected = selectedColor?.id === color.id;
                   const swatch = color.hex || "#E5E5E5";
+                  // Dùng ảnh được chỉ định riêng cho từng màu ngay trong selector.
+                  // Ưu tiên product_colors.image_url, sau đó ảnh product_images theo color_id.
+                  const colorPreviewImage =
+                    color.image_url ||
+                    (product.product_images ?? []).find(
+                      (img: any) =>
+                        img.color_id === color.id &&
+                        img.image_type !== "video" &&
+                        img.image_url &&
+                        !/\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(img.image_url),
+                    )?.image_url ||
+                    null;
                   return (
                     <button
                       key={color.id}
                       type="button"
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => {
+                        setSelectedColor(color);
+
+                        // Khi chọn màu, ưu tiên ảnh được gán trực tiếp cho màu đó.
+                        // Fallback: ảnh trong product_images có color_id tương ứng.
+                        const colorSpecificImage =
+                          color.image_url ||
+                          (product.product_images ?? []).find(
+                            (img: any) =>
+                              img.color_id === color.id &&
+                              img.image_type !== "video" &&
+                              img.image_url &&
+                              !/\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(img.image_url),
+                          )?.image_url;
+
+                        if (colorSpecificImage) {
+                          setSelectedImage(colorSpecificImage);
+                        }
+                      }}
                       aria-label={`Chọn màu ${color.name}`}
                       aria-pressed={isSelected}
                       title={color.name}
-                      className={`group inline-flex items-center gap-2 rounded-full border px-2 py-1.5 transition-all duration-200 ${
+                      className={`group inline-flex items-center gap-1.5 rounded-full border px-2 py-1 transition-all duration-200 ${
                         isSelected
-                          ? "border-neutral-900 bg-neutral-50 shadow-[0_0_0_1px_rgba(23,23,23,0.08)]"
-                          : "border-neutral-200 bg-white hover:border-neutral-400"
+                          ? "border-[#0759D8] bg-[#F4F8FF] shadow-[0_0_0_1px_rgba(7,89,216,0.12)]"
+                          : "border-neutral-200/80 bg-white/80 hover:border-neutral-300 hover:bg-white"
                       }`}
                     >
-                      <span
-                        className={`relative h-5 w-5 shrink-0 rounded-full border border-black/10 shadow-inner ${
-                          isSelected ? "ring-2 ring-neutral-900 ring-offset-2" : ""
-                        }`}
-                        style={{ backgroundColor: swatch }}
-                      />
-                      <span className={`text-[10px] ${isSelected ? "font-semibold text-neutral-900" : "font-medium text-neutral-600"}`}>
+                      {colorPreviewImage ? (
+                        <span
+                          className={`relative h-7 w-7 shrink-0 overflow-hidden rounded-full border border-black/10 bg-white ${
+                            isSelected ? "ring-1 ring-[#0759D8] ring-offset-1 ring-offset-white" : ""
+                          }`}
+                        >
+                          <img
+                            src={colorPreviewImage}
+                            alt={`Ảnh màu ${color.name}`}
+                            loading="lazy"
+                            className="h-full w-full object-cover"
+                          />
+                        </span>
+                      ) : (
+                        <span
+                          className={`relative h-4 w-4 shrink-0 rounded-full border border-black/10 ${
+                            isSelected ? "ring-1 ring-[#0759D8] ring-offset-1 ring-offset-white" : ""
+                          }`}
+                          style={{ backgroundColor: swatch }}
+                        />
+                      )}
+                      <span className={`text-[10px] leading-none ${isSelected ? "font-semibold text-[#0759D8]" : "font-medium text-neutral-600"}`}>
                         {color.name}
                       </span>
-                      {isSelected && <Check size={11} strokeWidth={2.2} className="text-neutral-900" />}
+                      {isSelected && <Check size={10} strokeWidth={2.4} className="text-[#0759D8]" />}
                     </button>
                   );
                 })}
@@ -1975,21 +2030,23 @@ const cartItem = {
             </div>
           )}
 
-          {/* Material — understated, premium US/UK editorial style */}
+          {/* Material — rounded, button-like card aligned with the variant selector */}
           {(selectedColor?.material || materials.length > 0 || product.material) && (
-            <div className="mt-3 flex min-h-[48px] items-center justify-between gap-4 border-y border-neutral-200 bg-white px-1 py-3">
+            <div className="mt-3 flex min-h-[52px] items-center justify-between gap-4 rounded-2xl border border-neutral-200/90 bg-white/75 px-3.5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_3px_12px_rgba(0,0,0,0.035)] backdrop-blur-xl transition-colors duration-200 hover:border-neutral-300">
               <div className="flex min-w-0 items-center gap-2.5">
-                <Layers3 size={15} strokeWidth={1.6} className="shrink-0 text-neutral-500" aria-hidden="true" />
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
+                  <Layers3 size={15} strokeWidth={1.6} className="text-neutral-500" aria-hidden="true" />
+                </span>
                 <div className="min-w-0">
                   <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-neutral-500">
-                    Material
+                    Chất Liệu
                   </p>
                   <p className="mt-0.5 text-[12px] font-medium leading-4 text-neutral-900">
                     {selectedColor?.material || materials.join(" · ") || product.material}
                   </p>
                 </div>
               </div>
-              <span className="shrink-0 text-[9px] uppercase tracking-[0.12em] text-neutral-400">Details</span>
+              <span className="shrink-0 rounded-full border border-neutral-200/80 bg-white/70 px-2.5 py-1.5 text-[8px] font-medium uppercase tracking-[0.12em] text-neutral-400">Details</span>
             </div>
           )}
 

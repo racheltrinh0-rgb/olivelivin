@@ -1929,6 +1929,52 @@ const cartItem = {
           )}
 
 
+          {/* Product color selector — restored */}
+          {(product.product_colors ?? []).length > 0 && (
+            <div className="mt-3 rounded-xl border border-neutral-200 bg-white px-3.5 py-3">
+              <div className="mb-2.5 flex items-center justify-between gap-3">
+                <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-neutral-500">
+                  Màu sắc
+                </span>
+                <span className="text-[11px] font-medium text-neutral-800">
+                  {selectedColor?.name || "Chọn màu"}
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                {(product.product_colors ?? []).map((color: any) => {
+                  const isSelected = selectedColor?.id === color.id;
+                  const swatch = color.hex || "#E5E5E5";
+                  return (
+                    <button
+                      key={color.id}
+                      type="button"
+                      onClick={() => setSelectedColor(color)}
+                      aria-label={`Chọn màu ${color.name}`}
+                      aria-pressed={isSelected}
+                      title={color.name}
+                      className={`group inline-flex items-center gap-2 rounded-full border px-2 py-1.5 transition-all duration-200 ${
+                        isSelected
+                          ? "border-neutral-900 bg-neutral-50 shadow-[0_0_0_1px_rgba(23,23,23,0.08)]"
+                          : "border-neutral-200 bg-white hover:border-neutral-400"
+                      }`}
+                    >
+                      <span
+                        className={`relative h-5 w-5 shrink-0 rounded-full border border-black/10 shadow-inner ${
+                          isSelected ? "ring-2 ring-neutral-900 ring-offset-2" : ""
+                        }`}
+                        style={{ backgroundColor: swatch }}
+                      />
+                      <span className={`text-[10px] ${isSelected ? "font-semibold text-neutral-900" : "font-medium text-neutral-600"}`}>
+                        {color.name}
+                      </span>
+                      {isSelected && <Check size={11} strokeWidth={2.2} className="text-neutral-900" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Material — understated, premium US/UK editorial style */}
           {(selectedColor?.material || materials.length > 0 || product.material) && (
             <div className="mt-3 flex min-h-[48px] items-center justify-between gap-4 border-y border-neutral-200 bg-white px-1 py-3">
